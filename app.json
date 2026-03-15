@@ -1,39 +1,57 @@
 {
   "expo": {
-    "name": "kaambook-app",
+    "name": "KaamBook",
     "slug": "kaambook-app",
+    "description": "Staff attendance tracking and salary management app for small businesses. Track daily attendance, manage salaries, and generate reports effortlessly.",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "kaambookapp",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FAFAF5"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kaambook.app"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#16A34A",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "package": "com.kaambook.app"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "KaamBook - Staff Attendance & Salary Tracker",
+      "shortName": "KaamBook",
+      "description": "Track staff attendance, manage salaries, and run your business efficiently. Free offline app for small businesses.",
+      "lang": "en",
+      "themeColor": "#16A34A",
+      "backgroundColor": "#FAFAF5"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-notifications",
+      "expo-font",
+      "expo-sqlite",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4eaa6cba-2da6-4c44-b77c-2d66ec5fbf2a"
+      }
     }
   }
 }

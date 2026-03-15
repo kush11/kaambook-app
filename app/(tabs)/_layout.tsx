@@ -1,68 +1,63 @@
-import React from 'react';
-import { SymbolView } from 'expo-symbols';
-import { Link, Tabs } from 'expo-router';
-import { Platform, Pressable } from 'react-native';
-
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { Tabs, router } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { TouchableOpacity, Text } from 'react-native';
+import { useBusinessStore } from '@/src/stores/useBusinessStore';
+import { colors } from '@/src/theme/colors';
+import i18n from '@/src/i18n';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        headerStyle: { backgroundColor: colors.primary },
+        headerTintColor: '#fff',
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable style={{ marginRight: 15 }}>
-                {({ pressed }) => (
-                  <SymbolView
-                    name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-                    size={25}
-                    tintColor={Colors[colorScheme].text}
-                    style={{ opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          title: i18n.t('tabs.home'),
+          headerTitle: () => {
+            const businessName = useBusinessStore.getState().activeBusiness?.name || 'KaamBook';
+            return (
+              <TouchableOpacity onPress={() => router.push('/business/select')}>
+                <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>{businessName}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>{i18n.t('home.switch_business')}</Text>
+              </TouchableOpacity>
+            );
+          },
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="account-group" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="salary-due"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
-            />
+          title: i18n.t('tabs.salary_due'),
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="cash-multiple" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="cashbook"
+        options={{
+          title: i18n.t('tabs.cashbook'),
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="book-open-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: i18n.t('tabs.settings'),
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="cog" size={size} color={color} />
           ),
         }}
       />
