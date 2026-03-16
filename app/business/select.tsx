@@ -11,7 +11,7 @@ import i18n from '@/src/i18n';
 
 export default function SelectBusinessScreen() {
   const { businesses, activeBusiness, loadBusinesses, setActiveBusiness } = useBusinessStore();
-  const { setSetting, loadSettings } = useSettingsStore();
+  const { setActiveBusinessId } = useSettingsStore();
   const { loadStaff } = useStaffStore();
 
   useEffect(() => {
@@ -20,8 +20,7 @@ export default function SelectBusinessScreen() {
 
   const handleSelect = async (business: Business) => {
     await setActiveBusiness(business.id);
-    await setSetting('active_business_id', business.id);
-    await loadSettings();
+    await setActiveBusinessId(business.id);
     router.back();
   };
 

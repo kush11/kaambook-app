@@ -57,7 +57,6 @@ export function calculateSalary(
           break;
         case 'unpaid_leave':
           unpaidLeaves++;
-          workingDays++;
           break;
         case 'holiday':
           holidays++;
@@ -93,13 +92,13 @@ export function calculateSalary(
       break;
     }
     case 'daily': {
-      // Daily: salary * (present + half*0.5)
-      earnedSalary = salaryAmount * (presentDays + (halfDays * 0.5));
+      // Daily: salary * (present + half*0.5 + paid_leaves)
+      earnedSalary = salaryAmount * (presentDays + (halfDays * 0.5) + paidLeaves);
       break;
     }
     case 'weekly': {
-      // Weekly: salary / 7 * payable days
-      const payableDays = presentDays + (halfDays * 0.5) + paidLeaves;
+      // Weekly: salary / 7 * payable days (including holidays and week offs)
+      const payableDays = presentDays + (halfDays * 0.5) + paidLeaves + holidays + weekOffs;
       const dailyRate = salaryAmount / 7;
       earnedSalary = dailyRate * payableDays;
       break;
@@ -113,7 +112,7 @@ export function calculateSalary(
       // Fallback: 1.5x calculated daily rate / 8 hours
       switch (salaryType) {
         case 'monthly':
-          hourlyRate = (salaryAmount / 30 / 8) * 1.5;
+          hourlyRate = (salaryAmount / totalDays / 8) * 1.5;
           break;
         case 'daily':
           hourlyRate = (salaryAmount / 8) * 1.5;

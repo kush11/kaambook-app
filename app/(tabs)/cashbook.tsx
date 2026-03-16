@@ -37,6 +37,7 @@ export default function CashbookScreen() {
   };
 
   const handleAdd = async (data: any) => {
+    if (!activeBusinessId) return;
     setLoading(true);
     await addEntry({ businessId: activeBusinessId, ...data });
     setLoading(false);
@@ -80,6 +81,7 @@ export default function CashbookScreen() {
       </View>
 
       <FlatList
+        style={styles.flatList}
         data={entries}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
@@ -109,6 +111,7 @@ const styles = StyleSheet.create({
   summaryRow: { flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 8 },
   summaryCard: { flex: 1, marginHorizontal: 4, backgroundColor: '#fff', borderLeftWidth: 3 },
   summaryLabel: { color: colors.textSecondary },
+  flatList: { flex: 1 },
   list: { paddingBottom: 80 },
   emptyContainer: { flex: 1 },
   fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: colors.primary },

@@ -11,21 +11,12 @@ export function getDb() {
     expo.execSync('PRAGMA journal_mode = WAL;');
     expo.execSync('PRAGMA foreign_keys = ON;');
     _db = drizzle(expo, { schema });
+    createTables();
   }
   return _db;
 }
 
-// For backward compat — lazy proxy
-export const db = new Proxy({} as ExpoSQLiteDatabase<typeof schema>, {
-  get(_target, prop: string) {
-    const database = getDb();
-    return database[prop as keyof typeof database];
-  },
-});
-
-export function initDatabase() {
-  const database = getDb();
-
+function createTables() {
   expo.execSync(`
     CREATE TABLE IF NOT EXISTS businesses (
       id TEXT PRIMARY KEY,
@@ -120,6 +111,18 @@ export function initDatabase() {
       created_at TEXT NOT NULL
     );
   `);
+}
+
+// For backward compat — lazy proxy
+export const db = new Proxy({} as ExpoSQLiteDatabase<typeof schema>, {
+  get(_target, prop: string) {
+    const database = getDb();
+    return database[prop as keyof typeof database];
+  },
+});
+
+export function initDatabase() {
+  getDb();
 }
 
 export { expo as rawDb };

@@ -14,6 +14,7 @@ interface SettingsState {
   loadSettings: () => Promise<void>;
   setSetting: (key: string, value: string) => Promise<void>;
   setLanguage: (lang: string) => Promise<void>;
+  setActiveBusinessId: (id: string) => Promise<void>;
   setReminderEnabled: (enabled: boolean) => Promise<void>;
   setReminderTime: (time: string) => Promise<void>;
   completeOnboarding: () => Promise<void>;
@@ -48,6 +49,11 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   setSetting: async (key: string, value: string) => {
     await db.insert(settings).values({ key, value })
       .onConflictDoUpdate({ target: settings.key, set: { value } });
+  },
+
+  setActiveBusinessId: async (id: string) => {
+    await get().setSetting('active_business_id', id);
+    set({ activeBusinessId: id });
   },
 
   setLanguage: async (lang: string) => {

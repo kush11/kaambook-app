@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Platform } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import dayjs from 'dayjs';
 

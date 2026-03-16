@@ -39,6 +39,9 @@ export const useStaffStore = create<StaffState>((set, get) => ({
   },
 
   addStaff: async (businessId: string, input: AddStaffInput) => {
+    if (!businessId) {
+      return '';
+    }
     const id = randomUUID();
     await db.insert(staff).values({
       id,

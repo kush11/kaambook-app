@@ -20,7 +20,8 @@
     "today_attendance": "Today's Attendance",
     "present": "Present",
     "absent": "Absent",
-    "switch_business": "Tap to switch business"
+    "switch_business": "Tap to switch business",
+    "no_business": "Please select a business first"
   },
   "staff": {
     "add": "Add Staff",

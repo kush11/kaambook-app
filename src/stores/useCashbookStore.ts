@@ -70,8 +70,8 @@ export const useCashbookStore = create<CashbookState>((set, get) => ({
       date: input.date || dayjs().format('YYYY-MM-DD'),
       createdAt: dayjs().toISOString(),
     });
-    const now = dayjs(input.date || undefined);
-    await get().loadEntries(input.businessId, now.year(), now.month());
+    const entryDate = dayjs(input.date || dayjs().format('YYYY-MM-DD'));
+    await get().loadEntries(input.businessId, entryDate.year(), entryDate.month());
   },
 
   deleteEntry: async (id: string, businessId: string, year: number, month: number) => {

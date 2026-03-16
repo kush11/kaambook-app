@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Card, Text, IconButton, Chip } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { Card, Text, IconButton } from 'react-native-paper';
 import { StaffAvatar } from './StaffAvatar';
 import { colors } from '@/src/theme/colors';
 import { formatCurrency } from '@/src/utils/formatters';

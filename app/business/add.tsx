@@ -12,7 +12,7 @@ export default function AddBusinessScreen() {
   const [nameError, setNameError] = useState(false);
   const [loading, setLoading] = useState(false);
   const { addBusiness } = useBusinessStore();
-  const { setSetting } = useSettingsStore();
+  const { setActiveBusinessId } = useSettingsStore();
 
   const handleSubmit = async () => {
     if (!name.trim()) {
@@ -21,7 +21,7 @@ export default function AddBusinessScreen() {
     }
     setLoading(true);
     const id = await addBusiness(name.trim());
-    await setSetting('active_business_id', id);
+    await setActiveBusinessId(id);
     setLoading(false);
     router.back();
   };
