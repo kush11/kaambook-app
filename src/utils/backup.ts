@@ -27,7 +27,7 @@ export async function createBackup(): Promise<void> {
   };
 
   const json = JSON.stringify(data, null, 2);
-  const fileName = `kaambook-backup-${dayjs().format('YYYY-MM-DD-HHmm')}.json`;
+  const fileName = `hisabpagar-backup-${dayjs().format('YYYY-MM-DD-HHmm')}.json`;
   const file = new File(Paths.cache, fileName);
   if (!file.exists) {
     file.create();
@@ -36,7 +36,7 @@ export async function createBackup(): Promise<void> {
 
   await Sharing.shareAsync(file.uri, {
     mimeType: 'application/json',
-    dialogTitle: 'Save KaamBook Backup',
+    dialogTitle: 'Save Hisab Pagar Backup',
   });
 }
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { View, FlatList, StyleSheet, Modal, Pressable } from 'react-native';
-import { Card, Text, FAB } from 'react-native-paper';
+import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { Card, Text, Portal, Modal } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { MonthNavigator } from '@/src/components/attendance/MonthNavigator';
 import { CashbookEntryCard } from '@/src/components/cashbook/CashbookEntryCard';
@@ -39,7 +40,11 @@ export default function CashbookScreen() {
   const handleAdd = async (data: any) => {
     if (!activeBusinessId) return;
     setLoading(true);
-    await addEntry({ businessId: activeBusinessId, ...data });
+    try {
+      await addEntry({ businessId: activeBusinessId, ...data });
+    } catch (e) {
+      console.error('Failed to add cashbook entry:', e);
+    }
     setLoading(false);
     setShowAdd(false);
   };
@@ -93,15 +98,19 @@ export default function CashbookScreen() {
         }
       />
 
-      <FAB icon="plus" style={styles.fab} onPress={() => setShowAdd(true)} color="#fff" />
+      <TouchableOpacity style={styles.fab} onPress={() => setShowAdd(true)} activeOpacity={0.7}>
+        <MaterialCommunityIcons name="plus" size={24} color="#fff" />
+      </TouchableOpacity>
 
-      <Modal visible={showAdd} transparent animationType="fade" onRequestClose={() => setShowAdd(false)}>
-        <Pressable style={styles.modalOverlay} onPress={() => setShowAdd(false)}>
-          <Pressable style={styles.modal} onPress={() => {}}>
-            <AddCashbookEntry onSubmit={handleAdd} isLoading={loading} />
-          </Pressable>
-        </Pressable>
-      </Modal>
+      <Portal>
+        <Modal
+          visible={showAdd}
+          onDismiss={() => setShowAdd(false)}
+          contentContainerStyle={styles.modal}
+        >
+          <AddCashbookEntry onSubmit={handleAdd} isLoading={loading} />
+        </Modal>
+      </Portal>
     </View>
   );
 }
@@ -114,7 +123,6 @@ const styles = StyleSheet.create({
   flatList: { flex: 1 },
   list: { paddingBottom: 80 },
   emptyContainer: { flex: 1 },
-  fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: colors.primary },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 16 },
-  modal: { backgroundColor: '#fff', borderRadius: 16, maxHeight: '80%' },
+  fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: colors.primary, width: 56, height: 56, borderRadius: 16, justifyContent: 'center' as const, alignItems: 'center' as const, elevation: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.27, shadowRadius: 4.65 },
+  modal: { backgroundColor: colors.surface, borderRadius: 16, marginHorizontal: 16, maxHeight: '85%', overflow: 'hidden' },
 });

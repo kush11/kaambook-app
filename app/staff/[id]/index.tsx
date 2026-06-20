@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Card, Text, Button, List, Divider } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { StaffAvatar } from '@/src/components/staff/StaffAvatar';
 import { SalaryBreakup } from '@/src/components/salary/SalaryBreakup';
@@ -21,6 +22,7 @@ import i18n from '@/src/i18n';
 
 export default function StaffDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const insets = useSafeAreaInsets();
   const { getStaffById, deleteStaff, loadStaff } = useStaffStore();
   const [breakdown, setBreakdown] = useState<SalaryBreakdownType | null>(null);
   const [showDelete, setShowDelete] = useState(false);
@@ -88,37 +90,42 @@ export default function StaffDetailScreen() {
     : i18n.t('salary.per_week');
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 24 }]}
+    >
       {/* Header */}
-      <Card style={styles.headerCard}>
+      <Card style={styles.headerCard} mode="elevated">
         <Card.Content style={styles.headerContent}>
           <StaffAvatar name={staffMember.name} photoUri={staffMember.photoUri} size={64} />
           <View style={styles.headerInfo}>
-            <Text variant="titleLarge">{staffMember.name}</Text>
+            <Text variant="titleLarge" style={styles.name}>{staffMember.name}</Text>
             {staffMember.phone && (
               <Text variant="bodyMedium" style={styles.phone}>{formatPhone(staffMember.phone)}</Text>
             )}
-            <Text variant="titleSmall" style={styles.salary}>
-              {formatCurrency(staffMember.salaryAmount)}{salaryLabel}
-            </Text>
+            <View style={styles.salaryPill}>
+              <Text variant="labelLarge" style={styles.salaryPillText}>
+                {formatCurrency(staffMember.salaryAmount)}{salaryLabel}
+              </Text>
+            </View>
           </View>
         </Card.Content>
       </Card>
 
       {/* Quick Actions */}
       <View style={styles.actions}>
-        <Button mode="contained" icon="calendar" onPress={() => router.push(`/staff/${id}/attendance`)} style={styles.actionBtn} compact>
+        <Button mode="contained" icon="calendar" onPress={() => router.push(`/staff/${id}/attendance`)} style={styles.actionBtn} contentStyle={styles.actionBtnContent}>
           {i18n.t('attendance.title')}
         </Button>
-        <Button mode="contained" icon="cash" onPress={() => router.push(`/staff/${id}/add-payment`)} style={styles.actionBtn} compact>
+        <Button mode="contained" icon="cash" onPress={() => router.push(`/staff/${id}/add-payment`)} style={styles.actionBtn} contentStyle={styles.actionBtnContent}>
           {i18n.t('payment.add')}
         </Button>
       </View>
-      <View style={styles.actions}>
-        <Button mode="outlined" icon="file-pdf-box" onPress={handleShareReport} style={styles.actionBtn} compact>
+      <View style={[styles.actions, styles.actionsSecondRow]}>
+        <Button mode="outlined" icon="file-pdf-box" onPress={handleShareReport} style={styles.actionBtn} contentStyle={styles.actionBtnContent}>
           {i18n.t('staff.pdf_report')}
         </Button>
-        <Button mode="outlined" icon="whatsapp" onPress={handleWhatsAppShare} style={styles.actionBtn} compact buttonColor="#25D366" textColor="#fff">
+        <Button mode="contained" icon="whatsapp" onPress={handleWhatsAppShare} style={styles.actionBtn} contentStyle={styles.actionBtnContent} buttonColor="#25D366" textColor="#fff">
           WhatsApp
         </Button>
       </View>
@@ -127,24 +134,24 @@ export default function StaffDetailScreen() {
       {breakdown && <SalaryBreakup breakdown={breakdown} />}
 
       {/* Navigation Links */}
-      <Card style={styles.linksCard}>
+      <Card style={styles.linksCard} mode="elevated">
         <List.Item
           title={i18n.t('payment.title')}
-          left={props => <List.Icon {...props} icon="cash-multiple" />}
+          left={props => <List.Icon {...props} icon="cash-multiple" color={colors.primary} />}
           right={props => <List.Icon {...props} icon="chevron-right" />}
           onPress={() => router.push(`/staff/${id}/payments`)}
         />
         <Divider />
         <List.Item
           title={i18n.t('staff.edit')}
-          left={props => <List.Icon {...props} icon="account-edit" />}
+          left={props => <List.Icon {...props} icon="account-edit" color={colors.primary} />}
           right={props => <List.Icon {...props} icon="chevron-right" />}
           onPress={() => router.push(`/staff/${id}/profile`)}
         />
         <Divider />
         <List.Item
           title={i18n.t('salary.edit_salary')}
-          left={props => <List.Icon {...props} icon="currency-inr" />}
+          left={props => <List.Icon {...props} icon="currency-inr" color={colors.primary} />}
           right={props => <List.Icon {...props} icon="chevron-right" />}
           onPress={() => router.push(`/staff/${id}/edit-salary`)}
         />
@@ -153,6 +160,7 @@ export default function StaffDetailScreen() {
       {/* Delete */}
       <Button
         mode="text"
+        icon="trash-can-outline"
         textColor={colors.error}
         onPress={() => setShowDelete(true)}
         style={styles.deleteBtn}
@@ -175,14 +183,25 @@ export default function StaffDetailScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  headerCard: { margin: 16, backgroundColor: '#fff' },
-  headerContent: { flexDirection: 'row', alignItems: 'center' },
+  content: { paddingTop: 4 },
+  headerCard: { marginHorizontal: 16, marginTop: 16, marginBottom: 8, backgroundColor: colors.surface, borderRadius: 20 },
+  headerContent: { flexDirection: 'row', alignItems: 'center', paddingVertical: 4 },
   headerInfo: { marginLeft: 16, flex: 1 },
+  name: { fontWeight: '700' },
   phone: { color: colors.textSecondary, marginTop: 2 },
-  salary: { color: colors.primary, marginTop: 4 },
-  actions: { flexDirection: 'row', paddingHorizontal: 16, gap: 12 },
-  actionBtn: { flex: 1 },
-  reportBtn: { flex: 1, marginTop: 8 },
-  linksCard: { margin: 16, backgroundColor: '#fff' },
-  deleteBtn: { margin: 16 },
+  salaryPill: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.primary + '14',
+    borderRadius: 999,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    marginTop: 8,
+  },
+  salaryPillText: { color: colors.primary, fontWeight: '700' },
+  actions: { flexDirection: 'row', paddingHorizontal: 16, gap: 12, marginTop: 8 },
+  actionsSecondRow: { marginTop: 12 },
+  actionBtn: { flex: 1, borderRadius: 12 },
+  actionBtnContent: { height: 46 },
+  linksCard: { marginHorizontal: 16, marginTop: 8, backgroundColor: colors.surface, borderRadius: 20, overflow: 'hidden' },
+  deleteBtn: { marginHorizontal: 16, marginTop: 16 },
 });

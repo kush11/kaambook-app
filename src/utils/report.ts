@@ -204,7 +204,7 @@ function generateSalarySlipHTML(
 
   <!-- Footer -->
   <div class="footer">
-    This is a computer-generated salary slip from KaamBook. No signature required.
+    This is a computer-generated salary slip from Hisab Pagar. No signature required.
   </div>
 </div>
 </body>

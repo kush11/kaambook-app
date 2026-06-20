@@ -97,7 +97,7 @@ export function AddCashbookEntry({ onSubmit, isLoading }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flexGrow: 0 },
   content: { padding: 16 },
   label: { marginTop: 16, marginBottom: 8, color: colors.textSecondary },
   segment: { marginBottom: 8 },

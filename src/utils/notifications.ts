@@ -26,7 +26,7 @@ export async function scheduleAttendanceReminder(hour: number, minute: number): 
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'KaamBook Reminder',
+        title: 'Hisab Pagar Reminder',
         body: "Don't forget to mark today's attendance!",
       },
       trigger: {

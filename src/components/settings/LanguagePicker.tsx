@@ -8,7 +8,7 @@ interface LanguagePickerProps {
   onChange: (lang: string) => void;
 }
 
-const LANGUAGES = [
+export const LANGUAGES = [
   { code: 'en', label: 'English' },
   { code: 'hi', label: 'हिंदी (Hindi)' },
   { code: 'gu', label: 'ગુજરાતી (Gujarati)' },
@@ -20,6 +20,10 @@ const LANGUAGES = [
   { code: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
   { code: 'od', label: 'ଓଡ଼ିଆ (Odia)' },
 ];
+
+export function getLanguageLabel(code: string): string {
+  return LANGUAGES.find(l => l.code === code)?.label ?? 'English';
+}
 
 export function LanguagePicker({ value, onChange }: LanguagePickerProps) {
   return (

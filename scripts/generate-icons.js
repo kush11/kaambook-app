@@ -87,7 +87,7 @@ function androidMonochromeSvg() {
 }
 
 async function generate() {
-  console.log('Generating KaamBook app icons...\n');
+  console.log('Generating Hisab Pagar app icons...\n');
 
   await sharp(Buffer.from(appIconSvg(1024))).png().toFile(path.join(ASSETS, 'icon.png'));
   console.log('  icon.png (1024x1024)');

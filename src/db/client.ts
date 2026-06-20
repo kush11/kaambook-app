@@ -7,7 +7,7 @@ let _db: ExpoSQLiteDatabase<typeof schema>;
 
 export function getDb() {
   if (!_db) {
-    expo = openDatabaseSync('kaambook.db');
+    expo = openDatabaseSync('hisabpagar.db');
     expo.execSync('PRAGMA journal_mode = WAL;');
     expo.execSync('PRAGMA foreign_keys = ON;');
     _db = drizzle(expo, { schema });

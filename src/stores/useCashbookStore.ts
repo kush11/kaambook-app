@@ -60,16 +60,21 @@ export const useCashbookStore = create<CashbookState>((set, get) => ({
   },
 
   addEntry: async (input: AddEntryInput) => {
-    await db.insert(cashbook).values({
-      id: randomUUID(),
-      businessId: input.businessId,
-      amount: input.amount,
-      type: input.type,
-      category: input.category,
-      description: input.description || null,
-      date: input.date || dayjs().format('YYYY-MM-DD'),
-      createdAt: dayjs().toISOString(),
-    });
+    try {
+      await db.insert(cashbook).values({
+        id: randomUUID(),
+        businessId: input.businessId,
+        amount: input.amount,
+        type: input.type,
+        category: input.category,
+        description: input.description || null,
+        date: input.date || dayjs().format('YYYY-MM-DD'),
+        createdAt: dayjs().toISOString(),
+      });
+    } catch (e) {
+      console.error('Failed to insert cashbook entry:', e);
+      throw e;
+    }
     const entryDate = dayjs(input.date || dayjs().format('YYYY-MM-DD'));
     await get().loadEntries(input.businessId, entryDate.year(), entryDate.month());
   },

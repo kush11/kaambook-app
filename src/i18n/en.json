@@ -1,7 +1,7 @@
 {
-  "app_name": "KaamBook",
+  "app_name": "Hisab Pagar",
   "onboarding": {
-    "title": "Welcome to KaamBook",
+    "title": "Welcome to Hisab Pagar",
     "subtitle": "Manage your staff attendance & payments offline",
     "select_language": "Select Language",
     "get_started": "Get Started"
@@ -97,7 +97,11 @@
     "name": "Business Name",
     "add": "Add Business",
     "section_title": "Business",
-    "switch_description": "Tap to switch or add business"
+    "switch_description": "Tap to switch or add business",
+    "rename": "Rename",
+    "delete": "Delete Business",
+    "delete_confirm": "This will permanently delete this business and all its staff, attendance and records. This cannot be undone.",
+    "name_placeholder": "e.g. Sharma Traders"
   },
   "cashbook": {
     "income": "Income",
@@ -145,7 +149,8 @@
     "success": "Success",
     "loading": "Loading...",
     "no_data": "No data available",
-    "rupee_symbol": "₹"
+    "rupee_symbol": "₹",
+    "this_month": "This Month"
   },
   "days": {
     "sunday": "Sunday",

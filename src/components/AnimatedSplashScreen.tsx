@@ -103,7 +103,7 @@ export function AnimatedSplashScreen({ isReady, onFinish, children }: AnimatedSp
             },
           ]}
         >
-          KaamBook
+          Hisab Pagar
         </Animated.Text>
 
         <Animated.Text

@@ -21,7 +21,7 @@ export default function TabLayout() {
         options={{
           title: i18n.t('tabs.home'),
           headerTitle: () => {
-            const businessName = useBusinessStore.getState().activeBusiness?.name || 'KaamBook';
+            const businessName = useBusinessStore.getState().activeBusiness?.name || 'Hisab Pagar';
             return (
               <TouchableOpacity onPress={() => router.push('/business/select')}>
                 <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>{businessName}</Text>

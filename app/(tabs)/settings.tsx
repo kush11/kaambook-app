@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { List, Switch, Text, Divider } from 'react-native-paper';
-import { LanguagePicker } from '@/src/components/settings/LanguagePicker';
+import { getLanguageLabel } from '@/src/components/settings/LanguagePicker';
 import { BackupRestore } from '@/src/components/settings/BackupRestore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
@@ -11,11 +11,7 @@ import { router } from 'expo-router';
 import i18n from '@/src/i18n';
 
 export default function SettingsScreen() {
-  const { language, setLanguage, reminderEnabled, setReminderEnabled, reminderTime } = useSettingsStore();
-
-  const handleLanguageChange = async (lang: string) => {
-    await setLanguage(lang);
-  };
+  const { language, reminderEnabled, setReminderEnabled, reminderTime } = useSettingsStore();
 
   const handleReminderToggle = async (enabled: boolean) => {
     if (enabled) {
@@ -34,7 +30,7 @@ export default function SettingsScreen() {
       <List.Section>
         <List.Subheader>{i18n.t('business.section_title')}</List.Subheader>
         <List.Item
-          title={useBusinessStore.getState().activeBusiness?.name || 'KaamBook'}
+          title={useBusinessStore.getState().activeBusiness?.name || 'Hisab Pagar'}
           description={i18n.t('business.switch_description')}
           left={props => <List.Icon {...props} icon="domain" />}
           right={props => <List.Icon {...props} icon="chevron-right" />}
@@ -46,7 +42,13 @@ export default function SettingsScreen() {
 
       <List.Section>
         <List.Subheader>{i18n.t('settings.language')}</List.Subheader>
-        <LanguagePicker value={language} onChange={handleLanguageChange} />
+        <List.Item
+          title={i18n.t('settings.language')}
+          description={getLanguageLabel(language)}
+          left={props => <List.Icon {...props} icon="translate" />}
+          right={props => <List.Icon {...props} icon="chevron-right" />}
+          onPress={() => router.push('/settings/language')}
+        />
       </List.Section>
 
       <Divider />

@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "KaamBook",
+    "name": "Hisab Pagar",
     "slug": "kaambook-app",
     "description": "Staff attendance tracking and salary management app for small businesses. Track daily attendance, manage salaries, and generate reports effortlessly.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "kaambookapp",
+    "scheme": "hisabpagar",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash-icon.png",
@@ -24,14 +24,25 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "package": "com.kaambook.app"
+      "package": "com.kaambook.app",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png",
-      "name": "KaamBook - Staff Attendance & Salary Tracker",
-      "shortName": "KaamBook",
+      "name": "Hisab Pagar - Staff Attendance & Salary Tracker",
+      "shortName": "Hisab Pagar",
       "description": "Track staff attendance, manage salaries, and run your business efficiently. Free offline app for small businesses.",
       "lang": "en",
       "themeColor": "#16A34A",
