@@ -1,7 +1,7 @@
 export const colors = {
-  primary: '#16A34A',        // Forest green
-  primaryLight: '#22C55E',
-  primaryDark: '#15803D',
+  primary: '#EA580C',        // Brand orange
+  primaryLight: '#FB923C',
+  primaryDark: '#C2410C',
   secondary: '#92400E',      // Earthy brown
   secondaryLight: '#B45309',
   background: '#FAFAF5',     // Warm off-white

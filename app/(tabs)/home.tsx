@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
-import { FAB } from 'react-native-paper';
+import { FAB, Button } from 'react-native-paper';
 import { router, useFocusEffect } from 'expo-router';
 import { StaffCard } from '@/src/components/staff/StaffCard';
 import { SearchBar } from '@/src/components/ui/SearchBar';
 import { EmptyState } from '@/src/components/ui/EmptyState';
+import { DashboardStats } from '@/src/components/home/DashboardStats';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useAttendanceStore } from '@/src/stores/useAttendanceStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
@@ -19,9 +20,11 @@ import i18n from '@/src/i18n';
 export default function HomeScreen() {
   const { staffList, loadStaff } = useStaffStore();
   const { activeBusinessId } = useSettingsStore();
-  const { markAttendance } = useAttendanceStore();
+  const { markAttendance, markAllPresent, markAllStatus } = useAttendanceStore();
   const [search, setSearch] = useState('');
   const [todayRecords, setTodayRecords] = useState<Map<string, AttendanceStatus>>(new Map());
+  const [markingAll, setMarkingAll] = useState(false);
+  const [markingHoliday, setMarkingHoliday] = useState(false);
 
   const loadData = useCallback(async () => {
     if (activeBusinessId) {
@@ -53,6 +56,35 @@ export default function HomeScreen() {
     await loadTodayAttendance();
   };
 
+  // Today's summary across all active staff (independent of the search filter).
+  const activeStaff = staffList.filter(s => s.status === 'active');
+  let presentCount = 0;
+  let absentCount = 0;
+  let markedCount = 0;
+  activeStaff.forEach((s) => {
+    const st = todayRecords.get(s.id);
+    if (st) {
+      markedCount++;
+      if (st === 'present') presentCount++;
+      else if (st === 'absent') absentCount++;
+    }
+  });
+  const pendingCount = activeStaff.length - markedCount;
+
+  const handleMarkAllPresent = async () => {
+    setMarkingAll(true);
+    await markAllPresent(activeStaff.map((s) => s.id), today());
+    await loadTodayAttendance();
+    setMarkingAll(false);
+  };
+
+  const handleMarkHoliday = async () => {
+    setMarkingHoliday(true);
+    await markAllStatus(activeStaff.map((s) => s.id), today(), 'holiday');
+    await loadTodayAttendance();
+    setMarkingHoliday(false);
+  };
+
   const filtered = staffList.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase()) && s.status === 'active'
   );
@@ -69,6 +101,40 @@ export default function HomeScreen() {
       <FlatList
         data={filtered}
         keyExtractor={item => item.id}
+        ListHeaderComponent={
+          activeStaff.length > 0 ? (
+            <View>
+              <DashboardStats
+                present={presentCount}
+                absent={absentCount}
+                pending={pendingCount}
+                total={activeStaff.length}
+              />
+              <View style={styles.headerActions}>
+                <Button
+                  mode="contained"
+                  icon="check-all"
+                  onPress={handleMarkAllPresent}
+                  loading={markingAll}
+                  buttonColor={colors.present}
+                  textColor="#fff"
+                  style={styles.headerBtn}
+                >
+                  {i18n.t('home.mark_all_present')}
+                </Button>
+                <Button
+                  mode="outlined"
+                  icon="calendar-star"
+                  onPress={handleMarkHoliday}
+                  loading={markingHoliday}
+                  style={styles.headerBtn}
+                >
+                  {i18n.t('home.mark_holiday')}
+                </Button>
+              </View>
+            </View>
+          ) : null
+        }
         renderItem={({ item }) => (
           <StaffCard
             staff={item}
@@ -99,6 +165,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   list: { paddingBottom: 80 },
+  headerActions: { flexDirection: 'row', gap: 8, marginHorizontal: 12, marginTop: 10, marginBottom: 4 },
+  headerBtn: { flex: 1 },
   emptyContainer: { flex: 1 },
   fab: {
     position: 'absolute',

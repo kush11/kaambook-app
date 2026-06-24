@@ -23,7 +23,7 @@ import i18n from '@/src/i18n';
 export default function StaffDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
-  const { getStaffById, deleteStaff, loadStaff } = useStaffStore();
+  const { getStaffById, deleteStaff, loadStaff, updateStaff } = useStaffStore();
   const [breakdown, setBreakdown] = useState<SalaryBreakdownType | null>(null);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -83,6 +83,10 @@ export default function StaffDetailScreen() {
   const handleDelete = async () => {
     await deleteStaff(id);
     router.back();
+  };
+
+  const handleToggleStatus = async () => {
+    await updateStaff(id, { status: staffMember.status === 'active' ? 'inactive' : 'active' });
   };
 
   const salaryLabel = staffMember.salaryType === 'monthly' ? i18n.t('salary.per_month')
@@ -154,6 +158,13 @@ export default function StaffDetailScreen() {
           left={props => <List.Icon {...props} icon="currency-inr" color={colors.primary} />}
           right={props => <List.Icon {...props} icon="chevron-right" />}
           onPress={() => router.push(`/staff/${id}/edit-salary`)}
+        />
+        <Divider />
+        <List.Item
+          title={staffMember.status === 'active' ? i18n.t('staff.mark_inactive') : i18n.t('staff.mark_active')}
+          description={staffMember.status === 'active' ? undefined : i18n.t('staff.status_inactive')}
+          left={props => <List.Icon {...props} icon={staffMember.status === 'active' ? 'account-off-outline' : 'account-check-outline'} color={staffMember.status === 'active' ? colors.warning : colors.primary} />}
+          onPress={handleToggleStatus}
         />
       </Card>
 

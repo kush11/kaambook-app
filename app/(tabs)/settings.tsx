@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, Linking } from 'react-native';
+import Constants from 'expo-constants';
 import { List, Switch, Text, Divider } from 'react-native-paper';
 import { getLanguageLabel } from '@/src/components/settings/LanguagePicker';
 import { BackupRestore } from '@/src/components/settings/BackupRestore';
@@ -23,6 +24,18 @@ export default function SettingsScreen() {
       await cancelAttendanceReminder();
     }
     await setReminderEnabled(enabled);
+  };
+
+  const PACKAGE = 'com.kaambook.app';
+  const handleRate = async () => {
+    const market = `market://details?id=${PACKAGE}`;
+    const web = `https://play.google.com/store/apps/details?id=${PACKAGE}`;
+    try {
+      const canOpenStore = await Linking.canOpenURL(market);
+      await Linking.openURL(canOpenStore ? market : web);
+    } catch {
+      Linking.openURL(web).catch(() => {});
+    }
   };
 
   return (
@@ -75,7 +88,18 @@ export default function SettingsScreen() {
 
       <List.Section>
         <List.Subheader>{i18n.t('settings.about')}</List.Subheader>
-        <List.Item title={i18n.t('settings.version')} description="1.0.0" />
+        <List.Item
+          title={i18n.t('settings.rate')}
+          description={i18n.t('settings.rate_desc')}
+          left={props => <List.Icon {...props} icon="star" color={colors.warning} />}
+          right={props => <List.Icon {...props} icon="open-in-new" />}
+          onPress={handleRate}
+        />
+        <Divider />
+        <List.Item
+          title={i18n.t('settings.version')}
+          description={Constants.expoConfig?.version || '1.0.1'}
+        />
       </List.Section>
     </ScrollView>
   );

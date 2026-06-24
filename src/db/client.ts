@@ -38,6 +38,7 @@ function createTables() {
       salary_type TEXT NOT NULL DEFAULT 'monthly',
       salary_amount REAL NOT NULL DEFAULT 0,
       week_off INTEGER NOT NULL DEFAULT -1,
+      week_off_days TEXT,
       overtime_rate REAL NOT NULL DEFAULT 0,
       joining_date TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'active',
@@ -49,6 +50,19 @@ function createTables() {
     expo.execSync(`ALTER TABLE staff ADD COLUMN overtime_rate REAL NOT NULL DEFAULT 0;`);
   } catch (e) {
     // Column already exists
+  }
+
+  try {
+    expo.execSync(`ALTER TABLE staff ADD COLUMN week_off_days TEXT;`);
+  } catch (e) {
+    // Column already exists
+  }
+  // One-time migration: carry each staff's legacy single week_off into the new list column.
+  // Runs once because new/edited rows always have a non-NULL week_off_days.
+  try {
+    expo.execSync(`UPDATE staff SET week_off_days = CASE WHEN week_off >= 0 THEN CAST(week_off AS TEXT) ELSE '' END WHERE week_off_days IS NULL;`);
+  } catch (e) {
+    // ignore
   }
 
   expo.execSync(`

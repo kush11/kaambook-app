@@ -11,6 +11,8 @@ interface AttendanceState {
   isLoading: boolean;
   loadMonthAttendance: (staffId: string, year: number, month: number) => Promise<void>;
   markAttendance: (staffId: string, date: string, status: AttendanceStatus, note?: string, overtimeHours?: number) => Promise<void>;
+  markAllStatus: (staffIds: string[], date: string, status: AttendanceStatus) => Promise<void>;
+  markAllPresent: (staffIds: string[], date: string) => Promise<void>;
   getAttendanceForDate: (staffId: string, date: string) => Attendance | undefined;
   getMonthSummary: (staffId: string, year: number, month: number) => Promise<Record<AttendanceStatus, number>>;
 }
@@ -34,15 +36,12 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
   },
 
   markAttendance: async (staffId: string, date: string, status: AttendanceStatus, note?: string, overtimeHours?: number) => {
-    const existing = get().records.find(r => r.staffId === staffId && r.date === date);
     const now = dayjs().toISOString();
 
-    if (existing) {
-      await db.update(attendance)
-        .set({ status, note: note || null, overtimeHours: overtimeHours || 0 })
-        .where(eq(attendance.id, existing.id));
-    } else {
-      await db.insert(attendance).values({
+    // Atomic upsert: insert, or if a row already exists for this (staff, date)
+    // update it instead. Never throws a UNIQUE constraint error.
+    await db.insert(attendance)
+      .values({
         id: randomUUID(),
         staffId,
         date,
@@ -50,12 +49,38 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
         note: note || null,
         overtimeHours: overtimeHours || 0,
         createdAt: now,
+      })
+      .onConflictDoUpdate({
+        target: [attendance.staffId, attendance.date],
+        set: { status, note: note || null, overtimeHours: overtimeHours || 0 },
       });
-    }
 
     // Reload current month
     const d = dayjs(date);
     await get().loadMonthAttendance(staffId, d.year(), d.month());
+  },
+
+  // Marks every given staff as "present" for a date in one shot.
+  // Queries the DB per staff (instead of relying on in-memory records) so it
+  // is safe to call from the home screen / for bulk marking without hitting
+  // the UNIQUE(staffId, date) constraint.
+  // Sets the same status (e.g. 'present' or 'holiday') for many staff on a date.
+  // Queries the DB per staff so it is safe for bulk use (no UNIQUE conflicts).
+  markAllStatus: async (staffIds: string[], date: string, status: AttendanceStatus) => {
+    const now = dayjs().toISOString();
+    for (const staffId of staffIds) {
+      // Atomic upsert per staff — safe to re-run, never throws UNIQUE errors.
+      await db.insert(attendance)
+        .values({ id: randomUUID(), staffId, date, status, note: null, overtimeHours: 0, createdAt: now })
+        .onConflictDoUpdate({
+          target: [attendance.staffId, attendance.date],
+          set: { status },
+        });
+    }
+  },
+
+  markAllPresent: async (staffIds: string[], date: string) => {
+    await get().markAllStatus(staffIds, date, 'present');
   },
 
   getAttendanceForDate: (staffId: string, date: string) => {

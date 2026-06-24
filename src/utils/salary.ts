@@ -17,6 +17,18 @@ export function calculateSalary(
   const attendanceMap = new Map<string, Attendance>();
   attendanceRecords.forEach(a => attendanceMap.set(a.date, a));
 
+  // Resolve the staff member's weekly off days (supports multiple).
+  // Prefer the new list column, fall back to the legacy single day.
+  const weekOffSet = new Set<number>(
+    (staffMember.weekOffDays ?? '')
+      .split(',')
+      .map(s => parseInt(s, 10))
+      .filter(n => !isNaN(n))
+  );
+  if (weekOffSet.size === 0 && staffMember.weekOff >= 0) {
+    weekOffSet.add(staffMember.weekOff);
+  }
+
   let totalDays = days.length;
   let workingDays = 0;
   let presentDays = 0;
@@ -68,7 +80,7 @@ export function calculateSalary(
       overtimeHours += record.overtimeHours || 0;
     } else {
       // No record - check if it's a weekly off
-      if (staffMember.weekOff === dayOfWeek) {
+      if (weekOffSet.has(dayOfWeek)) {
         weekOffs++;
       } else {
         // Unmarked past days count as absent
@@ -127,11 +139,18 @@ export function calculateSalary(
 
   earnedSalary = Math.round(earnedSalary);
 
-  // Calculate total paid
-  const totalPaid = paymentsInMonth.reduce((sum, p) => {
-    if (p.type === 'penalty') return sum - p.amount;
-    return sum + p.amount;
-  }, 0);
+  // Penalties are deductions from what the worker earned (they reduce the amount owed).
+  const totalPenalty = paymentsInMonth
+    .filter(p => p.type === 'penalty')
+    .reduce((sum, p) => sum + p.amount, 0);
+  if (totalPenalty > 0) {
+    earnedSalary = Math.max(0, earnedSalary - totalPenalty);
+  }
+
+  // Total money actually handed to the worker (salary, advance, bonus).
+  const totalPaid = paymentsInMonth
+    .filter(p => p.type !== 'penalty')
+    .reduce((sum, p) => sum + p.amount, 0);
 
   const balanceDue = earnedSalary - totalPaid;
 

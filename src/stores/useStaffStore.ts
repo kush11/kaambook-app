@@ -13,7 +13,7 @@ interface AddStaffInput {
   salaryType: SalaryType;
   salaryAmount: number;
   overtimeRate?: number;
-  weekOff: number;
+  weekOffDays: number[];
   joiningDate?: string;
 }
 
@@ -52,7 +52,8 @@ export const useStaffStore = create<StaffState>((set, get) => ({
       salaryType: input.salaryType,
       salaryAmount: input.salaryAmount,
       overtimeRate: input.overtimeRate || 0,
-      weekOff: input.weekOff,
+      weekOff: input.weekOffDays[0] ?? -1, // keep legacy column in sync
+      weekOffDays: input.weekOffDays.join(','),
       joiningDate: input.joiningDate || dayjs().format('YYYY-MM-DD'),
       status: 'active',
       createdAt: dayjs().toISOString(),

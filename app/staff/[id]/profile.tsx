@@ -14,6 +14,11 @@ export default function ProfileScreen() {
 
   if (!staffMember) return null;
 
+  // Parse the staff member's week-off days (new list column, fall back to legacy single day).
+  const initialWeekOffDays: number[] = staffMember.weekOffDays
+    ? staffMember.weekOffDays.split(',').map(Number).filter((n) => !isNaN(n))
+    : (staffMember.weekOff >= 0 ? [staffMember.weekOff] : []);
+
   const handleSubmit = async (data: any) => {
     setLoading(true);
     await updateStaff(id, {
@@ -21,7 +26,8 @@ export default function ProfileScreen() {
       phone: data.phone || null,
       salaryType: data.salaryType,
       salaryAmount: data.salaryAmount,
-      weekOff: data.weekOff,
+      weekOffDays: (data.weekOffDays as number[]).join(','),
+      weekOff: (data.weekOffDays as number[])[0] ?? -1, // keep legacy column in sync
     });
     setLoading(false);
     router.back();
@@ -35,7 +41,7 @@ export default function ProfileScreen() {
           phone: staffMember.phone || '',
           salaryType: staffMember.salaryType,
           salaryAmount: staffMember.salaryAmount,
-          weekOff: staffMember.weekOff,
+          weekOffDays: initialWeekOffDays,
         }}
         onSubmit={handleSubmit}
         submitLabel={i18n.t('common.save')}

@@ -3,7 +3,7 @@
     "name": "Hisab Pagar",
     "slug": "kaambook-app",
     "description": "Staff attendance tracking and salary management app for small businesses. Track daily attendance, manage salaries, and generate reports effortlessly.",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "hisabpagar",
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#16A34A",
+        "backgroundColor": "#EA580C",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -34,7 +34,9 @@
       ],
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.SYSTEM_ALERT_WINDOW"
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS"
       ]
     },
     "web": {
@@ -45,7 +47,7 @@
       "shortName": "Hisab Pagar",
       "description": "Track staff attendance, manage salaries, and run your business efficiently. Free offline app for small businesses.",
       "lang": "en",
-      "themeColor": "#16A34A",
+      "themeColor": "#EA580C",
       "backgroundColor": "#FAFAF5"
     },
     "plugins": [
@@ -53,7 +55,8 @@
       "expo-notifications",
       "expo-font",
       "expo-sqlite",
-      "expo-web-browser"
+      "expo-web-browser",
+      ["expo-contacts", { "contactsPermission": "Allow Hisab Pagar to pick a contact to add as staff." }]
     ],
     "experiments": {
       "typedRoutes": true

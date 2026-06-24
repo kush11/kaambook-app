@@ -5,6 +5,7 @@ import { AmountInput } from '../ui/AmountInput';
 import { colors } from '@/src/theme/colors';
 import type { SalaryType } from '@/src/types';
 import i18n from '@/src/i18n';
+import * as Contacts from 'expo-contacts';
 
 interface StaffFormData {
   name: string;
@@ -12,7 +13,7 @@ interface StaffFormData {
   salaryType: SalaryType;
   salaryAmount: number;
   overtimeRate: number;
-  weekOff: number;
+  weekOffDays: number[];
 }
 
 interface StaffFormProps {
@@ -22,15 +23,14 @@ interface StaffFormProps {
   isLoading?: boolean;
 }
 
-const DAYS = [
-  { value: '-1', label: 'None' },
-  { value: '0', label: 'Sun' },
-  { value: '1', label: 'Mon' },
-  { value: '2', label: 'Tue' },
-  { value: '3', label: 'Wed' },
-  { value: '4', label: 'Thu' },
-  { value: '5', label: 'Fri' },
-  { value: '6', label: 'Sat' },
+const DAY_OPTIONS = [
+  { value: 0, label: 'Sun' },
+  { value: 1, label: 'Mon' },
+  { value: 2, label: 'Tue' },
+  { value: 3, label: 'Wed' },
+  { value: 4, label: 'Thu' },
+  { value: 5, label: 'Fri' },
+  { value: 6, label: 'Sat' },
 ];
 
 export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoading }: StaffFormProps) {
@@ -39,26 +39,54 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
   const [salaryType, setSalaryType] = useState<SalaryType>(initialData?.salaryType || 'monthly');
   const [salaryAmount, setSalaryAmount] = useState(initialData?.salaryAmount || 0);
   const [overtimeRate, setOvertimeRate] = useState(initialData?.overtimeRate || 0);
-  const [weekOff, setWeekOff] = useState(String(initialData?.weekOff ?? -1));
+  const [weekOffDays, setWeekOffDays] = useState<number[]>(initialData?.weekOffDays ?? []);
   const [nameError, setNameError] = useState(false);
+  const [salaryError, setSalaryError] = useState(false);
+
+  const toggleDay = (day: number) => {
+    setWeekOffDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
+
+  const handlePickContact = async () => {
+    try {
+      const contact = await Contacts.presentContactPickerAsync();
+      if (!contact) return;
+      if (contact.name) { setName(contact.name); setNameError(false); }
+      const num = contact.phoneNumbers?.[0]?.number;
+      if (num) setPhone(num.replace(/[^0-9]/g, '').slice(-10)); // keep last 10 digits
+    } catch {
+      // picker dismissed or unavailable
+    }
+  };
 
   const handleSubmit = () => {
-    if (!name.trim()) {
-      setNameError(true);
-      return;
-    }
+    let hasError = false;
+    if (!name.trim()) { setNameError(true); hasError = true; }
+    if (!salaryAmount || salaryAmount <= 0) { setSalaryError(true); hasError = true; }
+    if (hasError) return;
     onSubmit({
       name: name.trim(),
       phone: phone.trim(),
       salaryType,
       salaryAmount,
       overtimeRate,
-      weekOff: Number(weekOff),
+      weekOffDays: [...weekOffDays].sort((a, b) => a - b),
     });
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <Button
+        mode="contained-tonal"
+        icon="account-box-multiple-outline"
+        onPress={handlePickContact}
+        style={styles.pickContactBtn}
+      >
+        {i18n.t('staff.pick_contact')}
+      </Button>
+
       <TextInput
         mode="outlined"
         label={i18n.t('staff.name')}
@@ -72,8 +100,9 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
         mode="outlined"
         label={i18n.t('staff.phone')}
         value={phone}
-        onChangeText={setPhone}
+        onChangeText={(t) => setPhone(t.replace(/[^0-9]/g, '').slice(0, 10))}
         keyboardType="phone-pad"
+        maxLength={10}
         style={styles.input}
       />
 
@@ -87,12 +116,14 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
           { value: 'weekly', label: i18n.t('staff.weekly') },
         ]}
         style={styles.input}
+        theme={{ colors: { secondaryContainer: colors.primary, onSecondaryContainer: '#fff' } }}
       />
 
       <AmountInput
         value={salaryAmount}
-        onChangeValue={setSalaryAmount}
+        onChangeValue={(v) => { setSalaryAmount(v); setSalaryError(false); }}
         label={i18n.t('staff.salary_amount')}
+        error={salaryError}
       />
 
       <AmountInput
@@ -102,39 +133,32 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
       />
 
       <Text variant="labelLarge" style={[styles.label, { marginTop: 16 }]}>{i18n.t('staff.week_off')}</Text>
-      <View style={styles.chipRow}>
-        {DAYS.slice(0, 4).map(d => (
-          <Chip
-            key={d.value}
-            selected={weekOff === d.value}
-            onPress={() => setWeekOff(d.value)}
-            showSelectedCheck={false}
-            style={[
-              styles.chip,
-              weekOff === d.value && styles.chipSelected,
-            ]}
-            textStyle={weekOff === d.value ? styles.chipTextSelected : undefined}
-          >
-            {d.label}
-          </Chip>
-        ))}
-      </View>
-      <View style={styles.chipRow}>
-        {DAYS.slice(4).map(d => (
-          <Chip
-            key={d.value}
-            selected={weekOff === d.value}
-            onPress={() => setWeekOff(d.value)}
-            showSelectedCheck={false}
-            style={[
-              styles.chip,
-              weekOff === d.value && styles.chipSelected,
-            ]}
-            textStyle={weekOff === d.value ? styles.chipTextSelected : undefined}
-          >
-            {d.label}
-          </Chip>
-        ))}
+      <Text style={styles.hint}>{i18n.t('staff.week_off_hint')}</Text>
+      <View style={styles.chipWrap}>
+        <Chip
+          selected={weekOffDays.length === 0}
+          onPress={() => setWeekOffDays([])}
+          showSelectedCheck={false}
+          style={[styles.chip, weekOffDays.length === 0 && styles.chipSelected]}
+          textStyle={weekOffDays.length === 0 ? styles.chipTextSelected : undefined}
+        >
+          {i18n.t('staff.none')}
+        </Chip>
+        {DAY_OPTIONS.map((d) => {
+          const sel = weekOffDays.includes(d.value);
+          return (
+            <Chip
+              key={d.value}
+              selected={sel}
+              onPress={() => toggleDay(d.value)}
+              showSelectedCheck={false}
+              style={[styles.chip, sel && styles.chipSelected]}
+              textStyle={sel ? styles.chipTextSelected : undefined}
+            >
+              {d.label}
+            </Chip>
+          );
+        })}
       </View>
 
       <Button
@@ -153,10 +177,12 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
 const styles = StyleSheet.create({
   container: { flex: 1 },
   contentContainer: { padding: 16 },
+  pickContactBtn: { marginBottom: 16 },
   input: { marginBottom: 16 },
   label: { marginBottom: 8, color: colors.textSecondary },
-  chipRow: { flexDirection: 'row', marginBottom: 8 },
-  chip: { marginRight: 8, backgroundColor: colors.surfaceVariant },
+  chipWrap: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
+  hint: { fontSize: 12, color: colors.textSecondary, marginBottom: 8 },
+  chip: { marginRight: 8, marginBottom: 8, backgroundColor: colors.surfaceVariant },
   chipSelected: { backgroundColor: colors.primary },
   chipTextSelected: { color: '#fff' },
   button: { marginTop: 24 },

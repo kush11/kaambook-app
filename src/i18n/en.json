@@ -20,12 +20,19 @@
     "today_attendance": "Today's Attendance",
     "present": "Present",
     "absent": "Absent",
+    "present_today": "Present",
+    "absent_today": "Absent",
+    "pending": "Pending",
+    "total_staff": "Total",
+    "mark_all_present": "Present all",
+    "mark_holiday": "Holiday",
     "switch_business": "Tap to switch business",
     "no_business": "Please select a business first"
   },
   "staff": {
     "add": "Add Staff",
     "edit": "Edit Staff",
+    "pick_contact": "Pick from contacts",
     "name": "Name",
     "phone": "Phone Number",
     "salary_type": "Salary Type",
@@ -36,13 +43,16 @@
     "weekly": "Weekly",
     "joining_date": "Joining Date",
     "week_off": "Weekly Off",
+    "week_off_hint": "Tap days off — you can pick more than one",
     "none": "None",
     "photo": "Photo",
     "save": "Save",
     "delete": "Delete Staff",
     "delete_confirm": "Are you sure you want to delete this staff member? All data will be lost.",
     "status_active": "Active",
-    "status_inactive": "Inactive",
+    "status_inactive": "Inactive — kept for records, hidden from daily list",
+    "mark_inactive": "Mark as inactive (left job)",
+    "mark_active": "Mark as active",
     "pdf_report": "PDF Report"
   },
   "attendance": {
@@ -137,7 +147,17 @@
     "restore_success": "Data restored successfully",
     "restore_confirm": "This will replace all current data. Continue?",
     "about": "About",
-    "version": "Version"
+    "version": "Version",
+    "rate": "Rate this app",
+    "rate_desc": "Enjoying Hisab Pagar? Leave a review ⭐"
+  },
+  "ai": {
+    "summary_btn": "AI Summary",
+    "summary_title": "AI Monthly Summary",
+    "generating": "Generating summary…",
+    "error": "Couldn't generate summary. Check your internet and try again.",
+    "not_configured": "AI summary isn't set up yet. Deploy the free proxy and add its URL to enable it.",
+    "disclaimer": "AI-generated from your data. Please verify important numbers."
   },
   "common": {
     "save": "Save",

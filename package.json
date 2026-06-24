@@ -16,6 +16,7 @@
     "drizzle-orm": "^0.45.1",
     "expo": "~54.0.35",
     "expo-constants": "~18.0.13",
+    "expo-contacts": "~15.0.0",
     "expo-crypto": "~15.0.9",
     "expo-document-picker": "~14.0.8",
     "expo-file-system": "~19.0.23",

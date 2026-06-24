@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { View, FlatList, ScrollView, StyleSheet } from 'react-native';
+import { Card, Text, Button, Portal, Modal, ActivityIndicator, IconButton } from 'react-native-paper';
 import { router, useFocusEffect } from 'expo-router';
 import { EmptyState } from '@/src/components/ui/EmptyState';
 import { StaffAvatar } from '@/src/components/staff/StaffAvatar';
 import { MonthNavigator } from '@/src/components/attendance/MonthNavigator';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
+import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { colors } from '@/src/theme/colors';
 import { formatCurrency } from '@/src/utils/formatters';
 import { calculateSalary } from '@/src/utils/salary';
+import { gatherMonthSummary, fetchAiSummary, isAiConfigured } from '@/src/utils/aiSummary';
 import { db } from '@/src/db/client';
 import { attendance, payments } from '@/src/db/schema';
 import { eq, and, gte, lte } from 'drizzle-orm';
@@ -24,10 +26,15 @@ interface StaffDue {
 
 export default function SalaryDueScreen() {
   const { staffList, loadStaff } = useStaffStore();
-  const { activeBusinessId } = useSettingsStore();
+  const { activeBusinessId, language } = useSettingsStore();
+  const { activeBusiness } = useBusinessStore();
   const [year, setYear] = useState(dayjs().year());
   const [month, setMonth] = useState(dayjs().month());
   const [dues, setDues] = useState<StaffDue[]>([]);
+  const [aiVisible, setAiVisible] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiText, setAiText] = useState('');
+  const [aiError, setAiError] = useState('');
 
   const loadDues = useCallback(async () => {
     if (!activeBusinessId) return;
@@ -67,6 +74,30 @@ export default function SalaryDueScreen() {
 
   const totalDue = dues.reduce((s, d) => s + d.breakdown.balanceDue, 0);
 
+  const openAiSummary = async () => {
+    setAiVisible(true);
+    setAiText('');
+    setAiError('');
+    if (!isAiConfigured()) {
+      setAiError(i18n.t('ai.not_configured'));
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const data = await gatherMonthSummary(activeBusiness?.name || 'My Business', staffList, year, month);
+      if (data.staff.length === 0) {
+        setAiError(i18n.t('common.no_data'));
+        return;
+      }
+      const text = await fetchAiSummary(data, language);
+      setAiText(text);
+    } catch {
+      setAiError(i18n.t('ai.error'));
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <MonthNavigator year={year} month={month} onPrev={prevMonth} onNext={nextMonth} />
@@ -78,6 +109,17 @@ export default function SalaryDueScreen() {
           </Text>
         </Card.Content>
       </Card>
+
+      <Button
+        mode="contained"
+        icon="robot-happy-outline"
+        onPress={openAiSummary}
+        style={styles.aiBtn}
+        contentStyle={styles.aiBtnContent}
+      >
+        {i18n.t('ai.summary_btn')}
+      </Button>
+
       <FlatList
         data={dues}
         keyExtractor={item => item.staff.id}
@@ -105,6 +147,39 @@ export default function SalaryDueScreen() {
           <EmptyState icon="check-circle" title={i18n.t('common.no_data')} />
         }
       />
+
+      <Portal>
+        <Modal
+          visible={aiVisible}
+          onDismiss={() => setAiVisible(false)}
+          contentContainerStyle={styles.modal}
+        >
+          <View style={styles.modalHeader}>
+            <Text variant="titleMedium" style={styles.modalTitle}>{i18n.t('ai.summary_title')}</Text>
+            <IconButton icon="close" size={20} onPress={() => setAiVisible(false)} />
+          </View>
+          <Text variant="bodySmall" style={styles.modalMonth}>
+            {dayjs().year(year).month(month).format('MMMM YYYY')}
+          </Text>
+
+          {aiLoading ? (
+            <View style={styles.modalCenter}>
+              <ActivityIndicator color={colors.primary} />
+              <Text style={styles.modalHint}>{i18n.t('ai.generating')}</Text>
+            </View>
+          ) : aiError ? (
+            <Text style={styles.modalError}>{aiError}</Text>
+          ) : (
+            <ScrollView style={styles.modalScroll}>
+              <Text variant="bodyMedium" style={styles.modalBody}>{aiText}</Text>
+            </ScrollView>
+          )}
+
+          {!aiLoading && !aiError ? (
+            <Text style={styles.modalFootnote}>{i18n.t('ai.disclaimer')}</Text>
+          ) : null}
+        </Modal>
+      </Portal>
     </View>
   );
 }
@@ -121,4 +196,16 @@ const styles = StyleSheet.create({
   cardContent: { flexDirection: 'row', alignItems: 'center' },
   cardInfo: { flex: 1, marginLeft: 12 },
   earned: { color: colors.textSecondary, marginTop: 2 },
+  aiBtn: { marginHorizontal: 16, marginBottom: 8, backgroundColor: colors.primary },
+  aiBtnContent: { paddingVertical: 4 },
+  modal: { backgroundColor: '#fff', margin: 20, borderRadius: 16, padding: 16, maxHeight: '80%' },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  modalTitle: { fontWeight: 'bold', flex: 1 },
+  modalMonth: { color: colors.textSecondary, marginBottom: 12 },
+  modalCenter: { alignItems: 'center', paddingVertical: 32 },
+  modalHint: { color: colors.textSecondary, marginTop: 12 },
+  modalError: { color: colors.error, paddingVertical: 16 },
+  modalScroll: { maxHeight: 360 },
+  modalBody: { lineHeight: 24, color: colors.text },
+  modalFootnote: { fontSize: 11, color: colors.textSecondary, marginTop: 14, fontStyle: 'italic' },
 });

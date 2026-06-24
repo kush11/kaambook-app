@@ -17,7 +17,8 @@ export const staff = sqliteTable('staff', {
   photoUri: text('photo_uri'),
   salaryType: text('salary_type').notNull().default('monthly'), // monthly, daily, weekly
   salaryAmount: real('salary_amount').notNull().default(0),
-  weekOff: integer('week_off').notNull().default(-1), // -1 = none, 0=Sun, 6=Sat
+  weekOff: integer('week_off').notNull().default(-1), // legacy single day: -1 = none, 0=Sun, 6=Sat
+  weekOffDays: text('week_off_days'), // comma-separated days e.g. "0,6" (supersedes weekOff)
   overtimeRate: real('overtime_rate').notNull().default(0),
   joiningDate: text('joining_date').notNull(),
   status: text('status').notNull().default('active'), // active, inactive

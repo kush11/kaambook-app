@@ -27,7 +27,8 @@ export interface Staff {
   photoUri: string | null;
   salaryType: SalaryType;
   salaryAmount: number;
-  weekOff: number; // day of week, -1 for none
+  weekOff: number; // legacy single day of week, -1 for none
+  weekOffDays: string | null; // comma-separated days e.g. "0,6"
   overtimeRate: number;
   joiningDate: string;
   status: StaffStatus;
