@@ -8,7 +8,7 @@ import i18n from '@/src/i18n';
 
 export default function ProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getStaffById, updateStaff } = useStaffStore();
+  const { getStaffById, updateStaff, isPhoneTaken } = useStaffStore();
   const [loading, setLoading] = useState(false);
   const staffMember = getStaffById(id);
 
@@ -46,6 +46,7 @@ export default function ProfileScreen() {
         onSubmit={handleSubmit}
         submitLabel={i18n.t('common.save')}
         isLoading={loading}
+        isPhoneTaken={(phone) => isPhoneTaken(phone, id)}
       />
     </View>
   );

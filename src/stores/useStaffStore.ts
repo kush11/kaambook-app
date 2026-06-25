@@ -25,6 +25,7 @@ interface StaffState {
   updateStaff: (id: string, updates: Partial<Staff>) => Promise<void>;
   deleteStaff: (id: string) => Promise<void>;
   getStaffById: (id: string) => Staff | undefined;
+  isPhoneTaken: (phone: string, excludeId?: string) => boolean;
 }
 
 export const useStaffStore = create<StaffState>((set, get) => ({
@@ -77,5 +78,16 @@ export const useStaffStore = create<StaffState>((set, get) => ({
 
   getStaffById: (id: string) => {
     return get().staffList.find(s => s.id === id);
+  },
+
+  // True if another staff member in the currently loaded (active) business already
+  // uses this phone number. Empty phone is always allowed. `excludeId` skips the
+  // staff member being edited so saving their own number doesn't count as a clash.
+  isPhoneTaken: (phone: string, excludeId?: string) => {
+    const digits = (phone || '').replace(/\D/g, '');
+    if (!digits) return false;
+    return get().staffList.some(
+      (s) => s.id !== excludeId && (s.phone || '').replace(/\D/g, '') === digits
+    );
   },
 }));

@@ -9,7 +9,7 @@
  * Required secret:  GEMINI_API_KEY  (set with `wrangler secret put GEMINI_API_KEY`)
  */
 
-const MODEL = 'gemini-2.0-flash'; // free tier; you can change to another Gemini model
+const MODEL = 'gemini-2.5-flash'; // free tier; you can change to another Gemini model
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -58,7 +58,14 @@ export default {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.4, maxOutputTokens: 600 },
+            generationConfig: {
+              temperature: 0.4,
+              maxOutputTokens: 800,
+              // Gemini 2.5 models "think" before answering, and that thinking
+              // counts against maxOutputTokens — which truncated short summaries.
+              // We don't need reasoning for a few bullet points, so turn it off.
+              thinkingConfig: { thinkingBudget: 0 },
+            },
           }),
         }
       );

@@ -53,7 +53,10 @@
     "status_inactive": "Inactive — kept for records, hidden from daily list",
     "mark_inactive": "Mark as inactive (left job)",
     "mark_active": "Mark as active",
-    "pdf_report": "PDF Report"
+    "pdf_report": "PDF Report",
+    "contact_permission_title": "Contacts permission needed",
+    "contact_permission_msg": "Allow contacts access to pick a staff member's name and number. You can enable it from Settings.",
+    "duplicate_phone": "This mobile number is already added for another staff member."
   },
   "attendance": {
     "title": "Attendance",
@@ -170,7 +173,8 @@
     "loading": "Loading...",
     "no_data": "No data available",
     "rupee_symbol": "₹",
-    "this_month": "This Month"
+    "this_month": "This Month",
+    "open_settings": "Open Settings"
   },
   "days": {
     "sunday": "Sunday",

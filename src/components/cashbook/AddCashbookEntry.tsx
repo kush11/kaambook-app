@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Button, SegmentedButtons, TextInput, Text, Chip } from 'react-native-paper';
+import { Button, TextInput, Text, Chip } from 'react-native-paper';
+import { SegmentedToggle } from '../ui/SegmentedToggle';
 import { AmountInput } from '../ui/AmountInput';
 import { colors } from '@/src/theme/colors';
 import type { CashbookType, CashbookCategory } from '@/src/types';
@@ -55,10 +56,10 @@ export function AddCashbookEntry({ onSubmit, isLoading }: Props) {
       />
 
       <Text variant="labelLarge" style={styles.label}>{i18n.t('cashbook.type')}</Text>
-      <SegmentedButtons
+      <SegmentedToggle
         value={type}
         onValueChange={handleTypeChange}
-        buttons={[
+        options={[
           { value: 'expense', label: i18n.t('cashbook.expense') },
           { value: 'income', label: i18n.t('cashbook.income') },
         ]}

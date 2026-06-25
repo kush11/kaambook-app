@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Button, SegmentedButtons, TextInput, Text } from 'react-native-paper';
+import { Button, TextInput, Text } from 'react-native-paper';
 import { AmountInput } from '../ui/AmountInput';
+import { SegmentedToggle } from '../ui/SegmentedToggle';
 import { colors } from '@/src/theme/colors';
 import type { PaymentType, PaymentMode } from '@/src/types';
 import i18n from '@/src/i18n';
@@ -36,10 +37,10 @@ export function PaymentForm({ onSubmit, isLoading }: PaymentFormProps) {
       />
 
       <Text variant="labelLarge" style={styles.label}>{i18n.t('payment.type')}</Text>
-      <SegmentedButtons
+      <SegmentedToggle
         value={type}
         onValueChange={(v) => setType(v as PaymentType)}
-        buttons={[
+        options={[
           { value: 'salary', label: i18n.t('payment.salary') },
           { value: 'advance', label: i18n.t('payment.advance') },
           { value: 'bonus', label: i18n.t('payment.bonus') },
@@ -49,10 +50,10 @@ export function PaymentForm({ onSubmit, isLoading }: PaymentFormProps) {
       />
 
       <Text variant="labelLarge" style={styles.label}>{i18n.t('payment.mode')}</Text>
-      <SegmentedButtons
+      <SegmentedToggle
         value={mode}
         onValueChange={(v) => setMode(v as PaymentMode)}
-        buttons={[
+        options={[
           { value: 'cash', label: i18n.t('payment.cash') },
           { value: 'upi', label: i18n.t('payment.upi') },
           { value: 'bank', label: i18n.t('payment.bank') },

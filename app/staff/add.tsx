@@ -9,7 +9,7 @@ import { colors } from '@/src/theme/colors';
 import i18n from '@/src/i18n';
 
 export default function AddStaffScreen() {
-  const { addStaff } = useStaffStore();
+  const { addStaff, isPhoneTaken } = useStaffStore();
   const { activeBusinessId } = useSettingsStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,7 +27,7 @@ export default function AddStaffScreen() {
 
   return (
     <View style={styles.container}>
-      <StaffForm onSubmit={handleSubmit} isLoading={loading} />
+      <StaffForm onSubmit={handleSubmit} isLoading={loading} isPhoneTaken={(phone) => isPhoneTaken(phone)} />
       <Snackbar visible={!!error} onDismiss={() => setError('')} duration={3000}>
         {error}
       </Snackbar>

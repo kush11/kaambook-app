@@ -9,7 +9,8 @@
   "tabs": {
     "home": "હોમ",
     "salary_due": "પગાર બાકી",
-    "settings": "સેટિંગ્સ"
+    "settings": "સેટિંગ્સ",
+    "cashbook": "કૅશબુક"
   },
   "home": {
     "title": "મારો સ્ટાફ",
@@ -18,7 +19,15 @@
     "add_first_staff": "તમારા પ્રથમ સ્ટાફને ઉમેરવા + દબાવો",
     "today_attendance": "આજની હાજરી",
     "present": "હાજર",
-    "absent": "ગેરહાજર"
+    "absent": "ગેરહાજર",
+    "present_today": "હાજર",
+    "absent_today": "ગેરહાજર",
+    "pending": "બાકી",
+    "total_staff": "કુલ",
+    "mark_all_present": "બધા હાજર",
+    "mark_holiday": "રજા",
+    "switch_business": "બિઝનેસ બદલવા ટૅપ કરો",
+    "no_business": "કૃપા કરી પહેલા એક બિઝનેસ પસંદ કરો"
   },
   "staff": {
     "add": "સ્ટાફ ઉમેરો",
@@ -38,7 +47,16 @@
     "delete": "સ્ટાફ કાઢી નાખો",
     "delete_confirm": "શું તમે ખરેખર આ સ્ટાફને કાઢી નાખવા માંગો છો? બધો ડેટા ગુમ થશે.",
     "status_active": "સક્રિય",
-    "status_inactive": "નિષ્ક્રિય"
+    "status_inactive": "નિષ્ક્રિય",
+    "pick_contact": "કોન્ટૅક્ટમાંથી પસંદ કરો",
+    "overtime_rate": "ઓવરટાઇમ રેટ (કલાક દીઠ)",
+    "week_off_hint": "રજાના દિવસ પસંદ કરો — એકથી વધુ પણ પસંદ કરી શકો",
+    "mark_inactive": "નિષ્ક્રિય કરો (નોકરી છોડી)",
+    "mark_active": "સક્રિય કરો",
+    "pdf_report": "PDF રિપોર્ટ",
+    "contact_permission_title": "સંપર્કોની પરવાનગી જરૂરી",
+    "contact_permission_msg": "સ્ટાફનું નામ અને નંબર પસંદ કરવા માટે સંપર્કોની પરવાનગી આપો. તમે તેને સેટિંગ્સમાંથી ચાલુ કરી શકો છો.",
+    "duplicate_phone": "આ મોબાઇલ નંબર પહેલેથી જ બીજા સ્ટાફ માટે ઉમેરાયેલ છે."
   },
   "attendance": {
     "title": "હાજરી",
@@ -99,7 +117,9 @@
     "restore_success": "ડેટા સફળતાપૂર્વક રિસ્ટોર થયો",
     "restore_confirm": "આ બધો હાલનો ડેટા બદલશે. ચાલુ રાખો?",
     "about": "એપ વિશે",
-    "version": "આવૃત્તિ"
+    "version": "આવૃત્તિ",
+    "rate": "ઍપ રેટ કરો",
+    "rate_desc": "હિસાબ પગાર ગમ્યું? રિવ્યૂ આપો ⭐"
   },
   "common": {
     "save": "સેવ કરો",
@@ -111,7 +131,9 @@
     "success": "સફળ",
     "loading": "લોડ થઈ રહ્યું છે...",
     "no_data": "કોઈ ડેટા ઉપલબ્ધ નથી",
-    "rupee_symbol": "₹"
+    "rupee_symbol": "₹",
+    "this_month": "આ મહિને",
+    "open_settings": "સેટિંગ્સ ખોલો"
   },
   "days": {
     "sunday": "રવિવાર",
@@ -128,5 +150,46 @@
     "thu": "ગુરુ",
     "fri": "શુક્ર",
     "sat": "શનિ"
+  },
+  "business": {
+    "name": "બિઝનેસનું નામ",
+    "add": "બિઝનેસ ઉમેરો",
+    "section_title": "બિઝનેસ",
+    "switch_description": "બદલવા કે ઉમેરવા ટૅપ કરો",
+    "rename": "નામ બદલો",
+    "delete": "બિઝનેસ કાઢી નાખો",
+    "delete_confirm": "આથી આ બિઝનેસ અને તેનો બધો સ્ટાફ, હાજરી અને રેકોર્ડ કાયમ માટે કાઢી નંખાશે. તે પાછું મેળવી શકાશે નહીં.",
+    "name_placeholder": "દા.ત. શર્મા ટ્રેડર્સ"
+  },
+  "cashbook": {
+    "income": "આવક",
+    "expense": "ખર્ચ",
+    "balance": "બૅલેન્સ",
+    "no_entries": "હજી કોઈ એન્ટ્રી નથી",
+    "add_entry_hint": "આવક કે ખર્ચ ઉમેરવા + દબાવો",
+    "amount": "રકમ",
+    "type": "પ્રકાર",
+    "category": "કૅટેગરી",
+    "description_optional": "વર્ણન (વૈકલ્પિક)",
+    "add_entry": "એન્ટ્રી ઉમેરો",
+    "categories": {
+      "wages": "મજૂરી",
+      "material": "સામાન",
+      "transport": "ટ્રાન્સપોર્ટ",
+      "food": "ખોરાક",
+      "rent": "ભાડું",
+      "other": "અન્ય",
+      "sales": "વેચાણ",
+      "payment_received": "ચુકવણી મળી",
+      "other_income": "અન્ય આવક"
+    }
+  },
+  "ai": {
+    "summary_btn": "AI સારાંશ",
+    "summary_title": "AI માસિક સારાંશ",
+    "generating": "સારાંશ બની રહ્યો છે…",
+    "error": "સારાંશ બની શક્યો નહીં. ઇન્ટરનેટ તપાસી ફરી પ્રયાસ કરો.",
+    "not_configured": "AI સારાંશ હજી સેટ નથી. ફ્રી પ્રોક્સી ડિપ્લોય કરી તેનું URL ઉમેરો.",
+    "disclaimer": "તમારા ડેટામાંથી AI દ્વારા બનાવેલ. મહત્વના આંકડા ચકાસો."
   }
 }

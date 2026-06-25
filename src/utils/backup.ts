@@ -1,28 +1,32 @@
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
-import { db } from '../db/client';
-import { businesses, staff, attendance, payments, settings } from '../db/schema';
+import { db, rawDb } from '../db/client';
+import { businesses, staff, attendance, payments, advances, cashbook, settings } from '../db/schema';
 import dayjs from 'dayjs';
 
 interface BackupData {
-  version: 1;
+  version: number;
   createdAt: string;
   businesses: any[];
   staff: any[];
   attendance: any[];
   payments: any[];
+  advances: any[];
+  cashbook: any[];
   settings: any[];
 }
 
 export async function createBackup(): Promise<void> {
   const data: BackupData = {
-    version: 1,
+    version: 2,
     createdAt: dayjs().toISOString(),
     businesses: await db.select().from(businesses),
     staff: await db.select().from(staff),
     attendance: await db.select().from(attendance),
     payments: await db.select().from(payments),
+    advances: await db.select().from(advances),
+    cashbook: await db.select().from(cashbook),
     settings: await db.select().from(settings),
   };
 
@@ -57,29 +61,45 @@ export async function restoreBackup(): Promise<boolean> {
     throw new Error('Invalid backup file');
   }
 
-  // Clear existing data
-  await db.delete(attendance);
-  await db.delete(payments);
-  await db.delete(staff);
-  await db.delete(businesses);
-  await db.delete(settings);
+  // Older (v1) backups didn't include advances/cashbook — default to empty.
+  const advancesData = data.advances ?? [];
+  const cashbookData = data.cashbook ?? [];
 
-  // Restore data
-  if (data.businesses.length > 0) {
-    await db.insert(businesses).values(data.businesses);
-  }
-  if (data.staff.length > 0) {
-    await db.insert(staff).values(data.staff);
-  }
-  if (data.attendance.length > 0) {
-    await db.insert(attendance).values(data.attendance);
-  }
-  if (data.payments.length > 0) {
-    await db.insert(payments).values(data.payments);
-  }
-  if (data.settings.length > 0) {
-    await db.insert(settings).values(data.settings);
-  }
+  // Replace everything atomically: if any step fails, the whole restore rolls
+  // back so we never leave the database half-wiped.
+  await rawDb.withTransactionAsync(async () => {
+    // Clear existing data — children before parents to satisfy foreign keys.
+    await db.delete(attendance);
+    await db.delete(payments);
+    await db.delete(advances);
+    await db.delete(cashbook);
+    await db.delete(staff);
+    await db.delete(businesses);
+    await db.delete(settings);
+
+    // Restore data — parents before children.
+    if (data.businesses.length > 0) {
+      await db.insert(businesses).values(data.businesses);
+    }
+    if (data.staff.length > 0) {
+      await db.insert(staff).values(data.staff);
+    }
+    if (data.attendance.length > 0) {
+      await db.insert(attendance).values(data.attendance);
+    }
+    if (data.payments.length > 0) {
+      await db.insert(payments).values(data.payments);
+    }
+    if (advancesData.length > 0) {
+      await db.insert(advances).values(advancesData);
+    }
+    if (cashbookData.length > 0) {
+      await db.insert(cashbook).values(cashbookData);
+    }
+    if (data.settings.length > 0) {
+      await db.insert(settings).values(data.settings);
+    }
+  });
 
   return true;
 }

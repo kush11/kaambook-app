@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { SegmentedButtons, Text, Button } from 'react-native-paper';
+import { Text, Button } from 'react-native-paper';
 import { router, useLocalSearchParams } from 'expo-router';
 import { AmountInput } from '@/src/components/ui/AmountInput';
+import { SegmentedToggle } from '@/src/components/ui/SegmentedToggle';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { colors } from '@/src/theme/colors';
 import type { SalaryType } from '@/src/types';
@@ -30,10 +31,10 @@ export default function EditSalaryScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text variant="labelLarge" style={styles.label}>{i18n.t('staff.salary_type')}</Text>
-      <SegmentedButtons
+      <SegmentedToggle
         value={salaryType}
         onValueChange={(v) => setSalaryType(v as SalaryType)}
-        buttons={[
+        options={[
           { value: 'monthly', label: i18n.t('staff.monthly') },
           { value: 'daily', label: i18n.t('staff.daily') },
           { value: 'weekly', label: i18n.t('staff.weekly') },

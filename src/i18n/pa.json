@@ -9,7 +9,8 @@
   "tabs": {
     "home": "ਹੋਮ",
     "salary_due": "ਤਨਖਾਹ ਬਕਾਇਆ",
-    "settings": "ਸੈਟਿੰਗਜ਼"
+    "settings": "ਸੈਟਿੰਗਜ਼",
+    "cashbook": "ਕੈਸ਼ਬੁੱਕ"
   },
   "home": {
     "title": "ਮੇਰਾ ਸਟਾਫ",
@@ -18,7 +19,15 @@
     "add_first_staff": "ਆਪਣਾ ਪਹਿਲਾ ਸਟਾਫ ਜੋੜਨ ਲਈ + ਦਬਾਓ",
     "today_attendance": "ਅੱਜ ਦੀ ਹਾਜ਼ਰੀ",
     "present": "ਹਾਜ਼ਰ",
-    "absent": "ਗੈਰਹਾਜ਼ਰ"
+    "absent": "ਗੈਰਹਾਜ਼ਰ",
+    "present_today": "ਹਾਜ਼ਰ",
+    "absent_today": "ਗੈਰਹਾਜ਼ਰ",
+    "pending": "ਬਾਕੀ",
+    "total_staff": "ਕੁੱਲ",
+    "mark_all_present": "ਸਾਰੇ ਹਾਜ਼ਰ",
+    "mark_holiday": "ਛੁੱਟੀ",
+    "switch_business": "ਕਾਰੋਬਾਰ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ",
+    "no_business": "ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਇੱਕ ਕਾਰੋਬਾਰ ਚੁਣੋ"
   },
   "staff": {
     "add": "ਸਟਾਫ ਜੋੜੋ",
@@ -38,7 +47,16 @@
     "delete": "ਸਟਾਫ ਮਿਟਾਓ",
     "delete_confirm": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਹੋ ਕਿ ਤੁਸੀਂ ਇਸ ਸਟਾਫ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ? ਸਾਰਾ ਡੇਟਾ ਗੁਆਚ ਜਾਵੇਗਾ।",
     "status_active": "ਸਰਗਰਮ",
-    "status_inactive": "ਅਸਰਗਰਮ"
+    "status_inactive": "ਅਸਰਗਰਮ",
+    "pick_contact": "ਸੰਪਰਕਾਂ ਵਿੱਚੋਂ ਚੁਣੋ",
+    "overtime_rate": "ਓਵਰਟਾਈਮ ਰੇਟ (ਪ੍ਰਤੀ ਘੰਟਾ)",
+    "week_off_hint": "ਛੁੱਟੀ ਵਾਲੇ ਦਿਨ ਚੁਣੋ — ਇੱਕ ਤੋਂ ਵੱਧ ਵੀ ਚੁਣ ਸਕਦੇ ਹੋ",
+    "mark_inactive": "ਅਕਿਰਿਆਸ਼ੀਲ ਕਰੋ (ਨੌਕਰੀ ਛੱਡ ਦਿੱਤੀ)",
+    "mark_active": "ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ",
+    "pdf_report": "PDF ਰਿਪੋਰਟ",
+    "contact_permission_title": "ਸੰਪਰਕਾਂ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ",
+    "contact_permission_msg": "ਸਟਾਫ਼ ਦਾ ਨਾਮ ਅਤੇ ਨੰਬਰ ਚੁਣਨ ਲਈ ਸੰਪਰਕਾਂ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਤੋਂ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।",
+    "duplicate_phone": "ਇਹ ਮੋਬਾਈਲ ਨੰਬਰ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਸਟਾਫ਼ ਲਈ ਜੋੜਿਆ ਗਿਆ ਹੈ।"
   },
   "attendance": {
     "title": "ਹਾਜ਼ਰੀ",
@@ -99,7 +117,9 @@
     "restore_success": "ਡੇਟਾ ਸਫਲਤਾਪੂਰਵਕ ਰੀਸਟੋਰ ਕੀਤਾ ਗਿਆ",
     "restore_confirm": "ਇਹ ਸਾਰਾ ਮੌਜੂਦਾ ਡੇਟਾ ਬਦਲ ਦੇਵੇਗਾ। ਜਾਰੀ ਰੱਖੋ?",
     "about": "ਐਪ ਬਾਰੇ",
-    "version": "ਵਰਜ਼ਨ"
+    "version": "ਵਰਜ਼ਨ",
+    "rate": "ਐਪ ਨੂੰ ਰੇਟ ਕਰੋ",
+    "rate_desc": "ਹਿਸਾਬ ਪਗਾਰ ਪਸੰਦ ਆਇਆ? ਰਿਵਿਊ ਦਿਓ ⭐"
   },
   "common": {
     "save": "ਸੇਵ ਕਰੋ",
@@ -111,7 +131,9 @@
     "success": "ਸਫਲ",
     "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
     "no_data": "ਕੋਈ ਡੇਟਾ ਉਪਲਬਧ ਨਹੀਂ",
-    "rupee_symbol": "₹"
+    "rupee_symbol": "₹",
+    "this_month": "ਇਸ ਮਹੀਨੇ",
+    "open_settings": "ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ"
   },
   "days": {
     "sunday": "ਐਤਵਾਰ",
@@ -128,5 +150,46 @@
     "thu": "ਵੀਰ",
     "fri": "ਸ਼ੁੱਕਰ",
     "sat": "ਸ਼ਨਿ"
+  },
+  "business": {
+    "name": "ਕਾਰੋਬਾਰ ਦਾ ਨਾਮ",
+    "add": "ਕਾਰੋਬਾਰ ਜੋੜੋ",
+    "section_title": "ਕਾਰੋਬਾਰ",
+    "switch_description": "ਬਦਲਣ ਜਾਂ ਜੋੜਨ ਲਈ ਟੈਪ ਕਰੋ",
+    "rename": "ਨਾਮ ਬਦਲੋ",
+    "delete": "ਕਾਰੋਬਾਰ ਮਿਟਾਓ",
+    "delete_confirm": "ਇਸ ਨਾਲ ਇਹ ਕਾਰੋਬਾਰ ਅਤੇ ਇਸ ਦਾ ਸਾਰਾ ਸਟਾਫ, ਹਾਜ਼ਰੀ ਤੇ ਰਿਕਾਰਡ ਹਮੇਸ਼ਾ ਲਈ ਮਿਟ ਜਾਣਗੇ। ਇਸ ਨੂੰ ਵਾਪਸ ਨਹੀਂ ਲਿਆਂਦਾ ਜਾ ਸਕਦਾ।",
+    "name_placeholder": "ਜਿਵੇਂ ਸ਼ਰਮਾ ਟ੍ਰੇਡਰਜ਼"
+  },
+  "cashbook": {
+    "income": "ਆਮਦਨ",
+    "expense": "ਖਰਚ",
+    "balance": "ਬਕਾਇਆ",
+    "no_entries": "ਅਜੇ ਕੋਈ ਐਂਟਰੀ ਨਹੀਂ",
+    "add_entry_hint": "ਆਮਦਨ ਜਾਂ ਖਰਚ ਜੋੜਨ ਲਈ + ਦਬਾਓ",
+    "amount": "ਰਕਮ",
+    "type": "ਕਿਸਮ",
+    "category": "ਸ਼੍ਰੇਣੀ",
+    "description_optional": "ਵੇਰਵਾ (ਚੋਣਵਾਂ)",
+    "add_entry": "ਐਂਟਰੀ ਜੋੜੋ",
+    "categories": {
+      "wages": "ਮਜ਼ਦੂਰੀ",
+      "material": "ਸਮਾਨ",
+      "transport": "ਟ੍ਰਾਂਸਪੋਰਟ",
+      "food": "ਖਾਣਾ",
+      "rent": "ਕਿਰਾਇਆ",
+      "other": "ਹੋਰ",
+      "sales": "ਵਿਕਰੀ",
+      "payment_received": "ਭੁਗਤਾਨ ਮਿਲਿਆ",
+      "other_income": "ਹੋਰ ਆਮਦਨ"
+    }
+  },
+  "ai": {
+    "summary_btn": "AI ਸਾਰ",
+    "summary_title": "AI ਮਾਸਿਕ ਸਾਰ",
+    "generating": "ਸਾਰ ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ…",
+    "error": "ਸਾਰ ਤਿਆਰ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਇੰਟਰਨੈੱਟ ਜਾਂਚੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "not_configured": "AI ਸਾਰ ਅਜੇ ਸੈੱਟ ਨਹੀਂ ਹੈ। ਮੁਫ਼ਤ ਪ੍ਰੌਕਸੀ ਡਿਪਲੌਏ ਕਰਕੇ ਇਸ ਦਾ URL ਪਾਓ।",
+    "disclaimer": "ਤੁਹਾਡੇ ਡੇਟਾ ਤੋਂ AI ਦੁਆਰਾ ਬਣਾਇਆ। ਜ਼ਰੂਰੀ ਅੰਕੜੇ ਜਾਂਚੋ।"
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { TextInput, Button, SegmentedButtons, Text, Chip } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
+import { TextInput, Button, Text, Chip, HelperText } from 'react-native-paper';
+import { SegmentedToggle } from '../ui/SegmentedToggle';
 import { AmountInput } from '../ui/AmountInput';
 import { colors } from '@/src/theme/colors';
 import type { SalaryType } from '@/src/types';
@@ -21,6 +22,8 @@ interface StaffFormProps {
   onSubmit: (data: StaffFormData) => void;
   submitLabel?: string;
   isLoading?: boolean;
+  /** Returns true if the given phone number already belongs to another staff member. */
+  isPhoneTaken?: (phone: string) => boolean;
 }
 
 const DAY_OPTIONS = [
@@ -33,7 +36,7 @@ const DAY_OPTIONS = [
   { value: 6, label: 'Sat' },
 ];
 
-export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoading }: StaffFormProps) {
+export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoading, isPhoneTaken }: StaffFormProps) {
   const [name, setName] = useState(initialData?.name || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
   const [salaryType, setSalaryType] = useState<SalaryType>(initialData?.salaryType || 'monthly');
@@ -42,6 +45,7 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
   const [weekOffDays, setWeekOffDays] = useState<number[]>(initialData?.weekOffDays ?? []);
   const [nameError, setNameError] = useState(false);
   const [salaryError, setSalaryError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
 
   const toggleDay = (day: number) => {
     setWeekOffDays((prev) =>
@@ -51,11 +55,29 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
 
   const handlePickContact = async () => {
     try {
+      // Reading the picked contact's details requires READ_CONTACTS at runtime;
+      // without it expo-contacts throws a SecurityException and crashes the app.
+      const { status, canAskAgain } = await Contacts.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          i18n.t('staff.contact_permission_title'),
+          i18n.t('staff.contact_permission_msg'),
+          canAskAgain
+            ? undefined
+            : [
+                { text: i18n.t('common.cancel'), style: 'cancel' },
+                { text: i18n.t('common.open_settings'), onPress: () => Linking.openSettings() },
+              ]
+        );
+        return;
+      }
       const contact = await Contacts.presentContactPickerAsync();
       if (!contact) return;
-      if (contact.name) { setName(contact.name); setNameError(false); }
+      const pickedName =
+        contact.name || [contact.firstName, contact.lastName].filter(Boolean).join(' ');
+      if (pickedName) { setName(pickedName); setNameError(false); }
       const num = contact.phoneNumbers?.[0]?.number;
-      if (num) setPhone(num.replace(/[^0-9]/g, '').slice(-10)); // keep last 10 digits
+      if (num) { setPhone(num.replace(/[^0-9]/g, '').slice(-10)); setPhoneError(false); } // keep last 10 digits
     } catch {
       // picker dismissed or unavailable
     }
@@ -65,6 +87,7 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
     let hasError = false;
     if (!name.trim()) { setNameError(true); hasError = true; }
     if (!salaryAmount || salaryAmount <= 0) { setSalaryError(true); hasError = true; }
+    if (phone.trim() && isPhoneTaken?.(phone.trim())) { setPhoneError(true); hasError = true; }
     if (hasError) return;
     onSubmit({
       name: name.trim(),
@@ -79,10 +102,11 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Button
-        mode="contained-tonal"
+        mode="outlined"
         icon="account-box-multiple-outline"
         onPress={handlePickContact}
         style={styles.pickContactBtn}
+        contentStyle={styles.buttonContent}
       >
         {i18n.t('staff.pick_contact')}
       </Button>
@@ -100,23 +124,28 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
         mode="outlined"
         label={i18n.t('staff.phone')}
         value={phone}
-        onChangeText={(t) => setPhone(t.replace(/[^0-9]/g, '').slice(0, 10))}
+        onChangeText={(t) => { setPhone(t.replace(/[^0-9]/g, '').slice(0, 10)); setPhoneError(false); }}
+        error={phoneError}
         keyboardType="phone-pad"
         maxLength={10}
-        style={styles.input}
+        style={phoneError ? styles.inputNoMargin : styles.input}
       />
+      {phoneError && (
+        <HelperText type="error" style={styles.phoneHelper}>
+          {i18n.t('staff.duplicate_phone')}
+        </HelperText>
+      )}
 
       <Text variant="labelLarge" style={styles.label}>{i18n.t('staff.salary_type')}</Text>
-      <SegmentedButtons
+      <SegmentedToggle
         value={salaryType}
         onValueChange={(v) => setSalaryType(v as SalaryType)}
-        buttons={[
+        options={[
           { value: 'monthly', label: i18n.t('staff.monthly') },
           { value: 'daily', label: i18n.t('staff.daily') },
           { value: 'weekly', label: i18n.t('staff.weekly') },
         ]}
         style={styles.input}
-        theme={{ colors: { secondaryContainer: colors.primary, onSecondaryContainer: '#fff' } }}
       />
 
       <AmountInput
@@ -179,6 +208,8 @@ const styles = StyleSheet.create({
   contentContainer: { padding: 16 },
   pickContactBtn: { marginBottom: 16 },
   input: { marginBottom: 16 },
+  inputNoMargin: { marginBottom: 0 },
+  phoneHelper: { marginBottom: 8 },
   label: { marginBottom: 8, color: colors.textSecondary },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
   hint: { fontSize: 12, color: colors.textSecondary, marginBottom: 8 },
