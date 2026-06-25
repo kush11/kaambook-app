@@ -16,15 +16,15 @@ interface SegmentedToggleProps {
 }
 
 /**
- * App-wide segmented toggle. One consistent look everywhere: a light-grey track
- * with the selected option as a solid orange pill and the unselected options
- * shown as dark text on the grey track (so they stay clearly visible, even on
- * white backgrounds). Replaces react-native-paper's SegmentedButtons, whose
+ * App-wide segmented toggle rendered as a row of solid buttons. Every option is
+ * a full button so both selected and unselected sides clearly read as buttons:
+ * the selected one is filled orange with white text, the others are solid grey
+ * with dark text. Replaces react-native-paper's SegmentedButtons, whose
  * unselected segments were transparent and disappeared on white surfaces.
  */
 export function SegmentedToggle({ value, onValueChange, options, style }: SegmentedToggleProps) {
   return (
-    <View style={[styles.track, style]}>
+    <View style={[styles.row, style]}>
       {options.map((opt) => {
         const selected = opt.value === value;
         return (
@@ -34,7 +34,7 @@ export function SegmentedToggle({ value, onValueChange, options, style }: Segmen
             style={({ pressed }) => [
               styles.segment,
               selected ? styles.segmentSelected : null,
-              pressed && !selected ? styles.segmentPressed : null,
+              pressed ? styles.segmentPressed : null,
             ]}
           >
             <Text
@@ -51,30 +51,29 @@ export function SegmentedToggle({ value, onValueChange, options, style }: Segmen
 }
 
 const styles = StyleSheet.create({
-  track: {
+  row: {
     flexDirection: 'row',
-    backgroundColor: colors.surfaceVariant,
-    borderRadius: 12,
-    padding: 4,
+    gap: 10,
   },
   segment: {
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 4,
-    borderRadius: 9,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.surfaceVariant,
   },
   segmentSelected: {
     backgroundColor: colors.primary,
   },
   segmentPressed: {
-    backgroundColor: 'rgba(0,0,0,0.06)',
+    opacity: 0.7,
   },
   label: {
     color: colors.text,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 15,
   },
   labelSelected: {
     color: '#fff',
