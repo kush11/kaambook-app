@@ -1,0 +1,24 @@
+diff --git a/node_modules/expo-contacts/android/src/main/java/expo/modules/contacts/ContactsModule.kt b/node_modules/expo-contacts/android/src/main/java/expo/modules/contacts/ContactsModule.kt
+index 44ccb27..f06f241 100644
+--- a/node_modules/expo-contacts/android/src/main/java/expo/modules/contacts/ContactsModule.kt
++++ b/node_modules/expo-contacts/android/src/main/java/expo/modules/contacts/ContactsModule.kt
+@@ -302,9 +302,16 @@ class ContactsModule : Module() {
+         val pendingPromise = contactPickingPromise ?: return@OnActivityResult
+ 
+         if (resultCode == Activity.RESULT_OK) {
+-          val contactId = intent?.data?.lastPathSegment
+-          val contact = getContactById(contactId, defaultFields)
+-          pendingPromise.resolve(contact?.toMap(defaultFields))
++          // Reading the picked contact re-queries the Data table, which throws a
++          // SecurityException when READ_CONTACTS isn't held. That exception escapes
++          // onto the main thread and crashes the app, so swallow it and resolve null.
++          try {
++            val contactId = intent?.data?.lastPathSegment
++            val contact = getContactById(contactId, defaultFields)
++            pendingPromise.resolve(contact?.toMap(defaultFields))
++          } catch (e: Exception) {
++            pendingPromise.resolve()
++          }
+         } else {
+           pendingPromise.resolve()
+         }
