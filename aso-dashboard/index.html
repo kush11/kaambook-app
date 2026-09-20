@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hisab Pagar — ASO / Play Store Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --green:#16A34A; --green-d:#15803d; --bg:#0f1115; --card:#171a21; --card2:#1d212b;
+    --line:#2a2f3a; --text:#e7eaf0; --muted:#9aa3b2; --good:#22c55e; --bad:#ef4444; --warn:#f59e0b; --accent:#3b82f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+  header{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header .logo{width:44px;height:44px;border-radius:11px;background:var(--green);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff}
+  header h1{margin:0;font-size:18px}
+  header .meta{color:var(--muted);font-size:12px;margin-top:2px}
+  header .pkg{font-family:ui-monospace,Menlo,monospace;background:var(--card2);padding:2px 7px;border-radius:6px;font-size:11px}
+  .wrap{max-width:1100px;margin:0 auto;padding:22px 24px 80px}
+  nav{display:flex;gap:6px;margin:18px 0 6px;flex-wrap:wrap}
+  nav button{background:var(--card);color:var(--muted);border:1px solid var(--line);padding:8px 14px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600}
+  nav button.active{background:var(--green);color:#fff;border-color:var(--green)}
+  .tab{display:none}
+  .tab.active{display:block;animation:fade .2s}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  .card h2{margin:0 0 4px;font-size:15px}
+  .card .sub{color:var(--muted);font-size:12px;margin-bottom:12px}
+  .grid{display:grid;gap:14px}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .kpi{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .kpi .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .kpi .val{font-size:24px;font-weight:800;margin-top:6px}
+  .kpi .delta{font-size:12px;margin-top:4px;font-weight:600}
+  .up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+  input,select{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 9px;font-size:13px;width:100%}
+  input:focus{outline:none;border-color:var(--green)}
+  button.act{background:var(--green);color:#fff;border:none;padding:9px 16px;border-radius:9px;cursor:pointer;font-weight:600;font-size:13px}
+  button.ghost{background:var(--card2);color:var(--text);border:1px solid var(--line);padding:8px 14px;border-radius:9px;cursor:pointer;font-size:13px}
+  button.tiny{background:none;border:none;color:var(--bad);cursor:pointer;font-size:16px;padding:0 4px}
+  .row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+  .row .f{flex:1;min-width:120px}
+  .row .f label{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+  .chartbox{position:relative;height:260px;margin-top:8px}
+  .task{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+  .task input[type=checkbox]{width:18px;height:18px;margin-top:1px;accent-color:var(--green);flex:0 0 auto}
+  .task.done .t-text{text-decoration:line-through;color:var(--muted)}
+  .task .t-text{font-weight:600}
+  .task .t-why{color:var(--muted);font-size:12px;margin-top:2px}
+  .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+  .pill.p1{background:rgba(239,68,68,.15);color:#fca5a5}
+  .pill.p2{background:rgba(245,158,11,.15);color:#fcd34d}
+  .pill.p3{background:rgba(59,130,246,.15);color:#93c5fd}
+  .note{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:12px 14px;color:#fcd34d;font-size:12.5px}
+  .muted{color:var(--muted)}
+  .rank-good{color:var(--good);font-weight:700}
+  .rank-mid{color:var(--warn);font-weight:700}
+  .rank-bad{color:var(--bad);font-weight:700}
+  .toolbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px;flex-wrap:wrap}
+  .empty{color:var(--muted);text-align:center;padding:24px;font-size:13px}
+  a{color:var(--accent)}
+  code{background:var(--card2);padding:1px 5px;border-radius:5px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">हप</div>
+  <div>
+    <h1>Hisab Pagar — Play Store / ASO Dashboard</h1>
+    <div class="meta">Package <span class="pkg">com.kaambook.app</span> · Market: India · Track recovery week by week</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav>
+    <button data-tab="overview" class="active">Overview</button>
+    <button data-tab="metrics">Weekly Metrics</button>
+    <button data-tab="keywords">Keyword Ranks</button>
+    <button data-tab="actions">Action Plan</button>
+  </nav>
+
+  <!-- OVERVIEW -->
+  <div class="tab active" id="overview">
+    <div class="note">
+      <b>Root cause on record:</b> Release <code>ac1189e</code> renamed the title <b>KaamBook → Hisab Pagar</b>.
+      Same package (listing kept), but the new title carries no functional keywords (attendance / staff / salary / payroll),
+      and a title change forces Google to re-index (4–8 weeks). Fix the title + descriptions <b>once</b>, then track here.
+    </div>
+    <div class="card">
+      <h2>Latest snapshot</h2>
+      <div class="sub">Auto-computed from your most recent weekly entry vs. the one before.</div>
+      <div class="grid kpis" id="kpiRow"><div class="empty">No data yet — add your first week under <b>Weekly Metrics</b>.</div></div>
+    </div>
+    <div class="card">
+      <h2>Store-listing visitors & install conversion</h2>
+      <div class="sub">From Play Console → Statistics. The trend that matters most for recovery.</div>
+      <div class="chartbox"><canvas id="overviewChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>How to read this</h2>
+      <div class="sub">Where each number comes from</div>
+      <table>
+        <tr><th>Metric</th><th style="text-align:left">Where to find it in Play Console</th></tr>
+        <tr><td>Impressions</td><td style="text-align:left">Statistics → Store listing acquisitions → "Store listing visitors / impressions"</td></tr>
+        <tr><td>Store visitors</td><td style="text-align:left">Statistics → Acquisition → Store listing visitors</td></tr>
+        <tr><td>Installs (new)</td><td style="text-align:left">Statistics → Acquisition → Store listing acquisitions (installs)</td></tr>
+        <tr><td>Conversion %</td><td style="text-align:left">Auto = installs ÷ visitors × 100</td></tr>
+        <tr><td>Rating / Reviews</td><td style="text-align:left">Quality → Ratings and reviews</td></tr>
+        <tr><td>Keyword rank</td><td style="text-align:left">Search the keyword on a phone (Incognito, India) and count your position. Or use AppTweak / SensorTower / AppFollow.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="tab" id="metrics">
+    <div class="card">
+      <h2>Add / update a week</h2>
+      <div class="sub">Enter the same day each week (e.g. every Monday) using a 7-day total from Play Console.</div>
+      <div class="row">
+        <div class="f" style="max-width:160px"><label>Week (date)</label><input type="date" id="m_week"></div>
+        <div class="f"><label>Impressions</label><input type="number" id="m_impr" placeholder="0"></div>
+        <div class="f"><label>Store visitors</label><input type="number" id="m_vis" placeholder="0"></div>
+        <div class="f"><label>Installs (new)</label><input type="number" id="m_inst" placeholder="0"></div>
+        <div class="f"><label>Rating (avg)</label><input type="number" step="0.01" id="m_rate" placeholder="0.0"></div>
+        <div class="f"><label>Total reviews</label><input type="number" id="m_rev" placeholder="0"></div>
+        <div class="f" style="flex:2"><label>Note (what changed?)</label><input type="text" id="m_note" placeholder="e.g. updated title to 'Hisab Pagar: Staff Salary'"></div>
+        <button class="act" onclick="saveWeek()">Save week</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <button class="ghost" onclick="exportData()">⬇ Export JSON</button>
+        <button class="ghost" onclick="document.getElementById('importFile').click()">⬆ Import JSON</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(event)">
+      </div>
+      <table id="metricsTable"></table>
+    </div>
+    <div class="card">
+      <h2>Conversion rate over time</h2>
+      <div class="chartbox"><canvas id="convChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- KEYWORDS -->
+  <div class="tab" id="keywords">
+    <div class="card">
+      <h2>Target keywords (India)</h2>
+      <div class="sub">Record your Play Store search position for each, weekly. Lower = better. "—" = not in top 100.</div>
+      <div class="row">
+        <div class="f" style="flex:2"><label>Add a keyword to track</label><input type="text" id="k_new" placeholder="e.g. staff attendance app"></div>
+        <button class="act" onclick="addKeyword()">Add keyword</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:10px">
+        <div class="f" style="max-width:200px"><label>Log ranks for week</label><input type="date" id="k_week"></div>
+        <button class="ghost" onclick="renderKeywordInputs()">Load week</button>
+        <button class="act" onclick="saveRanks()">Save ranks</button>
+      </div>
+      <table id="kwTable"></table>
+    </div>
+    <div class="card">
+      <h2>Keyword rank trend</h2>
+      <div class="sub">Y-axis inverted — top of chart = rank #1. Lines climbing = winning.</div>
+      <div class="chartbox"><canvas id="kwChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="tab" id="actions">
+    <div class="card">
+      <h2>ASO recovery checklist</h2>
+      <div class="sub">Do these in Play Console → Store listing. Check off as you go; progress is saved.</div>
+      <div id="taskList"></div>
+    </div>
+    <div class="card">
+      <h2>Title ideas (≤30 chars, keep the brand + a keyword)</h2>
+      <table>
+        <tr><th>Candidate title</th><th>Chars</th><th style="text-align:left">Why</th></tr>
+        <tr><td>Hisab Pagar: Staff Salary</td><td>25</td><td style="text-align:left">Brand + "staff" + "salary"</td></tr>
+        <tr><td>Hisab Pagar - Attendance</td><td>24</td><td style="text-align:left">Brand + highest-volume term</td></tr>
+        <tr><td>Hisab Pagar: Salary &amp; Haziri</td><td>29</td><td style="text-align:left">Brand + EN + Hindi term</td></tr>
+        <tr><td>Staff Attendance: Hisab Pagar</td><td>29</td><td style="text-align:left">Keyword-first (max search) — riskier for brand</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Golden rule</h2>
+      <div class="note">Pick <b>one</b> title and leave it for at least 4 weeks. Every title edit restarts Google's re-indexing clock. Iterate on the <i>short/long description</i> instead — those are lower-risk to change.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LS = {
+  weeks:'hp_aso_weeks', kws:'hp_aso_keywords', tasks:'hp_aso_tasks'
+};
+const load = (k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const save = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+let weeks = load(LS.weeks, []);
+let keywords = load(LS.kws, [
+  {kw:'staff attendance app', ranks:{}},
+  {kw:'salary calculator', ranks:{}},
+  {kw:'attendance register', ranks:{}},
+  {kw:'payroll small business', ranks:{}},
+  {kw:'employee attendance', ranks:{}},
+  {kw:'pagar / salary register', ranks:{}},
+  {kw:'haziri attendance', ranks:{}},
+  {kw:'kaambook', ranks:{}},
+]);
+const defaultTasks = [
+  {p:'p1', text:'Add a keyword to the Play Store title (≤30 chars)', why:'Strongest ranking signal. "Hisab Pagar" alone has no functional keyword.', done:false},
+  {p:'p1', text:'Rewrite short description (80 chars) with top keywords', why:'Google Play indexes the short description. Pack: staff attendance, salary, payroll.', done:false},
+  {p:'p2', text:'Rewrite full description (4000 chars), repeat keywords naturally', why:'Long description IS indexed on Google Play (unlike Apple). Use Hindi terms too: हाजिरी, पगार.', done:false},
+  {p:'p2', text:'Mention "KaamBook" once in the description', why:'Recover users who search the old brand name.', done:false},
+  {p:'p3', text:'Add keyword to one screenshot caption / feature graphic', why:'Reinforces relevance + lifts conversion.', done:false},
+  {p:'p3', text:'Set title once and DO NOT change it for 4 weeks', why:'Every edit restarts the 4–8 week re-indexing clock.', done:false},
+  {p:'p3', text:'Ask recent users for ratings (in-app review prompt)', why:'Rating volume/velocity is a ranking + conversion factor.', done:false},
+];
+let tasks = load(LS.tasks, defaultTasks);
+
+let oChart, cChart, kChart;
+
+// ---------- tabs ----------
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById(b.dataset.tab).classList.add('active');
+  renderAll();
+});
+
+// ---------- weekly metrics ----------
+function saveWeek(){
+  const wk = document.getElementById('m_week').value;
+  if(!wk){alert('Pick a week date');return;}
+  const rec = {
+    week:wk,
+    impr:+document.getElementById('m_impr').value||0,
+    vis:+document.getElementById('m_vis').value||0,
+    inst:+document.getElementById('m_inst').value||0,
+    rate:+document.getElementById('m_rate').value||0,
+    rev:+document.getElementById('m_rev').value||0,
+    note:document.getElementById('m_note').value.trim()
+  };
+  const i = weeks.findIndex(w=>w.week===wk);
+  if(i>=0) weeks[i]=rec; else weeks.push(rec);
+  weeks.sort((a,b)=>a.week<b.week?-1:1);
+  save(LS.weeks,weeks);
+  ['m_impr','m_vis','m_inst','m_rate','m_rev','m_note'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+function delWeek(wk){ if(confirm('Delete '+wk+'?')){weeks=weeks.filter(w=>w.week!==wk);save(LS.weeks,weeks);renderAll();} }
+const conv = w => w.vis>0 ? (w.inst/w.vis*100) : 0;
+const fmt = n => n>=1000? (n/1000).toFixed(n>=10000?0:1)+'k' : (''+n);
+
+function renderMetricsTable(){
+  const t=document.getElementById('metricsTable');
+  if(!weeks.length){t.innerHTML='<tr><td class="empty">No weeks logged yet.</td></tr>';return;}
+  let h='<tr><th>Week</th><th>Impr.</th><th>Visitors</th><th>Installs</th><th>Conv %</th><th>Rating</th><th>Reviews</th><th style="text-align:left">Note</th><th></th></tr>';
+  weeks.forEach(w=>{
+    h+=`<tr><td>${w.week}</td><td>${fmt(w.impr)}</td><td>${fmt(w.vis)}</td><td>${fmt(w.inst)}</td>
+    <td>${conv(w).toFixed(1)}</td><td>${w.rate||'—'}</td><td>${fmt(w.rev)}</td>
+    <td style="text-align:left" class="muted">${w.note||''}</td>
+    <td><button class="tiny" onclick="delWeek('${w.week}')">✕</button></td></tr>`;
+  });
+  t.innerHTML=h;
+}
+function renderKpis(){
+  const row=document.getElementById('kpiRow');
+  if(!weeks.length){return;}
+  const cur=weeks[weeks.length-1], prev=weeks[weeks.length-2];
+  const defs=[
+    {k:'Impressions',v:cur.impr,p:prev?.impr},
+    {k:'Store visitors',v:cur.vis,p:prev?.vis},
+    {k:'Installs',v:cur.inst,p:prev?.inst},
+    {k:'Conversion %',v:+conv(cur).toFixed(1),p:prev?+conv(prev).toFixed(1):undefined,suffix:'%'},
+    {k:'Rating',v:cur.rate,p:prev?.rate,raw:true},
+  ];
+  row.innerHTML=defs.map(d=>{
+    let delta='';
+    if(d.p!==undefined && d.p!==null){
+      const diff=(d.v-d.p);
+      const pct=d.p!==0? (diff/d.p*100):0;
+      const cls=diff>0?'up':diff<0?'down':'flat';
+      const arrow=diff>0?'▲':diff<0?'▼':'■';
+      delta=`<div class="delta ${cls}">${arrow} ${Math.abs(d.raw?diff:pct).toFixed(d.raw?2:0)}${d.raw?'':'%'} wk/wk</div>`;
+    }
+    const val=d.raw? (d.v||'—') : fmt(d.v)+(d.suffix||'');
+    return `<div class="kpi"><div class="label">${d.k}</div><div class="val">${val}</div>${delta}</div>`;
+  }).join('');
+}
+function renderOverviewChart(){
+  const ctx=document.getElementById('overviewChart');
+  const labels=weeks.map(w=>w.week);
+  if(oChart)oChart.destroy();
+  oChart=new Chart(ctx,{type:'line',data:{labels,datasets:[
+    {label:'Store visitors',data:weeks.map(w=>w.vis),borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',tension:.3,yAxisID:'y'},
+    {label:'Installs',data:weeks.map(w=>w.inst),borderColor:'#16A34A',backgroundColor:'rgba(22,163,74,.1)',tension:.3,yAxisID:'y'},
+    {label:'Conversion %',data:weeks.map(w=>+conv(w).toFixed(1)),borderColor:'#f59e0b',tension:.3,yAxisID:'y1'},
+  ]},options:chartOpts({y:{title:'count'},y1:{title:'%',right:true}})});
+}
+function renderConvChart(){
+  const ctx=document.getElementById('convChart');
+  if(cChart)cChart.destroy();
+  cChart=new Chart(ctx,{type:'bar',data:{labels:weeks.map(w=>w.week),datasets:[
+    {label:'Conversion %',data:weeks.map(w=>+conv(w).toFixed(1)),backgroundColor:'#16A34A'}
+  ]},options:chartOpts({y:{title:'%'}})});
+}
+function chartOpts(axes){
+  const o={responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#9aa3b2'}}},
+    scales:{x:{ticks:{color:'#9aa3b2'},grid:{color:'#2a2f3a'}},
+      y:{ticks:{color:'#9aa3b2'},grid:{color:'#2a2f3a'}}}};
+  if(axes.y1){o.scales.y1={position:'right',ticks:{color:'#9aa3b2'},grid:{drawOnChartArea:false}};}
+  return o;
+}
+
+// ---------- keywords ----------
+function addKeyword(){
+  const v=document.getElementById('k_new').value.trim();
+  if(!v)return;
+  if(keywords.some(k=>k.kw.toLowerCase()===v.toLowerCase())){alert('Already tracking that.');return;}
+  keywords.push({kw:v,ranks:{}});save(LS.kws,keywords);
+  document.getElementById('k_new').value='';renderAll();
+}
+function delKeyword(kw){ if(confirm('Stop tracking "'+kw+'"?')){keywords=keywords.filter(k=>k.kw!==kw);save(LS.kws,keywords);renderAll();} }
+function rankClass(r){ if(!r)return ''; if(r<=10)return 'rank-good'; if(r<=30)return 'rank-mid'; return 'rank-bad'; }
+function renderKwTable(){
+  const t=document.getElementById('kwTable');
+  const allWeeks=[...new Set(keywords.flatMap(k=>Object.keys(k.ranks)))].sort();
+  const recent=allWeeks.slice(-6);
+  let h='<tr><th>Keyword</th>'+recent.map(w=>`<th>${w.slice(5)}</th>`).join('')+'<th>Trend</th><th></th></tr>';
+  if(!keywords.length){t.innerHTML='<tr><td class="empty">No keywords.</td></tr>';return;}
+  keywords.forEach(k=>{
+    h+=`<tr><td>${k.kw}</td>`;
+    recent.forEach(w=>{const r=k.ranks[w];h+=`<td class="${rankClass(r)}">${r||'—'}</td>`;});
+    // trend: compare first vs last available in recent
+    const vals=recent.map(w=>k.ranks[w]).filter(Boolean);
+    let tr='—';
+    if(vals.length>=2){const d=vals[0]-vals[vals.length-1]; tr=d>0?`<span class="up">▲ +${d}</span>`:d<0?`<span class="down">▼ ${d}</span>`:'<span class="flat">■</span>';}
+    h+=`<td>${tr}</td><td><button class="tiny" onclick="delKeyword('${k.kw.replace(/'/g,"\\'")}')">✕</button></td></tr>`;
+  });
+  t.innerHTML=h;
+}
+function renderKeywordInputs(){
+  const wk=document.getElementById('k_week').value;
+  if(!wk){alert('Pick a week to log ranks for');return;}
+  const t=document.getElementById('kwTable');
+  let h=`<tr><th>Keyword</th><th>Rank for ${wk}</th></tr>`;
+  keywords.forEach((k,i)=>{
+    h+=`<tr><td>${k.kw}</td><td style="text-align:right"><input type="number" id="rk_${i}" style="max-width:90px;display:inline-block" value="${k.ranks[wk]||''}" placeholder="—"></td></tr>`;
+  });
+  t.innerHTML=h;
+}
+function saveRanks(){
+  const wk=document.getElementById('k_week').value;
+  if(!wk){alert('Pick a week date first, then Load week');return;}
+  keywords.forEach((k,i)=>{
+    const el=document.getElementById('rk_'+i);
+    if(el){const v=el.value.trim(); if(v) k.ranks[wk]=+v; else delete k.ranks[wk];}
+  });
+  save(LS.kws,keywords);renderAll();
+}
+function renderKwChart(){
+  const ctx=document.getElementById('kwChart');
+  const allWeeks=[...new Set(keywords.flatMap(k=>Object.keys(k.ranks)))].sort();
+  if(kChart)kChart.destroy();
+  const palette=['#16A34A','#3b82f6','#f59e0b','#ef4444','#a855f7','#06b6d4','#ec4899','#84cc16'];
+  kChart=new Chart(ctx,{type:'line',data:{labels:allWeeks,datasets:keywords.map((k,i)=>({
+    label:k.kw,data:allWeeks.map(w=>k.ranks[w]??null),borderColor:palette[i%palette.length],
+    spanGaps:true,tension:.3
+  }))},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#9aa3b2',font:{size:10}}}},
+    scales:{x:{ticks:{color:'#9aa3b2'},grid:{color:'#2a2f3a'}},
+      y:{reverse:true,min:1,ticks:{color:'#9aa3b2'},grid:{color:'#2a2f3a'},title:{display:true,text:'rank (1 = top)',color:'#9aa3b2'}}}}});
+}
+
+// ---------- tasks ----------
+function renderTasks(){
+  const c=document.getElementById('taskList');
+  c.innerHTML=tasks.map((t,i)=>`
+    <div class="task ${t.done?'done':''}">
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i})">
+      <div><div class="t-text"><span class="pill ${t.p}">${t.p.toUpperCase()}</span> ${t.text}</div>
+      <div class="t-why">${t.why}</div></div>
+    </div>`).join('');
+}
+function toggleTask(i){tasks[i].done=!tasks[i].done;save(LS.tasks,tasks);renderTasks();}
+
+// ---------- export / import ----------
+function exportData(){
+  const blob=new Blob([JSON.stringify({weeks,keywords,tasks},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='hisab-pagar-aso-data.json';a.click();
+}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);
+    if(d.weeks)weeks=d.weeks; if(d.keywords)keywords=d.keywords; if(d.tasks)tasks=d.tasks;
+    save(LS.weeks,weeks);save(LS.kws,keywords);save(LS.tasks,tasks);renderAll();
+    alert('Imported.');}catch{alert('Invalid file.');}};
+  r.readAsText(f);
+}
+
+function renderAll(){
+  renderKpis();renderMetricsTable();renderKwTable();renderTasks();
+  renderOverviewChart();renderConvChart();renderKwChart();
+}
+renderAll();
+</script>
+</body>
+</html>

@@ -4,6 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { db, rawDb } from '../db/client';
 import { businesses, staff, attendance, payments, advances, cashbook, settings } from '../db/schema';
 import dayjs from 'dayjs';
+import { track } from './analytics';
 
 interface BackupData {
   version: number;
@@ -42,6 +43,7 @@ export async function createBackup(): Promise<void> {
     mimeType: 'application/json',
     dialogTitle: 'Save Hisab Pagar Backup',
   });
+  track('backup_created', { staff_count: data.staff.length });
 }
 
 export async function restoreBackup(): Promise<boolean> {

@@ -5,6 +5,7 @@ import { eq, and, gte, lte, desc } from 'drizzle-orm';
 import { randomUUID } from 'expo-crypto';
 import dayjs from 'dayjs';
 import type { CashbookEntry, CashbookType, CashbookCategory } from '../types';
+import { track } from '../utils/analytics';
 
 interface AddEntryInput {
   businessId: string;
@@ -77,6 +78,7 @@ export const useCashbookStore = create<CashbookState>((set, get) => ({
     }
     const entryDate = dayjs(input.date || dayjs().format('YYYY-MM-DD'));
     await get().loadEntries(input.businessId, entryDate.year(), entryDate.month());
+    track('cashbook_entry_added', { type: input.type, category: input.category });
   },
 
   deleteEntry: async (id: string, businessId: string, year: number, month: number) => {

@@ -4,7 +4,17 @@
     "title": "Welcome to Hisab Pagar",
     "subtitle": "Manage your staff attendance & payments offline",
     "select_language": "Select Language",
-    "get_started": "Get Started"
+    "get_started": "Get Started",
+    "phone_label": "Your Mobile Number (Optional)",
+    "phone_placeholder": "10-digit mobile number",
+    "phone_help": "We may call you to hear your feedback and make the app better for you."
+  },
+  "phone_prompt": {
+    "title": "Help us improve Hisab Pagar",
+    "subtitle": "Share your mobile number — we may call to hear your feedback and suggestions.",
+    "placeholder": "10-digit mobile number",
+    "save": "Save",
+    "later": "Not Now"
   },
   "tabs": {
     "home": "Home",

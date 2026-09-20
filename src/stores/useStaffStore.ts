@@ -5,6 +5,7 @@ import { eq, and } from 'drizzle-orm';
 import { randomUUID } from 'expo-crypto';
 import dayjs from 'dayjs';
 import type { Staff, SalaryType, StaffStatus } from '../types';
+import { track, setUserProperties } from '../utils/analytics';
 
 interface AddStaffInput {
   name: string;
@@ -60,6 +61,12 @@ export const useStaffStore = create<StaffState>((set, get) => ({
       createdAt: dayjs().toISOString(),
     });
     await get().loadStaff(businessId);
+    track('staff_added', {
+      salary_type: input.salaryType,
+      has_phone: !!input.phone,
+      has_photo: !!input.photoUri,
+    });
+    setUserProperties({ staff_count: get().staffList.length });
     return id;
   },
 

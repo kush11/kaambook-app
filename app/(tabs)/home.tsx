@@ -6,6 +6,7 @@ import { StaffCard } from '@/src/components/staff/StaffCard';
 import { SearchBar } from '@/src/components/ui/SearchBar';
 import { EmptyState } from '@/src/components/ui/EmptyState';
 import { DashboardStats } from '@/src/components/home/DashboardStats';
+import { PhonePromptCard } from '@/src/components/home/PhonePromptCard';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useAttendanceStore } from '@/src/stores/useAttendanceStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
@@ -91,6 +92,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <PhonePromptCard />
       {staffList.length > 0 && (
         <SearchBar
           value={search}

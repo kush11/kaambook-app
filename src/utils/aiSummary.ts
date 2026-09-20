@@ -4,6 +4,7 @@ import { eq, and, gte, lte } from 'drizzle-orm';
 import dayjs from 'dayjs';
 import { calculateSalary } from './salary';
 import type { Staff, Attendance, Payment } from '../types';
+import { track } from './analytics';
 
 /**
  * URL of your deployed AI proxy (Cloudflare Worker / Vercel).
@@ -110,6 +111,7 @@ export async function fetchAiSummary(data: MonthSummaryInput, language: string):
   if (j.error || !j.summary) {
     throw new Error('REQUEST_FAILED');
   }
+  track('ai_summary_generated', { language });
   return j.summary;
 }
 

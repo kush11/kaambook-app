@@ -5,6 +5,7 @@ import { eq, and, gte, lte, desc } from 'drizzle-orm';
 import { randomUUID } from 'expo-crypto';
 import dayjs from 'dayjs';
 import type { Payment, PaymentType, PaymentMode } from '../types';
+import { track } from '../utils/analytics';
 
 interface AddPaymentInput {
   staffId: string;
@@ -63,6 +64,7 @@ export const usePaymentStore = create<PaymentState>((set, get) => ({
       createdAt: dayjs().toISOString(),
     });
     await get().loadPayments(input.staffId);
+    track('payment_added', { type: input.type, mode: input.mode });
   },
 
   deletePayment: async (id: string, staffId: string) => {

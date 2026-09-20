@@ -5,6 +5,7 @@ import { eq, and, gte, lte, sql } from 'drizzle-orm';
 import { randomUUID } from 'expo-crypto';
 import dayjs from 'dayjs';
 import type { Attendance, AttendanceStatus } from '../types';
+import { track } from '../utils/analytics';
 
 interface AttendanceState {
   records: Attendance[];
@@ -58,6 +59,7 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
     // Reload current month
     const d = dayjs(date);
     await get().loadMonthAttendance(staffId, d.year(), d.month());
+    track('attendance_marked', { status, has_overtime: !!overtimeHours, bulk: false });
   },
 
   // Marks every given staff as "present" for a date in one shot.
@@ -77,6 +79,7 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
           set: { status },
         });
     }
+    track('attendance_marked', { status, bulk: true, staff_count: staffIds.length });
   },
 
   markAllPresent: async (staffIds: string[], date: string) => {

@@ -5,6 +5,7 @@ import type { Staff, SalaryBreakdown, Payment } from '../types';
 import { formatCurrency } from './formatters';
 import { getMonthYear } from './date';
 import dayjs from 'dayjs';
+import { track } from './analytics';
 
 function numberToWords(num: number): string {
   if (num === 0) return 'Zero';
@@ -228,6 +229,7 @@ export async function generateAndShareReport(
     dialogTitle: `Salary Slip - ${staffMember.name}`,
     UTI: 'com.adobe.pdf',
   });
+  track('report_shared', { method: 'share_sheet' });
 }
 
 export async function generateReport(
@@ -258,4 +260,5 @@ export async function shareReportWhatsApp(
     dialogTitle: message,
     UTI: 'com.adobe.pdf',
   });
+  track('report_shared', { method: 'whatsapp' });
 }

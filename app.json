@@ -55,7 +55,8 @@
       "expo-font",
       "expo-sqlite",
       "expo-web-browser",
-      ["expo-contacts", { "contactsPermission": "Allow Hisab Pagar to pick a contact to add as staff." }]
+      ["expo-contacts", { "contactsPermission": "Allow Hisab Pagar to pick a contact to add as staff." }],
+      ["@sentry/react-native/expo", { "organization": "YOUR_SENTRY_ORG", "project": "hisab-pagar" }]
     ],
     "experiments": {
       "typedRoutes": true

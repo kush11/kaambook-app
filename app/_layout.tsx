@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
+import * as Sentry from '@sentry/react-native';
 import { PaperProvider } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -13,26 +14,46 @@ import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { colors } from '@/src/theme/colors';
 import { AnimatedSplashScreen } from '@/src/components/AnimatedSplashScreen';
+import { initAnalytics, track, identifyOwner } from '@/src/utils/analytics';
+import { SENTRY_DSN } from '@/src/config/telemetry';
+
+Sentry.init({
+  dsn: SENTRY_DSN,
+  enabled: !!SENTRY_DSN,
+  tracesSampleRate: 0.2,
+});
+
 // Keep native splash screen visible while JS loads
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
   const [splashDone, setSplashDone] = useState(false);
   const { isLoading, loadSettings } = useSettingsStore();
+  const pathname = usePathname();
 
   useEffect(() => {
     async function init() {
       // Hide native splash as soon as JS is ready — our animated splash takes over
       await SplashScreen.hideAsync();
+      initAnalytics();
       initDatabase();
       await seedDatabase();
       await loadSettings();
       await useBusinessStore.getState().loadBusinesses();
+      const s = useSettingsStore.getState();
+      // Re-identify returning users so every session links to their phone.
+      if (s.ownerPhone) identifyOwner(s.ownerPhone, { language: s.language });
+      track('app_open', { language: s.language, onboarded: s.isOnboarded });
       setDbReady(true);
     }
     init();
   }, []);
+
+  // Screen views — one event per route change.
+  useEffect(() => {
+    if (pathname) track('screen_view', { screen: pathname });
+  }, [pathname]);
 
   const appReady = dbReady && !isLoading;
 
@@ -96,3 +117,5 @@ export default function RootLayout() {
     </AnimatedSplashScreen>
   );
 }
+
+export default Sentry.wrap(RootLayout);

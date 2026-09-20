@@ -10,10 +10,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import i18n from '@/src/i18n';
 
 export default function OnboardingScreen() {
-  const { language, setLanguage, completeOnboarding } = useSettingsStore();
+  const { language, setLanguage, completeOnboarding, setOwnerPhone } = useSettingsStore();
   const { activeBusiness, updateBusiness, addBusiness } = useBusinessStore();
   const [selectedLang, setSelectedLang] = useState(language);
   const [businessName, setBusinessName] = useState('');
+  const [ownerPhone, setOwnerPhoneInput] = useState('');
 
   const handleLanguageChange = async (lang: string) => {
     setSelectedLang(lang);
@@ -21,6 +22,10 @@ export default function OnboardingScreen() {
   };
 
   const handleGetStarted = async () => {
+    const phoneDigits = ownerPhone.replace(/\D/g, '');
+    if (phoneDigits.length >= 10) {
+      await setOwnerPhone(phoneDigits, 'onboarding');
+    }
     const trimmed = businessName.trim();
     if (trimmed) {
       // A default business is seeded on first launch — rename it instead of
@@ -61,6 +66,23 @@ export default function OnboardingScreen() {
             left={<TextInput.Icon icon="domain" />}
           />
 
+          <Text variant="titleMedium" style={styles.fieldLabel}>
+            {i18n.t('onboarding.phone_label')}
+          </Text>
+          <TextInput
+            mode="outlined"
+            placeholder={i18n.t('onboarding.phone_placeholder')}
+            value={ownerPhone}
+            onChangeText={setOwnerPhoneInput}
+            keyboardType="phone-pad"
+            maxLength={13}
+            style={styles.phoneInput}
+            left={<TextInput.Icon icon="phone" />}
+          />
+          <Text variant="bodySmall" style={styles.phoneHelp}>
+            {i18n.t('onboarding.phone_help')}
+          </Text>
+
           <Text variant="titleMedium" style={styles.langLabel}>
             {i18n.t('onboarding.select_language')}
           </Text>
@@ -89,6 +111,8 @@ const styles = StyleSheet.create({
   middle: { flex: 1, marginTop: 24 },
   fieldLabel: { marginBottom: 8, color: colors.text },
   input: { marginBottom: 20, backgroundColor: colors.surface },
+  phoneInput: { backgroundColor: colors.surface },
+  phoneHelp: { marginTop: 4, marginBottom: 20, color: colors.textSecondary },
   langLabel: { marginBottom: 8, color: colors.text },
   button: { marginBottom: 32 },
   buttonContent: { paddingVertical: 8 },
