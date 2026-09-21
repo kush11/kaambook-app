@@ -1,8 +1,9 @@
 # Hisab Pagar 1.0.5 — release sheet
 
 - **Version:** 1.0.5 · **versionCode:** 10 (Play's highest so far is 9 / 1.0.4)
-- **Bundle:** `android/app/build/outputs/bundle/release/app-release.aab`
-- **Signed with:** upload key, SHA-256 `9D:A1:11:8B:3C:D9:19:2A:B0:47:B2:6A:43:7A:F0:21:A2:B8:3F:FD:AF:75:D7:73:97:BF:28:39:2D:5F:5E:9D`
+- **Bundle:** built on Expo (EAS), `eas build --platform android --profile production` — build `b7ee5040-7a54-4779-bc4d-033c8dee2c56`
+- **Signed with:** the EAS-managed upload key Play has on file, SHA-1 `85:C4:16:FF:81:83:20:2B:38:4B:DA:5E:6E:CE:7E:CB:42:DB:27:B0`
+- A locally built bundle (`./gradlew bundleRelease`) is signed with a different key and **Play rejects it**.
 
 ## Order of operations
 

@@ -1,5 +1,12 @@
 # Hisab Pagar — Android Release Guide
 
+> **Production builds are made on Expo (EAS), not locally.**
+> Every Play upload so far (versionCode 6 onwards) was built with
+> `eas build --platform android --profile production`, and Play has the **EAS-managed key**
+> registered as the upload key (SHA-1 `85:C4:16:FF:…:27:B0`). EAS also auto-increments the versionCode.
+> The local Gradle build described below is signed with a different keystore, so Play
+> **rejects** its bundles — use it only for test APKs to sideload on a phone.
+
 How to build a signed, Play-Store-ready Android bundle **locally** (no EAS).
 
 - **Package (applicationId):** `com.kaambook.app` — this is the app's identity on Play and must never change. (The Gradle `namespace` is `com.hisabpagar.app`; that is internal only.)
