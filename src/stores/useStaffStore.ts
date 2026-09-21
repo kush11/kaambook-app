@@ -75,12 +75,16 @@ export const useStaffStore = create<StaffState>((set, get) => ({
     // Reload from the staff's business
     const s = get().staffList.find(s => s.id === id);
     if (s) await get().loadStaff(s.businessId);
+    // Field names only — never the values.
+    track('staff_updated', { fields: Object.keys(updates).sort().join(',') });
   },
 
   deleteStaff: async (id: string) => {
     const s = get().staffList.find(s => s.id === id);
     await db.delete(staff).where(eq(staff.id, id));
     if (s) await get().loadStaff(s.businessId);
+    track('staff_deleted');
+    setUserProperties({ staff_count: get().staffList.length });
   },
 
   getStaffById: (id: string) => {

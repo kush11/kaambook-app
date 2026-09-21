@@ -10,6 +10,8 @@
 import PostHog from 'posthog-react-native';
 import { POSTHOG_API_KEY, POSTHOG_HOST } from '../config/telemetry';
 
+type Properties = NonNullable<Parameters<PostHog['capture']>[1]>;
+
 let client: PostHog | null = null;
 
 export function initAnalytics(): void {
@@ -28,7 +30,7 @@ export function initAnalytics(): void {
 }
 
 /** Track a product event. */
-export function track(event: string, properties?: Record<string, unknown>): void {
+export function track(event: string, properties?: Properties): void {
   try {
     client?.capture(event, properties);
   } catch {
@@ -40,8 +42,8 @@ export function track(event: string, properties?: Record<string, unknown>): void
  * Attach the owner's phone number as the user identity so their whole
  * activity history is visible under one person in PostHog.
  */
-export function identifyOwner(phone: string, properties?: Record<string, unknown>): void {
-  const digits = (phone || '').replace(/\D/g, '');
+export function identifyOwner(phone: string, properties?: Properties): void {
+  const digits = (phone || '').replace(/\D/g, '').slice(-10);
   if (!digits) return;
   try {
     client?.identify(digits, { phone: digits, ...properties });
@@ -51,12 +53,18 @@ export function identifyOwner(phone: string, properties?: Record<string, unknown
 }
 
 /** Set persistent person properties (language, app version, staff count, …). */
-export function setUserProperties(properties: Record<string, unknown>): void {
+export function setUserProperties(properties: Properties): void {
   try {
     client?.capture('$set', { $set: properties });
   } catch {
     // ignore
   }
+}
+
+/** Track a failed action. Only the action name and a short error message are sent. */
+export function trackError(action: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  track('error_occurred', { action, message: message.slice(0, 120) });
 }
 
 /** Flush pending events immediately (e.g. right after phone capture). */

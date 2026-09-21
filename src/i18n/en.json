@@ -16,6 +16,11 @@
     "save": "Save",
     "later": "Not Now"
   },
+  "backup_reminder": {
+    "title": "Back up your data",
+    "subtitle": "Your records are saved only on this phone. Save a backup to Google Drive or WhatsApp so you never lose them.",
+    "action": "Back Up Now"
+  },
   "tabs": {
     "home": "Home",
     "salary_due": "Salary Due",
@@ -42,6 +47,7 @@
   "staff": {
     "add": "Add Staff",
     "edit": "Edit Staff",
+    "details": "Staff Details",
     "pick_contact": "Pick from contacts",
     "name": "Name",
     "phone": "Phone Number",
@@ -119,6 +125,7 @@
   "business": {
     "name": "Business Name",
     "add": "Add Business",
+    "switch": "Switch Business",
     "section_title": "Business",
     "switch_description": "Tap to switch or add business",
     "rename": "Rename",
@@ -154,6 +161,8 @@
     "language": "Language",
     "attendance_reminder": "Attendance Reminder",
     "reminder_time": "Reminder Time",
+    "reminder_notif_title": "Hisab Pagar Reminder",
+    "reminder_notif_body": "Don't forget to mark today's attendance!",
     "backup": "Backup Data",
     "restore": "Restore Data",
     "backup_success": "Backup created successfully",
@@ -162,7 +171,14 @@
     "about": "About",
     "version": "Version",
     "rate": "Rate this app",
-    "rate_desc": "Enjoying Hisab Pagar? Leave a review ⭐"
+    "rate_desc": "Enjoying Hisab Pagar? Leave a review ⭐",
+    "owner_phone": "Your mobile number",
+    "owner_phone_add": "Add your number",
+    "share_app": "Share this app",
+    "share_app_desc": "Tell other business owners about Hisab Pagar"
+  },
+  "share": {
+    "message": "I use Hisab Pagar to manage staff attendance (hazri) and salary. It is free and works without internet. Try it:"
   },
   "ai": {
     "summary_btn": "AI Summary",

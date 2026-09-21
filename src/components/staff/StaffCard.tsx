@@ -1,58 +1,96 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Card, Text, IconButton } from 'react-native-paper';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Text, TouchableRipple } from 'react-native-paper';
 import { StaffAvatar } from './StaffAvatar';
 import { colors } from '@/src/theme/colors';
 import { formatCurrency } from '@/src/utils/formatters';
 import type { Staff, AttendanceStatus } from '@/src/types';
+import i18n from '@/src/i18n';
 
 interface StaffCardProps {
   staff: Staff;
   todayStatus?: AttendanceStatus;
   onPress: () => void;
   onMarkAttendance: (status: AttendanceStatus) => void;
+  /** Rows sit in one grouped list; the ends get the rounded corners. */
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
-export function StaffCard({ staff, todayStatus, onPress, onMarkAttendance }: StaffCardProps) {
+// P / A / ½ are the marks used in paper attendance registers, so they stay the
+// same in every language; the spoken label is translated.
+const marks: { status: AttendanceStatus; letter: string; color: string; labelKey: string }[] = [
+  { status: 'present', letter: 'P', color: colors.present, labelKey: 'attendance.present' },
+  { status: 'absent', letter: 'A', color: colors.absent, labelKey: 'attendance.absent' },
+  { status: 'half_day', letter: '½', color: colors.halfDay, labelKey: 'attendance.half_day' },
+];
+
+const salarySuffix = { monthly: 'salary.per_month', daily: 'salary.per_day', weekly: 'salary.per_week' } as const;
+
+export function StaffCard({ staff, todayStatus, onPress, onMarkAttendance, isFirst, isLast }: StaffCardProps) {
+  const suffixKey = salarySuffix[staff.salaryType as keyof typeof salarySuffix] ?? 'salary.per_month';
+
   return (
-    <Card style={styles.card} onPress={onPress}>
-      <Card.Content style={styles.content}>
-        <StaffAvatar name={staff.name} photoUri={staff.photoUri} size={44} />
-        <View style={styles.info}>
-          <Text variant="titleSmall" numberOfLines={1}>{staff.name}</Text>
-          <Text variant="bodySmall" style={styles.salary}>
-            {formatCurrency(staff.salaryAmount)}/{staff.salaryType === 'monthly' ? 'mo' : staff.salaryType === 'daily' ? 'day' : 'wk'}
-          </Text>
+    <View style={[styles.row, isFirst && styles.first, isLast && styles.last]}>
+      <TouchableRipple onPress={onPress} style={styles.touchable}>
+        <View style={styles.content}>
+          <StaffAvatar name={staff.name} photoUri={staff.photoUri} size={40} />
+          <View style={styles.info}>
+            <Text style={styles.name} numberOfLines={1}>{staff.name}</Text>
+            <Text style={styles.salary} numberOfLines={1}>
+              {formatCurrency(staff.salaryAmount)}{i18n.t(suffixKey)}
+            </Text>
+          </View>
+          <View style={styles.actions}>
+            {marks.map((m) => {
+              const selected = todayStatus === m.status;
+              return (
+                <Pressable
+                  key={m.status}
+                  onPress={() => onMarkAttendance(m.status)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${i18n.t(m.labelKey)}: ${staff.name}`}
+                  accessibilityState={{ selected }}
+                  style={[styles.chip, selected && { backgroundColor: m.color }]}
+                >
+                  <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{m.letter}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
-        <View style={styles.actions}>
-          <IconButton
-            icon="check-circle"
-            iconColor={todayStatus === 'present' ? colors.present : colors.border}
-            size={28}
-            onPress={() => onMarkAttendance('present')}
-          />
-          <IconButton
-            icon="close-circle"
-            iconColor={todayStatus === 'absent' ? colors.absent : colors.border}
-            size={28}
-            onPress={() => onMarkAttendance('absent')}
-          />
-          <IconButton
-            icon="circle-half-full"
-            iconColor={todayStatus === 'half_day' ? colors.halfDay : colors.border}
-            size={28}
-            onPress={() => onMarkAttendance('half_day')}
-          />
-        </View>
-      </Card.Content>
-    </Card>
+      </TouchableRipple>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { marginHorizontal: 16, marginVertical: 4, backgroundColor: '#fff' },
-  content: { flexDirection: 'row', alignItems: 'center' },
-  info: { flex: 1, marginLeft: 12 },
-  salary: { color: colors.textSecondary, marginTop: 2 },
-  actions: { flexDirection: 'row' },
+  row: {
+    marginHorizontal: 16,
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
+    overflow: 'hidden',
+  },
+  first: { borderTopWidth: 1, borderTopLeftRadius: 18, borderTopRightRadius: 18 },
+  last: { borderBottomColor: colors.border, borderBottomLeftRadius: 18, borderBottomRightRadius: 18 },
+  touchable: { paddingVertical: 8, paddingLeft: 12, paddingRight: 10 },
+  content: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  info: { flex: 1 },
+  name: { fontSize: 16, fontWeight: '600', color: colors.text },
+  salary: { fontSize: 13, color: colors.textSecondary, marginTop: 1 },
+  actions: { flexDirection: 'row', gap: 6 },
+  chip: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surfaceVariant,
+  },
+  chipText: { fontSize: 16, fontWeight: '700', color: colors.textSecondary },
+  chipTextSelected: { color: '#fff' },
 });

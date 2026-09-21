@@ -8,6 +8,6 @@
  *
  * Both are safe no-ops while left empty — the app runs normally without them.
  */
-export const POSTHOG_API_KEY = '';
+export const POSTHOG_API_KEY = 'phc_r9KMPZ7jmXuSuCsm9DGKbnFJmaYK4wkrC6uvctJKHLez';
 export const POSTHOG_HOST = 'https://us.i.posthog.com';
 export const SENTRY_DSN = '';

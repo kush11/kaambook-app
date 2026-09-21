@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Card, Text, Button, List, Divider } from 'react-native-paper';
+import { Card, Text, Button, List, Divider, Portal, Snackbar } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { StaffAvatar } from '@/src/components/staff/StaffAvatar';
@@ -19,6 +19,7 @@ import { eq, and, gte, lte } from 'drizzle-orm';
 import dayjs from 'dayjs';
 import type { SalaryBreakdown as SalaryBreakdownType, Attendance, Payment } from '@/src/types';
 import i18n from '@/src/i18n';
+import { trackError } from '@/src/utils/analytics';
 
 export default function StaffDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -26,6 +27,7 @@ export default function StaffDetailScreen() {
   const { getStaffById, deleteStaff, loadStaff, updateStaff } = useStaffStore();
   const [breakdown, setBreakdown] = useState<SalaryBreakdownType | null>(null);
   const [showDelete, setShowDelete] = useState(false);
+  const [shareFailed, setShareFailed] = useState(false);
 
   const { activeBusiness } = useBusinessStore();
   const staffMember = getStaffById(id);
@@ -58,9 +60,14 @@ export default function StaffDetailScreen() {
     const month = now.month();
     const startDate = now.startOf('month').format('YYYY-MM-DD');
     const endDate = now.endOf('month').format('YYYY-MM-DD');
-    const pay = await db.select().from(payments)
-      .where(and(eq(payments.staffId, id), gte(payments.date, startDate), lte(payments.date, endDate)));
-    await generateAndShareReport(activeBusiness.name, staffMember, breakdown, pay as Payment[], year, month);
+    try {
+      const pay = await db.select().from(payments)
+        .where(and(eq(payments.staffId, id), gte(payments.date, startDate), lte(payments.date, endDate)));
+      await generateAndShareReport(activeBusiness.name, staffMember, breakdown, pay as Payment[], year, month);
+    } catch (e) {
+      trackError('report_share', e);
+      setShareFailed(true);
+    }
   };
 
   const handleWhatsAppShare = async () => {
@@ -70,10 +77,15 @@ export default function StaffDetailScreen() {
     const mo = now.month();
     const startDate = now.startOf('month').format('YYYY-MM-DD');
     const endDate = now.endOf('month').format('YYYY-MM-DD');
-    const pay = await db.select().from(payments)
-      .where(and(eq(payments.staffId, id), gte(payments.date, startDate), lte(payments.date, endDate)));
-    const uri = await generateReport(activeBusiness.name, staffMember, breakdown, pay as Payment[], yr, mo);
-    await shareReportWhatsApp(uri, staffMember, yr, mo);
+    try {
+      const pay = await db.select().from(payments)
+        .where(and(eq(payments.staffId, id), gte(payments.date, startDate), lte(payments.date, endDate)));
+      const uri = await generateReport(activeBusiness.name, staffMember, breakdown, pay as Payment[], yr, mo);
+      await shareReportWhatsApp(uri, staffMember, yr, mo);
+    } catch (e) {
+      trackError('report_share_whatsapp', e);
+      setShareFailed(true);
+    }
   };
 
   useFocusEffect(useCallback(() => { loadData(); }, [loadData]));
@@ -188,6 +200,11 @@ export default function StaffDetailScreen() {
         onDismiss={() => setShowDelete(false)}
         destructive
       />
+      <Portal>
+        <Snackbar visible={shareFailed} onDismiss={() => setShareFailed(false)} duration={3000}>
+          {i18n.t('common.error')}
+        </Snackbar>
+      </Portal>
     </ScrollView>
   );
 }

@@ -6,6 +6,8 @@ import { formatCurrency } from './formatters';
 import { getMonthYear } from './date';
 import dayjs from 'dayjs';
 import { track } from './analytics';
+import { maybeAskForReview } from './reviewPrompt';
+import { playStoreUrl } from '../config/links';
 
 function numberToWords(num: number): string {
   if (num === 0) return 'Zero';
@@ -79,6 +81,7 @@ function generateSalarySlipHTML(
   .net-pay .amount { font-size: 22px; font-weight: bold; }
   .amount-words { background: #F0FDF4; padding: 8px 20px; font-size: 11px; color: #6B7280; border-top: 1px solid #D1FAE5; }
   .footer { padding: 10px 20px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; }
+  .footer a { color: #EA580C; text-decoration: none; font-weight: 600; }
   .payment-table { margin-top: 4px; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
   .badge-green { background: #D1FAE5; color: #16A34A; }
@@ -205,7 +208,8 @@ function generateSalarySlipHTML(
 
   <!-- Footer -->
   <div class="footer">
-    This is a computer-generated salary slip from Hisab Pagar. No signature required.
+    This is a computer-generated salary slip from Hisab Pagar. No signature required.<br>
+    Make free salary slips for your staff &mdash; <a href="${playStoreUrl('salary_slip')}">Get Hisab Pagar on Google Play</a>
   </div>
 </div>
 </body>
@@ -223,6 +227,7 @@ export async function generateAndShareReport(
   const html = generateSalarySlipHTML(businessName, staffMember, breakdown, payments, year, month);
 
   const { uri } = await Print.printToFileAsync({ html });
+  track('report_generated', { salary_type: staffMember.salaryType });
 
   await Sharing.shareAsync(uri, {
     mimeType: 'application/pdf',
@@ -230,6 +235,7 @@ export async function generateAndShareReport(
     UTI: 'com.adobe.pdf',
   });
   track('report_shared', { method: 'share_sheet' });
+  maybeAskForReview('report_shared');
 }
 
 export async function generateReport(
@@ -242,6 +248,7 @@ export async function generateReport(
 ): Promise<string> {
   const html = generateSalarySlipHTML(businessName, staffMember, breakdown, payments, year, month);
   const { uri } = await Print.printToFileAsync({ html });
+  track('report_generated', { salary_type: staffMember.salaryType });
   return uri;
 }
 
@@ -261,4 +268,5 @@ export async function shareReportWhatsApp(
     UTI: 'com.adobe.pdf',
   });
   track('report_shared', { method: 'whatsapp' });
+  maybeAskForReview('report_shared');
 }

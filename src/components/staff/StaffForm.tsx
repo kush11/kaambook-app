@@ -7,6 +7,7 @@ import { colors } from '@/src/theme/colors';
 import type { SalaryType } from '@/src/types';
 import i18n from '@/src/i18n';
 import * as Contacts from 'expo-contacts';
+import { track, trackError } from '@/src/utils/analytics';
 
 interface StaffFormData {
   name: string;
@@ -27,16 +28,16 @@ interface StaffFormProps {
 }
 
 const DAY_OPTIONS = [
-  { value: 0, label: 'Sun' },
-  { value: 1, label: 'Mon' },
-  { value: 2, label: 'Tue' },
-  { value: 3, label: 'Wed' },
-  { value: 4, label: 'Thu' },
-  { value: 5, label: 'Fri' },
-  { value: 6, label: 'Sat' },
+  { value: 0, labelKey: 'days.sun' },
+  { value: 1, labelKey: 'days.mon' },
+  { value: 2, labelKey: 'days.tue' },
+  { value: 3, labelKey: 'days.wed' },
+  { value: 4, labelKey: 'days.thu' },
+  { value: 5, labelKey: 'days.fri' },
+  { value: 6, labelKey: 'days.sat' },
 ];
 
-export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoading, isPhoneTaken }: StaffFormProps) {
+export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.save'), isLoading, isPhoneTaken }: StaffFormProps) {
   const [name, setName] = useState(initialData?.name || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
   const [salaryType, setSalaryType] = useState<SalaryType>(initialData?.salaryType || 'monthly');
@@ -59,6 +60,7 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
       // without it expo-contacts throws a SecurityException and crashes the app.
       const { status, canAskAgain } = await Contacts.requestPermissionsAsync();
       if (status !== 'granted') {
+        track('contact_permission_denied', { can_ask_again: canAskAgain });
         Alert.alert(
           i18n.t('staff.contact_permission_title'),
           i18n.t('staff.contact_permission_msg'),
@@ -78,8 +80,10 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
       if (pickedName) { setName(pickedName); setNameError(false); }
       const num = contact.phoneNumbers?.[0]?.number;
       if (num) { setPhone(num.replace(/[^0-9]/g, '').slice(-10)); setPhoneError(false); } // keep last 10 digits
-    } catch {
+      track('contact_picked', { has_phone: !!num });
+    } catch (e) {
       // picker dismissed or unavailable
+      trackError('contact_pick', e);
     }
   };
 
@@ -158,7 +162,7 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
       <AmountInput
         value={overtimeRate}
         onChangeValue={setOvertimeRate}
-        label="Overtime Rate (per hour)"
+        label={i18n.t('staff.overtime_rate')}
       />
 
       <Text variant="labelLarge" style={[styles.label, { marginTop: 16 }]}>{i18n.t('staff.week_off')}</Text>
@@ -184,7 +188,7 @@ export function StaffForm({ initialData, onSubmit, submitLabel = 'Save', isLoadi
               style={[styles.chip, sel && styles.chipSelected]}
               textStyle={sel ? styles.chipTextSelected : undefined}
             >
-              {d.label}
+              {i18n.t(d.labelKey)}
             </Chip>
           );
         })}

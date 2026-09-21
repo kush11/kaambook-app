@@ -5,6 +5,7 @@ import { eq, inArray } from 'drizzle-orm';
 import { randomUUID } from 'expo-crypto';
 import dayjs from 'dayjs';
 import type { Business } from '../types';
+import { track, setUserProperties } from '../utils/analytics';
 
 interface BusinessState {
   businesses: Business[];
@@ -36,6 +37,8 @@ export const useBusinessStore = create<BusinessState>((set, get) => ({
       createdAt: dayjs().toISOString(),
     });
     await get().loadBusinesses();
+    track('business_added', { type, business_count: get().businesses.length });
+    setUserProperties({ business_count: get().businesses.length });
     return id;
   },
 
@@ -45,6 +48,7 @@ export const useBusinessStore = create<BusinessState>((set, get) => ({
     // Activate selected
     await db.update(businesses).set({ isActive: 1 }).where(eq(businesses.id, id));
     await get().loadBusinesses();
+    track('business_switched', { business_count: get().businesses.length });
   },
 
   updateBusiness: async (id: string, name: string) => {
@@ -73,6 +77,8 @@ export const useBusinessStore = create<BusinessState>((set, get) => ({
       await db.update(businesses).set({ isActive: 1 }).where(eq(businesses.id, activeId));
     }
     await get().loadBusinesses();
+    track('business_deleted', { business_count: get().businesses.length });
+    setUserProperties({ business_count: get().businesses.length });
     return activeId;
   },
 }));

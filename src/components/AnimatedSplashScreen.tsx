@@ -1,48 +1,42 @@
 import { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet, Dimensions, Image } from 'react-native';
+import { View, Animated, StyleSheet, Image } from 'react-native';
 import { colors } from '@/src/theme/colors';
 
-const { width } = Dimensions.get('window');
+// Matches the icon Android's own splash screen draws (measured on device), so
+// the hand-over from the system splash to this one shows a single, still icon
+// instead of two overlapping ones.
+const ICON_SIZE = 156;
+// Same colour as the system splash (app.json → splash.backgroundColor), not the theme background.
+const SPLASH_BACKGROUND = '#FAFAF5';
 
 interface AnimatedSplashScreenProps {
   isReady: boolean;
   onFinish: () => void;
-  children: React.ReactNode;
 }
 
-export function AnimatedSplashScreen({ isReady, onFinish, children }: AnimatedSplashScreenProps) {
+/**
+ * Full-screen overlay drawn on top of the app while it starts. It is a sibling
+ * of the navigator, not a wrapper, so removing it never remounts the app.
+ */
+export function AnimatedSplashScreen({ isReady, onFinish }: AnimatedSplashScreenProps) {
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const iconOpacity = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
   const textTranslateY = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
-    // Entrance animation
-    Animated.sequence([
-      Animated.spring(scaleAnim, {
+    // Entrance animation — the icon stays still (it continues the system splash), only the text comes in.
+    Animated.parallel([
+      Animated.timing(textOpacity, {
         toValue: 1,
-        tension: 60,
-        friction: 8,
+        duration: 500,
         useNativeDriver: true,
       }),
-      Animated.parallel([
-        Animated.timing(iconOpacity, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(textOpacity, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(textTranslateY, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]),
+      Animated.timing(textTranslateY, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
     ]).start();
   }, []);
 
@@ -62,84 +56,64 @@ export function AnimatedSplashScreen({ isReady, onFinish, children }: AnimatedSp
             useNativeDriver: true,
           }),
         ]).start(onFinish);
-      }, 600);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [isReady]);
 
   return (
-    <View style={styles.container}>
-      {children}
-      <Animated.View
-        style={[
-          styles.splash,
-          {
-            opacity: fadeAnim,
-          },
-        ]}
-        pointerEvents={isReady ? 'none' : 'auto'}
-      >
-        <Animated.View
-          style={[
-            styles.iconContainer,
-            {
-              transform: [{ scale: scaleAnim }],
-            },
-          ]}
-        >
+    <Animated.View
+      style={[styles.splash, { opacity: fadeAnim }]}
+      pointerEvents={isReady ? 'none' : 'auto'}
+    >
+      {/* Icon sits at the exact centre of the screen, where the system splash puts it. */}
+      <View style={styles.centered}>
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
           <Image
             source={require('@/assets/images/splash-icon.png')}
             style={styles.icon}
             resizeMode="contain"
           />
         </Animated.View>
+      </View>
 
-        <Animated.Text
-          style={[
-            styles.appName,
-            {
-              opacity: textOpacity,
-              transform: [{ translateY: textTranslateY }],
-            },
-          ]}
-        >
-          Hisab Pagar
-        </Animated.Text>
-
-        <Animated.Text
-          style={[
-            styles.tagline,
-            {
-              opacity: textOpacity,
-              transform: [{ translateY: textTranslateY }],
-            },
-          ]}
-        >
-          Staff Attendance & Salary Tracker
-        </Animated.Text>
+      <Animated.View
+        style={[
+          styles.textBlock,
+          {
+            opacity: textOpacity,
+            transform: [{ translateY: textTranslateY }],
+          },
+        ]}
+      >
+        <Animated.Text style={styles.appName}>Hisab Pagar</Animated.Text>
+        <Animated.Text style={styles.tagline}>Staff Attendance & Salary Tracker</Animated.Text>
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   splash: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.background,
+    backgroundColor: SPLASH_BACKGROUND,
+  },
+  centered: {
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  iconContainer: {
-    width: width * 0.35,
-    height: width * 0.35,
-    marginBottom: 24,
-  },
   icon: {
-    width: '100%',
-    height: '100%',
+    width: ICON_SIZE,
+    height: ICON_SIZE,
+  },
+  textBlock: {
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    marginTop: ICON_SIZE / 2 + 20,
+    alignItems: 'center',
   },
   appName: {
     fontSize: 32,

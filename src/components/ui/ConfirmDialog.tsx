@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, Portal, Button, Text } from 'react-native-paper';
+import i18n from '@/src/i18n';
 
 interface ConfirmDialogProps {
   visible: boolean;
@@ -16,8 +17,8 @@ export function ConfirmDialog({
   visible,
   title,
   message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = i18n.t('common.confirm'),
+  cancelLabel = i18n.t('common.cancel'),
   destructive,
   onConfirm,
   onDismiss,

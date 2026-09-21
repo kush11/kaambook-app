@@ -49,7 +49,7 @@ export function CashbookEntryCard({ entry, onDelete }: Props) {
         </View>
         <Text
           variant="titleMedium"
-          style={{ color: isExpense ? colors.error : colors.primary, fontWeight: 'bold' }}
+          style={{ color: isExpense ? colors.error : colors.success, fontWeight: 'bold' }}
         >
           {isExpense ? '-' : '+'}{formatCurrency(entry.amount)}
         </Text>

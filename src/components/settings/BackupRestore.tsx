@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Button, Text, Snackbar } from 'react-native-paper';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { createBackup, restoreBackup } from '@/src/utils/backup';
+import { trackError } from '@/src/utils/analytics';
 import { colors } from '@/src/theme/colors';
 import i18n from '@/src/i18n';
 
@@ -17,6 +18,7 @@ export function BackupRestore() {
       await createBackup();
       setMessage(i18n.t('settings.backup_success'));
     } catch (e) {
+      trackError('backup_create', e);
       setMessage(i18n.t('common.error'));
     }
     setLoading(false);
@@ -29,6 +31,7 @@ export function BackupRestore() {
       const success = await restoreBackup();
       if (success) setMessage(i18n.t('settings.restore_success'));
     } catch (e) {
+      trackError('backup_restore', e);
       setMessage(i18n.t('common.error'));
     }
     setLoading(false);

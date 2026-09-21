@@ -2,8 +2,10 @@ import { create } from 'zustand';
 import { db } from '../db/client';
 import { settings } from '../db/schema';
 import { eq } from 'drizzle-orm';
+import dayjs from 'dayjs';
 import i18n, { setLocale } from '../i18n';
 import { track, identifyOwner, flushAnalytics } from '../utils/analytics';
+import { scheduleAttendanceReminder } from '../utils/notifications';
 
 interface SettingsState {
   language: string;
@@ -14,6 +16,8 @@ interface SettingsState {
   isLoading: boolean;
   ownerPhone: string;
   phonePromptDismissed: boolean;
+  lastBackupAt: string;
+  backupReminderSnoozedAt: string;
   loadSettings: () => Promise<void>;
   setSetting: (key: string, value: string) => Promise<void>;
   setLanguage: (lang: string) => Promise<void>;
@@ -23,6 +27,8 @@ interface SettingsState {
   completeOnboarding: () => Promise<void>;
   setOwnerPhone: (phone: string, source: 'onboarding' | 'home_prompt' | 'settings') => Promise<void>;
   dismissPhonePrompt: () => Promise<void>;
+  markBackupDone: () => Promise<void>;
+  snoozeBackupReminder: () => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
@@ -34,6 +40,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   isLoading: true,
   ownerPhone: '',
   phonePromptDismissed: false,
+  lastBackupAt: '',
+  backupReminderSnoozedAt: '',
 
   loadSettings: async () => {
     const rows = await db.select().from(settings);
@@ -51,6 +59,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       isOnboarded: map['onboarded'] === '1',
       ownerPhone: map['owner_phone'] || '',
       phonePromptDismissed: map['phone_prompt_dismissed'] === '1',
+      lastBackupAt: map['last_backup_at'] || '',
+      backupReminderSnoozedAt: map['backup_reminder_snoozed_at'] || '',
       isLoading: false,
     });
   },
@@ -70,16 +80,23 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     await get().setSetting('language', lang);
     set({ language: lang });
     track('language_changed', { language: lang });
+    // The scheduled reminder keeps the text it was created with — recreate it in the new language.
+    if (get().reminderEnabled) {
+      const [h, m] = get().reminderTime.split(':').map(Number);
+      scheduleAttendanceReminder(h, m);
+    }
   },
 
   setReminderEnabled: async (enabled: boolean) => {
     await get().setSetting('reminder_enabled', enabled ? '1' : '0');
     set({ reminderEnabled: enabled });
+    track('reminder_toggled', { enabled });
   },
 
   setReminderTime: async (time: string) => {
     await get().setSetting('reminder_time', time);
     set({ reminderTime: time });
+    track('reminder_time_changed', { time });
   },
 
   completeOnboarding: async () => {
@@ -91,7 +108,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   // Saves the app owner's phone number and links it as the analytics identity
   // so we can call users for feedback and see their full activity history.
   setOwnerPhone: async (phone: string, source) => {
-    const digits = (phone || '').replace(/\D/g, '');
+    // Last 10 digits, so "+91 98…" and "98…" are the same person.
+    const digits = (phone || '').replace(/\D/g, '').slice(-10);
     if (!digits) return;
     await get().setSetting('owner_phone', digits);
     set({ ownerPhone: digits });
@@ -104,5 +122,17 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     await get().setSetting('phone_prompt_dismissed', '1');
     set({ phonePromptDismissed: true });
     track('phone_prompt_dismissed');
+  },
+
+  markBackupDone: async () => {
+    const now = dayjs().toISOString();
+    await get().setSetting('last_backup_at', now);
+    set({ lastBackupAt: now });
+  },
+
+  snoozeBackupReminder: async () => {
+    const now = dayjs().toISOString();
+    await get().setSetting('backup_reminder_snoozed_at', now);
+    set({ backupReminderSnoozedAt: now });
   },
 }));

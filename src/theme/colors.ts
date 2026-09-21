@@ -1,21 +1,23 @@
 export const colors = {
-  primary: '#EA580C',        // Brand orange
+  primary: '#C2410C',        // Brand orange, deep enough for white text on top
   primaryLight: '#FB923C',
-  primaryDark: '#C2410C',
+  primaryDark: '#9A3412',
+  primaryTint: '#FFEDD5',    // Soft orange behind active tabs and tonal buttons
   secondary: '#92400E',      // Earthy brown
   secondaryLight: '#B45309',
-  background: '#FAFAF5',     // Warm off-white
+  background: '#FAF7F0',     // Warm off-white
   surface: '#FFFFFF',
-  surfaceVariant: '#F0F0EA',
-  text: '#1C1C1C',
-  textSecondary: '#6B7280',
+  surfaceVariant: '#F3EEE4',
+  text: '#1F1A17',
+  textSecondary: '#6B635B',
   error: '#DC2626',
-  success: '#16A34A',
+  success: '#15803D',
   warning: '#F59E0B',
-  border: '#E5E5E0',
-  present: '#16A34A',
-  absent: '#DC2626',
-  halfDay: '#F59E0B',
+  border: '#E8E2D6',
+  divider: '#F0EBE0',
+  present: '#15803D',
+  absent: '#B91C1C',
+  halfDay: '#B45309',
   paidLeave: '#3B82F6',
   holiday: '#8B5CF6',
   weekOff: '#6B7280',

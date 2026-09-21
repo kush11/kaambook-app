@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 export async function requestNotificationPermissions(): Promise<boolean> {
   try {
     const Notifications = await import('expo-notifications');
@@ -26,8 +28,8 @@ export async function scheduleAttendanceReminder(hour: number, minute: number): 
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Hisab Pagar Reminder',
-        body: "Don't forget to mark today's attendance!",
+        title: i18n.t('settings.reminder_notif_title'),
+        body: i18n.t('settings.reminder_notif_body'),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,

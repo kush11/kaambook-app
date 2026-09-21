@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
-import { FAB, Button } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Text, TouchableRipple } from 'react-native-paper';
 import { router, useFocusEffect } from 'expo-router';
 import { StaffCard } from '@/src/components/staff/StaffCard';
 import { SearchBar } from '@/src/components/ui/SearchBar';
 import { EmptyState } from '@/src/components/ui/EmptyState';
-import { DashboardStats } from '@/src/components/home/DashboardStats';
+import { TodaySummaryCard } from '@/src/components/home/TodaySummaryCard';
 import { PhonePromptCard } from '@/src/components/home/PhonePromptCard';
+import { BackupReminderCard } from '@/src/components/home/BackupReminderCard';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useAttendanceStore } from '@/src/stores/useAttendanceStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
@@ -61,6 +63,7 @@ export default function HomeScreen() {
   const activeStaff = staffList.filter(s => s.status === 'active');
   let presentCount = 0;
   let absentCount = 0;
+  let halfDayCount = 0;
   let markedCount = 0;
   activeStaff.forEach((s) => {
     const st = todayRecords.get(s.id);
@@ -68,6 +71,7 @@ export default function HomeScreen() {
       markedCount++;
       if (st === 'present') presentCount++;
       else if (st === 'absent') absentCount++;
+      else if (st === 'half_day') halfDayCount++;
     }
   });
   const pendingCount = activeStaff.length - markedCount;
@@ -93,53 +97,38 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <PhonePromptCard />
-      {staffList.length > 0 && (
-        <SearchBar
-          value={search}
-          onChangeText={setSearch}
-          placeholder={i18n.t('home.search_placeholder')}
-        />
-      )}
+      <BackupReminderCard />
       <FlatList
         data={filtered}
         keyExtractor={item => item.id}
+        keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           activeStaff.length > 0 ? (
             <View>
-              <DashboardStats
+              <TodaySummaryCard
                 present={presentCount}
                 absent={absentCount}
+                halfDay={halfDayCount}
                 pending={pendingCount}
                 total={activeStaff.length}
+                markingAll={markingAll}
+                markingHoliday={markingHoliday}
+                onMarkAllPresent={handleMarkAllPresent}
+                onMarkHoliday={handleMarkHoliday}
               />
-              <View style={styles.headerActions}>
-                <Button
-                  mode="contained"
-                  icon="check-all"
-                  onPress={handleMarkAllPresent}
-                  loading={markingAll}
-                  buttonColor={colors.present}
-                  textColor="#fff"
-                  style={styles.headerBtn}
-                >
-                  {i18n.t('home.mark_all_present')}
-                </Button>
-                <Button
-                  mode="outlined"
-                  icon="calendar-star"
-                  onPress={handleMarkHoliday}
-                  loading={markingHoliday}
-                  style={styles.headerBtn}
-                >
-                  {i18n.t('home.mark_holiday')}
-                </Button>
-              </View>
+              <SearchBar
+                value={search}
+                onChangeText={setSearch}
+                placeholder={i18n.t('home.search_placeholder')}
+              />
             </View>
           ) : null
         }
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <StaffCard
             staff={item}
+            isFirst={index === 0}
+            isLast={index === filtered.length - 1}
             todayStatus={todayRecords.get(item.id)}
             onPress={() => router.push(`/staff/${item.id}`)}
             onMarkAttendance={(status) => handleMarkAttendance(item.id, status)}
@@ -154,26 +143,34 @@ export default function HomeScreen() {
           />
         }
       />
-      <FAB
-        icon="plus"
-        style={styles.fab}
+      {/* Paper's extended FAB clips its label on some OEM fonts, so this is a plain pill. */}
+      <TouchableRipple
+        borderless
         onPress={() => router.push('/staff/add')}
-        color="#fff"
-      />
+        accessibilityRole="button"
+        style={styles.fab}
+      >
+        <View style={styles.fabContent}>
+          <MaterialCommunityIcons name="plus" size={22} color="#fff" />
+          <Text style={styles.fabLabel}>{i18n.t('staff.add')}</Text>
+        </View>
+      </TouchableRipple>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  list: { paddingBottom: 80 },
-  headerActions: { flexDirection: 'row', gap: 8, marginHorizontal: 12, marginTop: 10, marginBottom: 4 },
-  headerBtn: { flex: 1 },
+  list: { paddingBottom: 96 },
   emptyContainer: { flex: 1 },
   fab: {
     position: 'absolute',
     right: 16,
     bottom: 16,
+    borderRadius: 26,
     backgroundColor: colors.primary,
+    elevation: 4,
   },
+  fabContent: { flexDirection: 'row', alignItems: 'center', gap: 8, height: 52, paddingLeft: 16, paddingRight: 22 },
+  fabLabel: { color: '#fff', fontSize: 15, fontWeight: '700' },
 });

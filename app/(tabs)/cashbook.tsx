@@ -59,10 +59,10 @@ export default function CashbookScreen() {
 
       {/* Summary Cards */}
       <View style={styles.summaryRow}>
-        <Card style={[styles.summaryCard, { borderLeftColor: colors.primary }]}>
+        <Card style={[styles.summaryCard, { borderLeftColor: colors.success }]}>
           <Card.Content>
             <Text variant="bodySmall" style={styles.summaryLabel}>{i18n.t('cashbook.income')}</Text>
-            <Text variant="titleMedium" style={{ color: colors.primary, fontWeight: 'bold' }}>
+            <Text variant="titleMedium" style={{ color: colors.success, fontWeight: 'bold' }}>
               {formatCurrency(totalIncome)}
             </Text>
           </Card.Content>
@@ -75,10 +75,10 @@ export default function CashbookScreen() {
             </Text>
           </Card.Content>
         </Card>
-        <Card style={[styles.summaryCard, { borderLeftColor: balance >= 0 ? colors.primary : colors.error }]}>
+        <Card style={[styles.summaryCard, { borderLeftColor: balance >= 0 ? colors.success : colors.error }]}>
           <Card.Content>
             <Text variant="bodySmall" style={styles.summaryLabel}>{i18n.t('cashbook.balance')}</Text>
-            <Text variant="titleMedium" style={{ color: balance >= 0 ? colors.primary : colors.error, fontWeight: 'bold' }}>
+            <Text variant="titleMedium" style={{ color: balance >= 0 ? colors.success : colors.error, fontWeight: 'bold' }}>
               {formatCurrency(balance)}
             </Text>
           </Card.Content>

@@ -8,11 +8,19 @@ interface StaffAvatarProps {
   size?: number;
 }
 
-const avatarColors = [
-  '#16A34A', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316',
+// Soft tint behind dark initials of the same hue.
+const avatarColors: { bg: string; fg: string }[] = [
+  { bg: '#FFEDD5', fg: '#9A3412' },
+  { bg: '#DCFCE7', fg: '#166534' },
+  { bg: '#DBEAFE', fg: '#1E40AF' },
+  { bg: '#FCE7F3', fg: '#9D174D' },
+  { bg: '#FEF3C7', fg: '#92400E' },
+  { bg: '#E0E7FF', fg: '#3730A3' },
+  { bg: '#CCFBF1', fg: '#115E59' },
+  { bg: '#FEE2E2', fg: '#991B1B' },
 ];
 
-function getColorForName(name: string): string {
+function getColorForName(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -30,12 +38,14 @@ export function StaffAvatar({ name, photoUri, size = 48 }: StaffAvatarProps) {
   if (photoUri) {
     return <Avatar.Image size={size} source={{ uri: photoUri }} />;
   }
+  const { bg, fg } = getColorForName(name);
   return (
     <Avatar.Text
       size={size}
       label={getInitials(name)}
-      style={{ backgroundColor: getColorForName(name) }}
-      labelStyle={{ fontSize: size * 0.38 }}
+      color={fg}
+      style={{ backgroundColor: bg }}
+      labelStyle={{ fontSize: size * 0.38, fontWeight: '700' }}
     />
   );
 }

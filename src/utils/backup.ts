@@ -5,6 +5,7 @@ import { db, rawDb } from '../db/client';
 import { businesses, staff, attendance, payments, advances, cashbook, settings } from '../db/schema';
 import dayjs from 'dayjs';
 import { track } from './analytics';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 interface BackupData {
   version: number;
@@ -44,6 +45,7 @@ export async function createBackup(): Promise<void> {
     dialogTitle: 'Save Hisab Pagar Backup',
   });
   track('backup_created', { staff_count: data.staff.length });
+  await useSettingsStore.getState().markBackupDone();
 }
 
 export async function restoreBackup(): Promise<boolean> {
@@ -103,5 +105,10 @@ export async function restoreBackup(): Promise<boolean> {
     }
   });
 
+  track('backup_restored', {
+    backup_version: data.version,
+    staff_count: data.staff.length,
+    business_count: data.businesses.length,
+  });
   return true;
 }
