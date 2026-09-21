@@ -36,7 +36,7 @@ Whether you run a shop, factory, restaurant, construction site, or any small bus
 • Cashbook (Hisab Kitab) — Track business income and expenses by category, with monthly totals.
 • PDF Salary Reports — Generate salary slips and share them instantly on WhatsApp.
 • Multiple Businesses — Manage staff for more than one business in a single app.
-• 100% Offline — Your data stays on your phone. No internet needed, no account required.
+• Works Fully Offline — Your staff, attendance and salary records stay on your phone. No internet needed, no account required.
 • Backup & Restore — Keep your data safe and move it between devices.
 • Attendance Reminders — A daily reminder so you never forget to mark attendance.
 

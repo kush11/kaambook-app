@@ -1,8 +1,8 @@
-// Standalone verification of the real calculateSalary() engine.
+// Standalone verification of the real calculateSalary() engine. Run: npx tsx scripts/verify-salary.ts
 // Uses a fully-past month (January 2025) so no "future day" skipping interferes.
 // Jan 2025: 31 days, starts Wed Jan 1. Saturdays: 4,11,18,25 (4). Sundays: 5,12,19,26 (4).
-import { calculateSalary } from './src/utils/salary';
-import type { Staff, Attendance, Payment, AttendanceStatus, SalaryType } from './src/types';
+import { calculateSalary } from '../src/utils/salary';
+import type { Staff, Attendance, Payment, AttendanceStatus, SalaryType } from '../src/types';
 
 const YEAR = 2025;
 const MONTH = 0; // January (0-indexed)

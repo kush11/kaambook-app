@@ -2,7 +2,7 @@
 
 How to build a signed, Play-Store-ready Android bundle **locally** (no EAS).
 
-- **Package:** `com.hisabpagar.app`
+- **Package (applicationId):** `com.kaambook.app` — this is the app's identity on Play and must never change. (The Gradle `namespace` is `com.hisabpagar.app`; that is internal only.)
 - **App name:** Hisab Pagar
 - **Deep-link scheme:** `hisabpagar://`
 - **Build output:** Android App Bundle (`.aab`)
@@ -121,8 +121,10 @@ keytool -list -v -keystore android/app/hisabpagar-upload.keystore -alias hisabpa
 
 ## Notes
 
-- Current keystore password is weak (`password@123`). Since the app hasn't shipped
-  yet, regenerate the keystore with a strong password before first publish — it's
-  free to redo now, impossible later.
+- The app is live on Play, so the upload keystore can no longer be regenerated — but its
+  **passwords can still be changed** without changing the key:
+  `keytool -storepasswd -keystore android/app/hisabpagar-upload.keystore` and
+  `keytool -keypasswd -alias hisabpagar -keystore android/app/hisabpagar-upload.keystore`,
+  then update `android/gradle.properties`. Never write the password in this file or anywhere in git.
 - For automated submission you could later add a Play service-account key
   (`play-store-key.json`) and use `eas submit`, but manual upload works fine.
