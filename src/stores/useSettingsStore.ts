@@ -18,6 +18,9 @@ interface SettingsState {
   phonePromptDismissed: boolean;
   lastBackupAt: string;
   backupReminderSnoozedAt: string;
+  /** Google account connected for Drive auto-backup; empty when not connected. */
+  driveEmail: string;
+  driveLastBackupAt: string;
   loadSettings: () => Promise<void>;
   setSetting: (key: string, value: string) => Promise<void>;
   setLanguage: (lang: string) => Promise<void>;
@@ -31,6 +34,8 @@ interface SettingsState {
   dismissPhonePrompt: () => Promise<void>;
   markBackupDone: () => Promise<void>;
   snoozeBackupReminder: () => Promise<void>;
+  setDriveAccount: (email: string) => Promise<void>;
+  markDriveBackupDone: () => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
@@ -44,6 +49,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   phonePromptDismissed: false,
   lastBackupAt: '',
   backupReminderSnoozedAt: '',
+  driveEmail: '',
+  driveLastBackupAt: '',
 
   loadSettings: async () => {
     const rows = await db.select().from(settings);
@@ -63,6 +70,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       phonePromptDismissed: map['phone_prompt_dismissed'] === '1',
       lastBackupAt: map['last_backup_at'] || '',
       backupReminderSnoozedAt: map['backup_reminder_snoozed_at'] || '',
+      driveEmail: map['drive_account_email'] || '',
+      driveLastBackupAt: map['drive_last_backup_at'] || '',
       isLoading: false,
     });
   },
@@ -150,5 +159,19 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const now = dayjs().toISOString();
     await get().setSetting('backup_reminder_snoozed_at', now);
     set({ backupReminderSnoozedAt: now });
+  },
+
+  setDriveAccount: async (email: string) => {
+    await get().setSetting('drive_account_email', email);
+    if (!email) await get().setSetting('drive_last_backup_at', '');
+    set({ driveEmail: email, ...(email ? {} : { driveLastBackupAt: '' }) });
+  },
+
+  markDriveBackupDone: async () => {
+    const now = dayjs().toISOString();
+    await get().setSetting('drive_last_backup_at', now);
+    // Drive counts as a backup for the manual-backup reminder too.
+    await get().setSetting('last_backup_at', now);
+    set({ driveLastBackupAt: now, lastBackupAt: now });
   },
 }));

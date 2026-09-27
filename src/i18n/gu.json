@@ -222,5 +222,24 @@
     "title": "%{name} ની આજની હાજરી ભરો",
     "subtitle": "દરરોજ હાજરી ભરો — પગાર અને બાકી આપોઆપ ગણાશે.",
     "reminder_on": "અમે તમને દરરોજ %{time} વાગ્યે યાદ અપાવીશું."
+  },
+  "drive": {
+    "title": "Google Drive બેકઅપ",
+    "on": "ઓટોમેટિક બેકઅપ ચાલુ છે",
+    "connected_as": "%{email} સાથે જોડાયેલ",
+    "last_backup": "છેલ્લું બેકઅપ: %{time}",
+    "never": "હજુ બેકઅપ થયું નથી",
+    "connect": "Google Drive જોડો",
+    "backup_now": "હમણાં બેકઅપ લો",
+    "backup_done": "બેકઅપ Google Drive માં સેવ થયું",
+    "restore": "Drive માંથી પાછું લાવો",
+    "disconnect": "ઓટોમેટિક બેકઅપ બંધ કરો",
+    "restore_confirm": "આ ફોનનો બધો ડેટા Google Drive ના બેકઅપથી બદલાઈ જશે. ચાલુ રાખવું?",
+    "restore_none": "આ Google ખાતામાં કોઈ બેકઅપ મળ્યું નથી.",
+    "restore_done": "તમારો ડેટા પાછો આવી ગયો છે.",
+    "promo_title": "તમારો રેકોર્ડ ક્યારેય ન ગુમાવો",
+    "promo_subtitle": "તમારા Google Drive માં ઓટોમેટિક બેકઅપ ચાલુ કરો. સ્ટાફ, હાજરી અને પેમેન્ટ દરરોજ સેવ થાય છે અને એપ ફરી ઇન્સ્ટોલ કરો કે ફોન બદલો ત્યારે પાછા મળે છે.",
+    "onboarding_restore": "પહેલાં Hisab Pagar વાપર્યું છે? Google Drive માંથી ડેટા પાછો લાવો",
+    "error": "Google Drive બેકઅપ થઈ શક્યું નથી. ફરી પ્રયત્ન કરો."
   }
 }

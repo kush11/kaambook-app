@@ -222,5 +222,24 @@
     "title": "%{name} ची आजची हजेरी लावा",
     "subtitle": "रोज हजेरी लावा — पगार आणि बाकी आपोआप मोजली जाईल.",
     "reminder_on": "आम्ही तुम्हाला रोज %{time} वाजता आठवण करून देऊ."
+  },
+  "drive": {
+    "title": "Google Drive बॅकअप",
+    "on": "ऑटोमॅटिक बॅकअप सुरू आहे",
+    "connected_as": "%{email} शी जोडलेले",
+    "last_backup": "शेवटचा बॅकअप: %{time}",
+    "never": "अजून बॅकअप झालेला नाही",
+    "connect": "Google Drive जोडा",
+    "backup_now": "आता बॅकअप घ्या",
+    "backup_done": "बॅकअप Google Drive मध्ये सेव्ह झाला",
+    "restore": "Drive मधून परत आणा",
+    "disconnect": "ऑटोमॅटिक बॅकअप बंद करा",
+    "restore_confirm": "या फोनवरील सर्व डेटा Google Drive च्या बॅकअपने बदलला जाईल. पुढे जायचे?",
+    "restore_none": "या Google खात्यात बॅकअप सापडला नाही.",
+    "restore_done": "तुमचा डेटा परत आला आहे.",
+    "promo_title": "तुमचे रेकॉर्ड कधीही गमावू नका",
+    "promo_subtitle": "तुमच्या Google Drive मध्ये ऑटोमॅटिक बॅकअप सुरू करा. स्टाफ, हजेरी आणि पेमेंट रोज सेव्ह होतात आणि अ‍ॅप पुन्हा इन्स्टॉल केल्यावर किंवा फोन बदलल्यावर परत मिळतात.",
+    "onboarding_restore": "आधी Hisab Pagar वापरले आहे? Google Drive मधून डेटा परत आणा",
+    "error": "Google Drive बॅकअप झाला नाही. पुन्हा प्रयत्न करा."
   }
 }

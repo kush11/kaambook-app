@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { createBackup } from '@/src/utils/backup';
+import { isDriveConfigured, useDriveConnect, uploadBackupToDrive } from '@/src/utils/googleDrive';
 import { track, trackError } from '@/src/utils/analytics';
 import { colors } from '@/src/theme/colors';
 import i18n from '@/src/i18n';
@@ -20,45 +21,71 @@ let shownThisSession = false;
 
 /**
  * Nudges the owner to back up, since all records live only on this phone.
+ *
+ * With Google Drive backup configured this becomes a one-time "turn on
+ * automatic backup" card, shown as soon as there is any staff to protect, and
+ * it disappears for good once Drive is connected. Without Drive it is the
+ * older periodic "share a backup file" reminder.
+ *
  * Renders nothing while the phone-number prompt is showing, so the home
  * screen never stacks two cards.
  */
 export function BackupReminderCard() {
-  const { isOnboarded, ownerPhone, phonePromptDismissed, lastBackupAt, backupReminderSnoozedAt, snoozeBackupReminder } =
-    useSettingsStore();
+  const {
+    isOnboarded,
+    ownerPhone,
+    phonePromptDismissed,
+    lastBackupAt,
+    backupReminderSnoozedAt,
+    snoozeBackupReminder,
+    driveEmail,
+  } = useSettingsStore();
   const { staffList } = useStaffStore();
+  const { connect, busy: connecting } = useDriveConnect('home_card');
   const [loading, setLoading] = useState(false);
 
+  const driveMode = isDriveConfigured();
   const phonePromptVisible = isOnboarded && !ownerPhone && !phonePromptDismissed;
   const snoozed = !!backupReminderSnoozedAt && dayjs().diff(dayjs(backupReminderSnoozedAt), 'day') < SNOOZE_DAYS;
   const firstStaffAt = staffList.map((s) => s.createdAt).sort()[0];
-  const due = lastBackupAt
-    ? dayjs().diff(dayjs(lastBackupAt), 'day') >= REPEAT_REMINDER_DAYS
-    : !!firstStaffAt && dayjs().diff(dayjs(firstStaffAt), 'day') >= FIRST_REMINDER_DAYS;
+
+  let due: boolean;
+  if (driveMode) {
+    due = !driveEmail && staffList.length > 0;
+  } else {
+    due = lastBackupAt
+      ? dayjs().diff(dayjs(lastBackupAt), 'day') >= REPEAT_REMINDER_DAYS
+      : !!firstStaffAt && dayjs().diff(dayjs(firstStaffAt), 'day') >= FIRST_REMINDER_DAYS;
+  }
   const visible = isOnboarded && !phonePromptVisible && !snoozed && due;
 
   useEffect(() => {
     if (visible && !shownThisSession) {
       shownThisSession = true;
-      track('backup_reminder_shown', { ever_backed_up: !!lastBackupAt });
+      track('backup_reminder_shown', { ever_backed_up: !!lastBackupAt, drive: driveMode });
     }
-  }, [visible, lastBackupAt]);
+  }, [visible, lastBackupAt, driveMode]);
 
   if (!visible) return null;
 
   const handleBackup = async () => {
-    track('backup_reminder_tapped');
+    track('backup_reminder_tapped', { drive: driveMode });
     setLoading(true);
     try {
-      await createBackup();
+      if (driveMode) {
+        const ok = await connect();
+        if (ok) await uploadBackupToDrive(false);
+      } else {
+        await createBackup();
+      }
     } catch (e) {
-      trackError('backup_create', e);
+      trackError(driveMode ? 'drive_backup' : 'backup_create', e);
     }
     setLoading(false);
   };
 
   const handleLater = async () => {
-    track('backup_reminder_snoozed');
+    track('backup_reminder_snoozed', { drive: driveMode });
     await snoozeBackupReminder();
   };
 
@@ -66,17 +93,23 @@ export function BackupReminderCard() {
     <Card style={styles.card} mode="outlined">
       <Card.Content>
         <Text variant="titleMedium" style={styles.title}>
-          {i18n.t('backup_reminder.title')}
+          {i18n.t(driveMode ? 'drive.promo_title' : 'backup_reminder.title')}
         </Text>
         <Text variant="bodySmall" style={styles.subtitle}>
-          {i18n.t('backup_reminder.subtitle')}
+          {i18n.t(driveMode ? 'drive.promo_subtitle' : 'backup_reminder.subtitle')}
         </Text>
         <View style={styles.actions}>
           <Button mode="text" onPress={handleLater} textColor={colors.textSecondary}>
             {i18n.t('phone_prompt.later')}
           </Button>
-          <Button mode="contained" icon="cloud-upload" onPress={handleBackup} loading={loading}>
-            {i18n.t('backup_reminder.action')}
+          <Button
+            mode="contained"
+            icon={driveMode ? 'google' : 'cloud-upload'}
+            onPress={handleBackup}
+            loading={loading || connecting}
+            disabled={loading || connecting}
+          >
+            {i18n.t(driveMode ? 'drive.connect' : 'backup_reminder.action')}
           </Button>
         </View>
       </Card.Content>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, Button, TextInput } from 'react-native-paper';
+import { Text, Button, TextInput, Snackbar } from 'react-native-paper';
 import { router } from 'expo-router';
 import { LanguagePicker } from '@/src/components/settings/LanguagePicker';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
@@ -8,6 +8,8 @@ import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { colors } from '@/src/theme/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import i18n from '@/src/i18n';
+import { isDriveConfigured, useDriveConnect, restoreFromDrive } from '@/src/utils/googleDrive';
+import { trackError } from '@/src/utils/analytics';
 
 export default function OnboardingScreen() {
   const { language, setLanguage, completeOnboarding, setOwnerPhone } = useSettingsStore();
@@ -15,6 +17,30 @@ export default function OnboardingScreen() {
   const [selectedLang, setSelectedLang] = useState(language);
   const [businessName, setBusinessName] = useState('');
   const [ownerPhone, setOwnerPhoneInput] = useState('');
+  const { connect, busy: connecting } = useDriveConnect('onboarding');
+  const [restoring, setRestoring] = useState(false);
+  const [message, setMessage] = useState('');
+
+  // Returning user on a new phone or a reinstall: pull their Drive backup and
+  // skip onboarding (the backup carries the onboarded flag and language).
+  const handleRestore = async () => {
+    const ok = await connect();
+    if (!ok) return;
+    setRestoring(true);
+    try {
+      const result = await restoreFromDrive();
+      if (result === 'restored') {
+        router.replace('/(tabs)/home');
+        return;
+      }
+      setMessage(i18n.t(result === 'none' ? 'drive.restore_none' : 'drive.error'));
+    } catch (e) {
+      trackError('drive_restore', e);
+      setMessage(i18n.t('drive.error'));
+    } finally {
+      setRestoring(false);
+    }
+  };
 
   const handleLanguageChange = async (lang: string) => {
     setSelectedLang(lang);
@@ -90,15 +116,33 @@ export default function OnboardingScreen() {
         </ScrollView>
       </View>
 
-      <Button
-        mode="contained"
-        onPress={handleGetStarted}
-        style={styles.button}
-        contentStyle={styles.buttonContent}
-        labelStyle={styles.buttonLabel}
-      >
-        {i18n.t('onboarding.get_started')}
-      </Button>
+      <View>
+        {isDriveConfigured() && (
+          <Button
+            mode="text"
+            icon="google-drive"
+            onPress={handleRestore}
+            loading={connecting || restoring}
+            disabled={connecting || restoring}
+            style={styles.restoreLink}
+          >
+            {i18n.t('drive.onboarding_restore')}
+          </Button>
+        )}
+        <Button
+          mode="contained"
+          onPress={handleGetStarted}
+          disabled={connecting || restoring}
+          style={styles.button}
+          contentStyle={styles.buttonContent}
+          labelStyle={styles.buttonLabel}
+        >
+          {i18n.t('onboarding.get_started')}
+        </Button>
+      </View>
+      <Snackbar visible={!!message} onDismiss={() => setMessage('')} duration={4000}>
+        {message}
+      </Snackbar>
     </View>
   );
 }
@@ -114,6 +158,7 @@ const styles = StyleSheet.create({
   phoneInput: { backgroundColor: colors.surface },
   phoneHelp: { marginTop: 4, marginBottom: 20, color: colors.textSecondary },
   langLabel: { marginBottom: 8, color: colors.text },
+  restoreLink: { marginBottom: 8 },
   button: { marginBottom: 32 },
   buttonContent: { paddingVertical: 8 },
   buttonLabel: { fontSize: 16 },

@@ -4,6 +4,7 @@ import Constants from 'expo-constants';
 import { List, Switch, Text, Divider } from 'react-native-paper';
 import { getLanguageLabel } from '@/src/components/settings/LanguagePicker';
 import { BackupRestore } from '@/src/components/settings/BackupRestore';
+import { DriveBackupSection } from '@/src/components/settings/DriveBackupSection';
 import { OwnerPhoneDialog } from '@/src/components/settings/OwnerPhoneDialog';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
@@ -93,6 +94,7 @@ export default function SettingsScreen() {
 
       <List.Section>
         <List.Subheader>{i18n.t('settings.backup')}</List.Subheader>
+        <DriveBackupSection />
         <BackupRestore />
       </List.Section>
 

@@ -222,5 +222,24 @@
     "title": "Mark today's attendance for %{name}",
     "subtitle": "Do this every day and salary and dues are calculated automatically.",
     "reminder_on": "We'll remind you every day at %{time}."
+  },
+  "drive": {
+    "title": "Google Drive backup",
+    "on": "Automatic backup is on",
+    "connected_as": "Connected as %{email}",
+    "last_backup": "Last backup: %{time}",
+    "never": "Not backed up yet",
+    "connect": "Connect Google Drive",
+    "backup_now": "Back up now",
+    "backup_done": "Backup saved to Google Drive",
+    "restore": "Restore from Drive",
+    "disconnect": "Turn off automatic backup",
+    "restore_confirm": "This will replace all data on this phone with your Google Drive backup. Continue?",
+    "restore_none": "No backup found in this Google account.",
+    "restore_done": "Your data has been restored.",
+    "promo_title": "Never lose your records",
+    "promo_subtitle": "Turn on automatic backup to your Google Drive. Staff, attendance and payments are saved every day and come back when you reinstall or change phones.",
+    "onboarding_restore": "Already used Hisab Pagar? Restore from Google Drive",
+    "error": "Google Drive backup failed. Please try again."
   }
 }

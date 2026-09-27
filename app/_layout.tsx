@@ -18,6 +18,8 @@ import i18n from '@/src/i18n';
 import { AnimatedSplashScreen } from '@/src/components/AnimatedSplashScreen';
 import { initAnalytics, track, identifyOwner, setUserProperties } from '@/src/utils/analytics';
 import { SENTRY_DSN } from '@/src/config/telemetry';
+import { maybeAutoBackup } from '@/src/utils/googleDrive';
+import { AppState } from 'react-native';
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -56,8 +58,13 @@ function RootLayout() {
       track('app_open', { language: s.language, onboarded: s.isOnboarded, ...counts });
       setUserProperties(counts);
       setDbReady(true);
+      maybeAutoBackup();
     }
     init();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') maybeAutoBackup();
+    });
+    return () => sub.remove();
   }, []);
 
   // Screen views — one event per route change.

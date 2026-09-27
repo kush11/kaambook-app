@@ -6,7 +6,7 @@
     "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "hisabpagar",
+    "scheme": ["hisabpagar", "com.kaambook.app"],
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash-icon.png",
@@ -55,8 +55,20 @@
       "expo-font",
       "expo-sqlite",
       "expo-web-browser",
-      ["expo-contacts", { "contactsPermission": "Allow Hisab Pagar to pick a contact to add as staff." }],
-      ["@sentry/react-native/expo", { "organization": "YOUR_SENTRY_ORG", "project": "hisab-pagar" }]
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow Hisab Pagar to pick a contact to add as staff."
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "YOUR_SENTRY_ORG",
+          "project": "hisab-pagar"
+        }
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

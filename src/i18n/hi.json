@@ -222,5 +222,24 @@
     "title": "%{name} की आज की हाज़िरी लगाएं",
     "subtitle": "रोज़ हाज़िरी लगाएं — पगार और बकाया अपने आप जुड़ जाएगा।",
     "reminder_on": "हम आपको रोज़ %{time} बजे याद दिलाएंगे।"
+  },
+  "drive": {
+    "title": "Google Drive बैकअप",
+    "on": "ऑटोमैटिक बैकअप चालू है",
+    "connected_as": "%{email} से जुड़ा है",
+    "last_backup": "आख़िरी बैकअप: %{time}",
+    "never": "अभी तक बैकअप नहीं हुआ",
+    "connect": "Google Drive जोड़ें",
+    "backup_now": "अभी बैकअप लें",
+    "backup_done": "बैकअप Google Drive में सेव हो गया",
+    "restore": "Drive से वापस लाएं",
+    "disconnect": "ऑटोमैटिक बैकअप बंद करें",
+    "restore_confirm": "इस फ़ोन का सारा डेटा Google Drive के बैकअप से बदल दिया जाएगा। जारी रखें?",
+    "restore_none": "इस Google खाते में कोई बैकअप नहीं मिला।",
+    "restore_done": "आपका डेटा वापस आ गया है।",
+    "promo_title": "अपना रिकॉर्ड कभी न खोएं",
+    "promo_subtitle": "अपने Google Drive में ऑटोमैटिक बैकअप चालू करें। स्टाफ, हाज़िरी और पेमेंट रोज़ सेव होते हैं और ऐप दोबारा इंस्टॉल करने या फ़ोन बदलने पर वापस मिल जाते हैं।",
+    "onboarding_restore": "पहले से Hisab Pagar इस्तेमाल किया है? Google Drive से डेटा वापस लाएं",
+    "error": "Google Drive बैकअप नहीं हो पाया। फिर से कोशिश करें।"
   }
 }
