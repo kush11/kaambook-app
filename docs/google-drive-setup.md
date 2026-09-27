@@ -29,8 +29,8 @@ at https://console.cloud.google.com — signed in as the Play Console owner acco
    - User type: **External**.
    - App name: `Hisab Pagar`. Support email: the Play Console owner email.
    - App logo: optional (adding one triggers a brand review; skip it).
-   - Authorised domain: `kushsingh11.github.io` (where the privacy policy lives).
-   - Privacy policy link: the GitHub Pages privacy-policy URL from the Play listing.
+   - Authorised domain: `kush11.github.io` (where the privacy policy lives).
+   - Privacy policy link: `https://kush11.github.io/kaambook-app/privacy-policy.html`.
    - Scopes: add `https://www.googleapis.com/auth/drive.appdata`, `openid`, `email`.
      All three are **non-sensitive**, so no Google verification review is needed.
    - Publishing status: **In production** (Testing mode caps sign-ins at 100 users and

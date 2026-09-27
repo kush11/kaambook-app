@@ -1,0 +1,32 @@
+# Release to Google Play (internal track) whenever a version tag is pushed.
+#
+#   git tag v1.0.7 && git push origin v1.0.7
+#
+# Build runs on EAS with the EAS-managed upload key and remote versionCode
+# auto-increment (see eas.json "production" profile). Submit uses the Google
+# Service Account key stored in EAS credentials (not in this repo).
+# Promote internal -> production by hand in Play Console.
+#
+# Manual run without a tag:  eas workflow:run release-android.yml
+name: Release Android
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_android:
+    name: Build Android (production)
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  submit_android:
+    name: Submit to Google Play (internal)
+    needs: [build_android]
+    type: submit
+    params:
+      profile: production
+      build_id: ${{ needs.build_android.outputs.build_id }}

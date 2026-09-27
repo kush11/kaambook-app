@@ -12,7 +12,7 @@
  *
  * Empty string = feature hidden everywhere (safe no-op), like POSTHOG_API_KEY.
  */
-export const GOOGLE_ANDROID_CLIENT_ID = '';
+export const GOOGLE_ANDROID_CLIENT_ID = '172168001236-bql8gqbjupgusussd2mm7vg4s005iv6r.apps.googleusercontent.com';
 
 /** Single file, overwritten on every backup. */
 export const DRIVE_BACKUP_FILE_NAME = 'hisabpagar-backup.json';

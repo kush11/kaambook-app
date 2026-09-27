@@ -7,6 +7,42 @@
 > The local Gradle build described below is signed with a different keystore, so Play
 > **rejects** its bundles — use it only for test APKs to sideload on a phone.
 
+## Automated release (EAS Workflows) — the normal path
+
+`.eas/workflows/release-android.yml` builds and submits to the **Internal testing** track
+whenever a `v*` tag is pushed. Nothing runs on merges to master.
+
+```bash
+# 1. bump "version" in app.json, commit, merge to master
+# 2. tag the release
+git tag v1.0.7
+git push origin v1.0.7
+# 3. ~15 min later the build is on Play → Internal testing
+# 4. Play Console → Internal testing → Promote release → Production, paste release notes
+```
+
+- Watch runs at https://expo.dev/accounts/kush636/projects/kaambook-app/workflows
+- Run it without a tag: `eas workflow:run release-android.yml`
+- Release notes are **not** set by EAS submit; paste them from `docs/release-<version>.md`.
+
+### One-time setup (done 2026-09-28 unless marked TODO)
+
+- Google Service Account key (`play-console-service-account@kaambook-app.iam.gserviceaccount.com`)
+  uploaded to EAS credentials and assigned to `com.kaambook.app` for submissions. The JSON
+  is **not** in the repo; a copy lives in `~/Downloads/kaambook-app-f68f1049fadc.json`.
+- `eas.json` → `submit.production.android` uses the EAS-stored key, track `internal`.
+- **TODO (Play Console):** Users and permissions → Invite new users → the service-account
+  email above → App permissions → add *Hisab Pagar* with **Release apps to testing tracks**,
+  **Manage testing tracks and edit tester lists**, **View app information** (and
+  **Release to production** if you ever want the workflow to go straight to production).
+  Until this is done `eas submit` fails with "The caller does not have permission".
+- **TODO (expo.dev):** project → Settings → GitHub → install the Expo GitHub app and link
+  `kush11/kaambook-app`. Tag pushes only trigger the workflow after this.
+
+---
+
+## Local build (fallback / test APKs only)
+
 How to build a signed, Play-Store-ready Android bundle **locally** (no EAS).
 
 - **Package (applicationId):** `com.kaambook.app` — this is the app's identity on Play and must never change. (The Gradle `namespace` is `com.hisabpagar.app`; that is internal only.)
@@ -133,5 +169,5 @@ keytool -list -v -keystore android/app/hisabpagar-upload.keystore -alias hisabpa
   `keytool -storepasswd -keystore android/app/hisabpagar-upload.keystore` and
   `keytool -keypasswd -alias hisabpagar -keystore android/app/hisabpagar-upload.keystore`,
   then update `android/gradle.properties`. Never write the password in this file or anywhere in git.
-- For automated submission you could later add a Play service-account key
-  (`play-store-key.json`) and use `eas submit`, but manual upload works fine.
+- Automated submission uses the Google Service Account key stored in EAS credentials
+  (see "Automated release" above). Never commit the JSON key.
