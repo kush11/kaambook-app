@@ -6,7 +6,7 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 
 | Version | versionCode | Date | EAS build | Play status |
 |---|---|---|---|---|
-| 1.0.7 | 12 | 2026-09-28 | `0b179a4d` | Internal testing |
+| 1.0.7 | 13 (12 manual) | 2026-09-28 | CI run `01a0e4ad` (vc 13); manual `0b179a4d` (vc 12) | Internal testing |
 | 1.0.6 | 11 | 2026-09-27 | `08fa496d` | Production |
 | 1.0.5 | 10 | 2026-09-21 | `b7ee5040` | Production (superseded) |
 | 1.0.4 | 8, 9 | 2026-06-26 | — | Production (superseded) |
@@ -27,7 +27,9 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 - `backup.ts` split into `buildBackupData` / `restoreBackupData` so file and Drive
   backups share one code path.
 - Release process now runs on EAS Workflows: pushing a `v*` tag builds and submits to
-  the Internal testing track (`.eas/workflows/release-android.yml`).
+  the Internal testing track (`.eas/workflows/release-android.yml`). First run: tag
+  `v1.0.7` → workflow run `01a0e4ad` → versionCode 13 on Internal testing.
+- Website at https://kush11.github.io/kaambook-app/ (docs/index.html, 10 languages).
 
 ## 1.0.6 — 2026-09-27 · [release sheet](docs/release-1.0.6.md)
 

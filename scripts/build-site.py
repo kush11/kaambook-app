@@ -1,0 +1,463 @@
+# Generates docs/index.html for the Hisab Pagar site.
+# Feature bullets come from docs/play-store-listing.md (already translated per language);
+# everything else is written here. Run from the repo root.
+import json, re
+
+listing = open('docs/play-store-listing.md', encoding='utf-8').read()
+LANG_KEYS = ['en', 'hi', 'gu', 'mr', 'pa', 'bn', 'ta', 'te', 'kn', 'od']
+NAMES = {'en': 'English', 'hi': 'हिंदी', 'gu': 'ગુજરાતી', 'mr': 'मराठी', 'pa': 'ਪੰਜਾਬੀ',
+         'bn': 'বাংলা', 'ta': 'தமிழ்', 'te': 'తెలుగు', 'kn': 'ಕನ್ನಡ', 'od': 'ଓଡ଼ିଆ'}
+HTML_LANG = {'en': 'en', 'hi': 'hi', 'gu': 'gu', 'mr': 'mr', 'pa': 'pa', 'bn': 'bn',
+             'ta': 'ta', 'te': 'te', 'kn': 'kn', 'od': 'or'}
+
+# --- feature bullets + "why" lines from the listing --------------------------
+secs = re.split(r'\n## ', listing)[1:]
+feat = {}
+for key, sec in zip(LANG_KEYS, secs):
+    blocks = re.findall(r'```\n(.*?)\n```', sec, re.S)
+    full = blocks[2]
+    bullets = [l.strip()[1:].strip() for l in full.split('\n') if l.strip().startswith('•')]
+    feat[key] = {'features': [b.split(' — ', 1) for b in bullets[:9]],
+                 'why': [b.split(' — ', 1) for b in bullets[9:13]]}
+    assert all(len(f) == 2 for f in feat[key]['features']), key
+
+# --- page copy ---------------------------------------------------------------
+T = {}
+T['en'] = dict(
+    tagline="Staff attendance and salary, in one small app",
+    sub="Mark haziri every day. Hisab Pagar works out each person's salary, keeps advances and payments straight, and makes a slip you can send on WhatsApp. It works without internet.",
+    cta="Get it on Google Play", cta_note="Free · No sign-up · Android",
+    demo_today="Today's attendance", demo_marked="2 of 3 marked", demo_present="Present", demo_absent="Absent", demo_half="Half day",
+    how_title="How it works",
+    s1t="Add your staff", s1d="Name, monthly or daily wage, weekly off. Pick from your phone contacts if you like.",
+    s2t="Mark attendance every day", s2d="Tap P for present, A for absent, ½ for half day. One tap per person. On a normal day, mark everyone present at once.",
+    s3t="Salary is ready", s3d="See what each person has earned and what is still due after advances. At month end, share a PDF slip on WhatsApp.",
+    features_title="What's inside", why_title="Why owners like it",
+    data_title="Your data stays yours",
+    data_d="Records live on your phone, not on our servers. If you turn on backup, a copy goes to your own Google Drive, in a folder only this app can see, and comes back when you sign in on a new phone.",
+    lang_title="In your language",
+    lang_sub="The whole app, including reminders and salary slips, is available in these languages. Tap one to read this page in it.",
+    faq_title="Common questions",
+    q1="Is it really free?", a1="Yes. There is no subscription and nothing to unlock.",
+    q2="Does it need internet?", a2="No. Everything is saved on your phone and works offline. Internet is only used if you turn on Google Drive backup or the AI monthly summary.",
+    q3="What if I change phones or reinstall?", a3="Turn on automatic backup in Settings. The app saves a copy in your own Google Drive every day and restores it when you sign in on the new phone. You can also export a backup file and keep it on WhatsApp.",
+    q4="Can my staff see the app?", a4="No. This is the owner's register. Staff get their salary slip as a PDF when you share it.",
+    q5="I run two shops.", a5="Add a second business in Settings and switch between them. Each one has its own staff and cashbook.",
+    footer_privacy="Privacy policy", footer_changelog="What changed in each version", footer_contact="Questions or ideas? Write to",
+)
+T['hi'] = dict(
+    tagline="स्टाफ की हाज़िरी और पगार, एक छोटे से ऐप में",
+    sub="रोज़ हाज़िरी लगाएँ। हिसाब पगार हर व्यक्ति की पगार जोड़ देता है, एडवांस और पेमेंट का हिसाब रखता है, और WhatsApp पर भेजने लायक स्लिप बनाता है। बिना इंटरनेट के चलता है।",
+    cta="Google Play से डाउनलोड करें", cta_note="मुफ़्त · कोई साइन-अप नहीं · Android",
+    demo_today="आज की हाज़िरी", demo_marked="3 में से 2 लगी", demo_present="हाज़िर", demo_absent="गैरहाज़िर", demo_half="आधा दिन",
+    how_title="कैसे काम करता है",
+    s1t="अपना स्टाफ जोड़ें", s1d="नाम, मासिक या दैनिक पगार, साप्ताहिक छुट्टी। चाहें तो फ़ोन के कॉन्टैक्ट से चुनें।",
+    s2t="रोज़ हाज़िरी लगाएँ", s2d="हाज़िर के लिए P, गैरहाज़िर के लिए A, आधे दिन के लिए ½ दबाएँ। हर व्यक्ति के लिए एक टैप। सामान्य दिन में सबको एक साथ हाज़िर करें।",
+    s3t="पगार तैयार", s3d="देखें किसने कितना कमाया और एडवांस काटकर कितना बाकी है। महीने के अंत में PDF स्लिप WhatsApp पर भेजें।",
+    features_title="ऐप में क्या-क्या है", why_title="दुकानदार इसे क्यों पसंद करते हैं",
+    data_title="आपका डेटा आपका ही रहता है",
+    data_d="रिकॉर्ड आपके फ़ोन में रहते हैं, हमारे सर्वर पर नहीं। बैकअप चालू करने पर एक कॉपी आपके अपने Google Drive में जाती है, ऐसे फ़ोल्डर में जिसे सिर्फ़ यह ऐप देख सकता है, और नए फ़ोन पर साइन इन करते ही वापस आ जाती है।",
+    lang_title="आपकी भाषा में",
+    lang_sub="पूरा ऐप, रिमाइंडर और सैलरी स्लिप समेत, इन भाषाओं में है। किसी पर टैप करके यह पेज उसी भाषा में पढ़ें।",
+    faq_title="आम सवाल",
+    q1="क्या यह सच में मुफ़्त है?", a1="हाँ। कोई सब्सक्रिप्शन नहीं, कुछ भी अनलॉक नहीं करना।",
+    q2="क्या इंटरनेट चाहिए?", a2="नहीं। सब कुछ आपके फ़ोन में सेव होता है और ऑफलाइन चलता है। इंटरनेट सिर्फ़ तब लगता है जब आप Google Drive बैकअप या AI मासिक सारांश चालू करें।",
+    q3="फ़ोन बदलने या ऐप दोबारा इंस्टॉल करने पर क्या होगा?", a3="सेटिंग्स में ऑटोमैटिक बैकअप चालू करें। ऐप रोज़ आपके अपने Google Drive में कॉपी रखता है और नए फ़ोन पर साइन इन करते ही वापस ले आता है। बैकअप फ़ाइल निकालकर WhatsApp पर भी रख सकते हैं।",
+    q4="क्या मेरा स्टाफ ऐप देख सकता है?", a4="नहीं। यह मालिक का रजिस्टर है। स्टाफ को सैलरी स्लिप PDF में मिलती है जब आप शेयर करते हैं।",
+    q5="मेरी दो दुकानें हैं।", a5="सेटिंग्स में दूसरा बिज़नेस जोड़ें और दोनों के बीच बदलें। हर एक का अपना स्टाफ और कैशबुक होता है।",
+    footer_privacy="प्राइवेसी पॉलिसी", footer_changelog="हर वर्ज़न में क्या बदला", footer_contact="सवाल या सुझाव? लिखें",
+)
+T['gu'] = dict(
+    tagline="સ્ટાફની હાજરી અને પગાર, એક નાની એપમાં",
+    sub="દરરોજ હાજરી ભરો. હિસાબ પગાર દરેકનો પગાર ગણે છે, એડવાન્સ અને પેમેન્ટનો હિસાબ રાખે છે, અને WhatsApp પર મોકલી શકાય તેવી સ્લિપ બનાવે છે. ઇન્ટરનેટ વગર ચાલે છે.",
+    cta="Google Play પરથી મેળવો", cta_note="મફત · સાઇન-અપ નહીં · Android",
+    demo_today="આજની હાજરી", demo_marked="3 માંથી 2 ભરાઈ", demo_present="હાજર", demo_absent="ગેરહાજર", demo_half="અડધો દિવસ",
+    how_title="કેવી રીતે કામ કરે છે",
+    s1t="તમારો સ્ટાફ ઉમેરો", s1d="નામ, માસિક કે દૈનિક પગાર, સાપ્તાહિક રજા. ઇચ્છો તો ફોનના કોન્ટેક્ટમાંથી પસંદ કરો.",
+    s2t="દરરોજ હાજરી ભરો", s2d="હાજર માટે P, ગેરહાજર માટે A, અડધા દિવસ માટે ½ દબાવો. દરેક વ્યક્તિ માટે એક ટેપ. સામાન્ય દિવસે બધાને એકસાથે હાજર કરો.",
+    s3t="પગાર તૈયાર", s3d="જુઓ કોણે કેટલું કમાવ્યું અને એડવાન્સ બાદ કેટલું બાકી છે. મહિનાના અંતે PDF સ્લિપ WhatsApp પર મોકલો.",
+    features_title="એપમાં શું છે", why_title="દુકાનદારોને કેમ ગમે છે",
+    data_title="તમારો ડેટા તમારો જ રહે છે",
+    data_d="રેકોર્ડ તમારા ફોનમાં રહે છે, અમારા સર્વર પર નહીં. બેકઅપ ચાલુ કરો તો એક કોપી તમારા પોતાના Google Drive માં જાય છે, એવા ફોલ્ડરમાં જે ફક્ત આ એપ જોઈ શકે, અને નવા ફોનમાં સાઇન ઇન કરતાં પાછી આવે છે.",
+    lang_title="તમારી ભાષામાં",
+    lang_sub="આખી એપ, રિમાઇન્ડર અને પગાર સ્લિપ સહિત, આ ભાષાઓમાં છે. કોઈ એક પર ટેપ કરીને આ પેજ તે ભાષામાં વાંચો.",
+    faq_title="સામાન્ય પ્રશ્નો",
+    q1="શું ખરેખર મફત છે?", a1="હા. કોઈ સબ્સ્ક્રિપ્શન નથી, કંઈ અનલોક કરવાનું નથી.",
+    q2="ઇન્ટરનેટ જોઈએ?", a2="ના. બધું તમારા ફોનમાં સેવ થાય છે અને ઓફલાઇન ચાલે છે. ઇન્ટરનેટ ફક્ત Google Drive બેકઅપ કે AI માસિક સારાંશ ચાલુ કરો ત્યારે વપરાય છે.",
+    q3="ફોન બદલું કે એપ ફરી ઇન્સ્ટોલ કરું તો?", a3="સેટિંગ્સમાં ઓટોમેટિક બેકઅપ ચાલુ કરો. એપ દરરોજ તમારા પોતાના Google Drive માં કોપી રાખે છે અને નવા ફોનમાં સાઇન ઇન કરતાં પાછી લાવે છે. બેકઅપ ફાઇલ કાઢીને WhatsApp પર પણ રાખી શકો.",
+    q4="મારો સ્ટાફ એપ જોઈ શકે?", a4="ના. આ માલિકનું રજિસ્ટર છે. તમે શેર કરો ત્યારે સ્ટાફને પગાર સ્લિપ PDF માં મળે છે.",
+    q5="મારી બે દુકાનો છે.", a5="સેટિંગ્સમાં બીજો વ્યવસાય ઉમેરો અને બંને વચ્ચે બદલો. દરેકનો પોતાનો સ્ટાફ અને કેશબુક હોય છે.",
+    footer_privacy="પ્રાઇવસી પોલિસી", footer_changelog="દરેક વર્ઝનમાં શું બદલાયું", footer_contact="પ્રશ્ન કે સૂચન? લખો",
+)
+T['mr'] = dict(
+    tagline="स्टाफची हजेरी आणि पगार, एका छोट्या अ‍ॅपमध्ये",
+    sub="रोज हजेरी लावा. हिसाब पगार प्रत्येकाचा पगार मोजतो, अ‍ॅडव्हान्स आणि पेमेंटचा हिशेब ठेवतो, आणि WhatsApp वर पाठवता येईल अशी स्लिप बनवतो. इंटरनेटशिवाय चालते.",
+    cta="Google Play वरून घ्या", cta_note="मोफत · साइन-अप नाही · Android",
+    demo_today="आजची हजेरी", demo_marked="3 पैकी 2 लावली", demo_present="हजर", demo_absent="गैरहजर", demo_half="अर्धा दिवस",
+    how_title="कसे काम करते",
+    s1t="तुमचा स्टाफ जोडा", s1d="नाव, मासिक किंवा दैनिक पगार, साप्ताहिक सुट्टी. हवे तर फोनच्या कॉन्टॅक्टमधून निवडा.",
+    s2t="रोज हजेरी लावा", s2d="हजरसाठी P, गैरहजरसाठी A, अर्ध्या दिवसासाठी ½ दाबा. प्रत्येकासाठी एक टॅप. नेहमीच्या दिवशी सगळ्यांना एकाच वेळी हजर करा.",
+    s3t="पगार तयार", s3d="कोणी किती कमावले आणि अ‍ॅडव्हान्स वजा जाता किती बाकी आहे ते पाहा. महिन्याअखेरीस PDF स्लिप WhatsApp वर पाठवा.",
+    features_title="अ‍ॅपमध्ये काय आहे", why_title="दुकानदारांना का आवडते",
+    data_title="तुमचा डेटा तुमचाच राहतो",
+    data_d="रेकॉर्ड तुमच्या फोनमध्ये राहतात, आमच्या सर्व्हरवर नाही. बॅकअप सुरू केल्यास एक प्रत तुमच्या स्वतःच्या Google Drive मध्ये जाते, फक्त हे अ‍ॅप पाहू शकेल अशा फोल्डरमध्ये, आणि नव्या फोनवर साइन इन केल्यावर परत येते.",
+    lang_title="तुमच्या भाषेत",
+    lang_sub="संपूर्ण अ‍ॅप, रिमाइंडर आणि पगार स्लिपसह, या भाषांमध्ये आहे. एकावर टॅप करून हे पान त्या भाषेत वाचा.",
+    faq_title="नेहमीचे प्रश्न",
+    q1="खरंच मोफत आहे का?", a1="हो. कोणतेही सबस्क्रिप्शन नाही, काहीही अनलॉक करायचे नाही.",
+    q2="इंटरनेट लागते का?", a2="नाही. सर्व काही तुमच्या फोनमध्ये सेव्ह होते आणि ऑफलाइन चालते. Google Drive बॅकअप किंवा AI मासिक सारांश सुरू केल्यासच इंटरनेट वापरले जाते.",
+    q3="फोन बदलला किंवा अ‍ॅप पुन्हा इन्स्टॉल केले तर?", a3="सेटिंग्जमध्ये ऑटोमॅटिक बॅकअप सुरू करा. अ‍ॅप रोज तुमच्या स्वतःच्या Google Drive मध्ये प्रत ठेवते आणि नव्या फोनवर साइन इन केल्यावर परत आणते. बॅकअप फाइल काढून WhatsApp वरही ठेवू शकता.",
+    q4="माझा स्टाफ अ‍ॅप पाहू शकतो का?", a4="नाही. हे मालकाचे रजिस्टर आहे. तुम्ही शेअर केल्यावर स्टाफला पगार स्लिप PDF मध्ये मिळते.",
+    q5="माझी दोन दुकाने आहेत.", a5="सेटिंग्जमध्ये दुसरा व्यवसाय जोडा आणि दोन्हींमध्ये बदला. प्रत्येकाचा स्वतःचा स्टाफ आणि कॅशबुक असतो.",
+    footer_privacy="प्रायव्हसी पॉलिसी", footer_changelog="प्रत्येक आवृत्तीत काय बदलले", footer_contact="प्रश्न किंवा सूचना? लिहा",
+)
+T['pa'] = dict(
+    tagline="ਸਟਾਫ਼ ਦੀ ਹਾਜ਼ਰੀ ਅਤੇ ਤਨਖਾਹ, ਇੱਕ ਛੋਟੀ ਜਿਹੀ ਐਪ ਵਿੱਚ",
+    sub="ਰੋਜ਼ ਹਾਜ਼ਰੀ ਲਗਾਓ। ਹਿਸਾਬ ਪਗਾਰ ਹਰ ਇੱਕ ਦੀ ਤਨਖਾਹ ਗਿਣਦੀ ਹੈ, ਐਡਵਾਂਸ ਅਤੇ ਪੇਮੈਂਟ ਦਾ ਹਿਸਾਬ ਰੱਖਦੀ ਹੈ, ਅਤੇ WhatsApp 'ਤੇ ਭੇਜਣ ਵਾਲੀ ਸਲਿੱਪ ਬਣਾਉਂਦੀ ਹੈ। ਇੰਟਰਨੈੱਟ ਤੋਂ ਬਿਨਾਂ ਚੱਲਦੀ ਹੈ।",
+    cta="Google Play ਤੋਂ ਲਓ", cta_note="ਮੁਫ਼ਤ · ਕੋਈ ਸਾਈਨ-ਅੱਪ ਨਹੀਂ · Android",
+    demo_today="ਅੱਜ ਦੀ ਹਾਜ਼ਰੀ", demo_marked="3 ਵਿੱਚੋਂ 2 ਲੱਗੀ", demo_present="ਹਾਜ਼ਰ", demo_absent="ਗੈਰਹਾਜ਼ਰ", demo_half="ਅੱਧਾ ਦਿਨ",
+    how_title="ਕਿਵੇਂ ਕੰਮ ਕਰਦੀ ਹੈ",
+    s1t="ਆਪਣਾ ਸਟਾਫ਼ ਜੋੜੋ", s1d="ਨਾਮ, ਮਹੀਨਾਵਾਰ ਜਾਂ ਰੋਜ਼ਾਨਾ ਤਨਖਾਹ, ਹਫ਼ਤਾਵਾਰ ਛੁੱਟੀ। ਚਾਹੋ ਤਾਂ ਫ਼ੋਨ ਦੇ ਸੰਪਰਕਾਂ ਵਿੱਚੋਂ ਚੁਣੋ।",
+    s2t="ਰੋਜ਼ ਹਾਜ਼ਰੀ ਲਗਾਓ", s2d="ਹਾਜ਼ਰ ਲਈ P, ਗੈਰਹਾਜ਼ਰ ਲਈ A, ਅੱਧੇ ਦਿਨ ਲਈ ½ ਦਬਾਓ। ਹਰ ਬੰਦੇ ਲਈ ਇੱਕ ਟੈਪ। ਆਮ ਦਿਨ ਸਾਰਿਆਂ ਨੂੰ ਇਕੱਠੇ ਹਾਜ਼ਰ ਕਰੋ।",
+    s3t="ਤਨਖਾਹ ਤਿਆਰ", s3d="ਦੇਖੋ ਕਿਸ ਨੇ ਕਿੰਨਾ ਕਮਾਇਆ ਅਤੇ ਐਡਵਾਂਸ ਕੱਟ ਕੇ ਕਿੰਨਾ ਬਾਕੀ ਹੈ। ਮਹੀਨੇ ਦੇ ਅੰਤ ਵਿੱਚ PDF ਸਲਿੱਪ WhatsApp 'ਤੇ ਭੇਜੋ।",
+    features_title="ਐਪ ਵਿੱਚ ਕੀ-ਕੀ ਹੈ", why_title="ਦੁਕਾਨਦਾਰਾਂ ਨੂੰ ਕਿਉਂ ਪਸੰਦ ਹੈ",
+    data_title="ਤੁਹਾਡਾ ਡਾਟਾ ਤੁਹਾਡਾ ਹੀ ਰਹਿੰਦਾ ਹੈ",
+    data_d="ਰਿਕਾਰਡ ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਰਹਿੰਦੇ ਹਨ, ਸਾਡੇ ਸਰਵਰ 'ਤੇ ਨਹੀਂ। ਬੈਕਅੱਪ ਚਾਲੂ ਕਰਨ 'ਤੇ ਇੱਕ ਕਾਪੀ ਤੁਹਾਡੇ ਆਪਣੇ Google Drive ਵਿੱਚ ਜਾਂਦੀ ਹੈ, ਅਜਿਹੇ ਫੋਲਡਰ ਵਿੱਚ ਜੋ ਸਿਰਫ਼ ਇਹ ਐਪ ਦੇਖ ਸਕਦੀ ਹੈ, ਅਤੇ ਨਵੇਂ ਫ਼ੋਨ 'ਤੇ ਸਾਈਨ ਇਨ ਕਰਦਿਆਂ ਵਾਪਸ ਆ ਜਾਂਦੀ ਹੈ।",
+    lang_title="ਤੁਹਾਡੀ ਭਾਸ਼ਾ ਵਿੱਚ",
+    lang_sub="ਪੂਰੀ ਐਪ, ਰਿਮਾਈਂਡਰ ਅਤੇ ਤਨਖਾਹ ਸਲਿੱਪ ਸਮੇਤ, ਇਨ੍ਹਾਂ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਹੈ। ਕਿਸੇ ਇੱਕ 'ਤੇ ਟੈਪ ਕਰਕੇ ਇਹ ਪੰਨਾ ਉਸ ਭਾਸ਼ਾ ਵਿੱਚ ਪੜ੍ਹੋ।",
+    faq_title="ਆਮ ਸਵਾਲ",
+    q1="ਕੀ ਇਹ ਸੱਚਮੁੱਚ ਮੁਫ਼ਤ ਹੈ?", a1="ਹਾਂ। ਕੋਈ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਨਹੀਂ, ਕੁਝ ਵੀ ਅਨਲੌਕ ਨਹੀਂ ਕਰਨਾ।",
+    q2="ਕੀ ਇੰਟਰਨੈੱਟ ਚਾਹੀਦਾ ਹੈ?", a2="ਨਹੀਂ। ਸਭ ਕੁਝ ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਸੇਵ ਹੁੰਦਾ ਹੈ ਅਤੇ ਆਫਲਾਈਨ ਚੱਲਦਾ ਹੈ। ਇੰਟਰਨੈੱਟ ਸਿਰਫ਼ Google Drive ਬੈਕਅੱਪ ਜਾਂ AI ਮਹੀਨਾਵਾਰ ਸਾਰ ਚਾਲੂ ਕਰਨ 'ਤੇ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ।",
+    q3="ਫ਼ੋਨ ਬਦਲਣ ਜਾਂ ਐਪ ਦੁਬਾਰਾ ਇੰਸਟਾਲ ਕਰਨ 'ਤੇ ਕੀ ਹੋਵੇਗਾ?", a3="ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਟੋਮੈਟਿਕ ਬੈਕਅੱਪ ਚਾਲੂ ਕਰੋ। ਐਪ ਰੋਜ਼ ਤੁਹਾਡੇ ਆਪਣੇ Google Drive ਵਿੱਚ ਕਾਪੀ ਰੱਖਦੀ ਹੈ ਅਤੇ ਨਵੇਂ ਫ਼ੋਨ 'ਤੇ ਸਾਈਨ ਇਨ ਕਰਦਿਆਂ ਵਾਪਸ ਲੈ ਆਉਂਦੀ ਹੈ। ਬੈਕਅੱਪ ਫਾਈਲ ਕੱਢ ਕੇ WhatsApp 'ਤੇ ਵੀ ਰੱਖ ਸਕਦੇ ਹੋ।",
+    q4="ਕੀ ਮੇਰਾ ਸਟਾਫ਼ ਐਪ ਦੇਖ ਸਕਦਾ ਹੈ?", a4="ਨਹੀਂ। ਇਹ ਮਾਲਕ ਦਾ ਰਜਿਸਟਰ ਹੈ। ਸਟਾਫ਼ ਨੂੰ ਤਨਖਾਹ ਸਲਿੱਪ PDF ਵਿੱਚ ਮਿਲਦੀ ਹੈ ਜਦੋਂ ਤੁਸੀਂ ਸ਼ੇਅਰ ਕਰਦੇ ਹੋ।",
+    q5="ਮੇਰੀਆਂ ਦੋ ਦੁਕਾਨਾਂ ਹਨ।", a5="ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਦੂਜਾ ਕਾਰੋਬਾਰ ਜੋੜੋ ਅਤੇ ਦੋਹਾਂ ਵਿਚਕਾਰ ਬਦਲੋ। ਹਰ ਇੱਕ ਦਾ ਆਪਣਾ ਸਟਾਫ਼ ਅਤੇ ਕੈਸ਼ਬੁੱਕ ਹੁੰਦੀ ਹੈ।",
+    footer_privacy="ਪ੍ਰਾਈਵੇਸੀ ਪਾਲਿਸੀ", footer_changelog="ਹਰ ਵਰਜ਼ਨ ਵਿੱਚ ਕੀ ਬਦਲਿਆ", footer_contact="ਸਵਾਲ ਜਾਂ ਸੁਝਾਅ? ਲਿਖੋ",
+)
+T['bn'] = dict(
+    tagline="স্টাফের হাজিরা ও বেতন, একটি ছোট অ্যাপে",
+    sub="প্রতিদিন হাজিরা দিন। হিসাব পগার প্রত্যেকের বেতন হিসাব করে, অ্যাডভান্স ও পেমেন্টের হিসাব রাখে, আর WhatsApp-এ পাঠানোর মতো স্লিপ বানায়। ইন্টারনেট ছাড়াই চলে।",
+    cta="Google Play থেকে নিন", cta_note="বিনামূল্যে · সাইন-আপ নেই · Android",
+    demo_today="আজকের হাজিরা", demo_marked="৩ জনের মধ্যে ২ জনের হয়েছে", demo_present="উপস্থিত", demo_absent="অনুপস্থিত", demo_half="অর্ধেক দিন",
+    how_title="কীভাবে কাজ করে",
+    s1t="আপনার স্টাফ যোগ করুন", s1d="নাম, মাসিক বা দৈনিক বেতন, সাপ্তাহিক ছুটি। চাইলে ফোনের কন্টাক্ট থেকে বেছে নিন।",
+    s2t="প্রতিদিন হাজিরা দিন", s2d="উপস্থিতের জন্য P, অনুপস্থিতের জন্য A, অর্ধেক দিনের জন্য ½ চাপুন। প্রত্যেকের জন্য একটি ট্যাপ। সাধারণ দিনে সবাইকে একসাথে উপস্থিত করুন।",
+    s3t="বেতন তৈরি", s3d="দেখুন কে কত আয় করেছে আর অ্যাডভান্স বাদে কত বকেয়া। মাসের শেষে PDF স্লিপ WhatsApp-এ পাঠান।",
+    features_title="অ্যাপে কী আছে", why_title="দোকানদারেরা কেন পছন্দ করেন",
+    data_title="আপনার ডেটা আপনারই থাকে",
+    data_d="রেকর্ড আপনার ফোনে থাকে, আমাদের সার্ভারে নয়। ব্যাকআপ চালু করলে একটি কপি আপনার নিজের Google Drive-এ যায়, এমন ফোল্ডারে যা শুধু এই অ্যাপ দেখতে পারে, আর নতুন ফোনে সাইন ইন করলেই ফিরে আসে।",
+    lang_title="আপনার ভাষায়",
+    lang_sub="পুরো অ্যাপ, রিমাইন্ডার ও বেতন স্লিপ সহ, এই ভাষাগুলিতে আছে। একটিতে ট্যাপ করে এই পাতা সেই ভাষায় পড়ুন।",
+    faq_title="সাধারণ প্রশ্ন",
+    q1="সত্যিই কি বিনামূল্যে?", a1="হ্যাঁ। কোনো সাবস্ক্রিপশন নেই, কিছু আনলক করতে হয় না।",
+    q2="ইন্টারনেট লাগে?", a2="না। সব কিছু আপনার ফোনে সেভ হয় আর অফলাইনে চলে। শুধু Google Drive ব্যাকআপ বা AI মাসিক সারাংশ চালু করলে ইন্টারনেট লাগে।",
+    q3="ফোন বদলালে বা অ্যাপ আবার ইনস্টল করলে?", a3="সেটিংসে অটোমেটিক ব্যাকআপ চালু করুন। অ্যাপ প্রতিদিন আপনার নিজের Google Drive-এ কপি রাখে আর নতুন ফোনে সাইন ইন করলেই ফিরিয়ে আনে। ব্যাকআপ ফাইল বের করে WhatsApp-এও রাখতে পারেন।",
+    q4="আমার স্টাফ কি অ্যাপ দেখতে পারবে?", a4="না। এটি মালিকের রেজিস্টার। আপনি শেয়ার করলে স্টাফ বেতন স্লিপ PDF হিসেবে পায়।",
+    q5="আমার দুটি দোকান।", a5="সেটিংসে দ্বিতীয় ব্যবসা যোগ করুন আর দুটির মধ্যে বদল করুন। প্রতিটির নিজস্ব স্টাফ ও ক্যাশবুক থাকে।",
+    footer_privacy="প্রাইভেসি পলিসি", footer_changelog="প্রতিটি সংস্করণে কী বদলেছে", footer_contact="প্রশ্ন বা পরামর্শ? লিখুন",
+)
+T['ta'] = dict(
+    tagline="ஊழியர் வருகையும் சம்பளமும், ஒரு சிறிய செயலியில்",
+    sub="தினமும் வருகையைக் குறியுங்கள். ஹிசாப் பகார் ஒவ்வொருவரின் சம்பளத்தைக் கணக்கிட்டு, அட்வான்ஸ் மற்றும் பேமெண்ட் கணக்கை சரியாக வைத்து, WhatsApp-இல் அனுப்பக்கூடிய ஸ்லிப்பை உருவாக்கும். இணையம் இல்லாமல் வேலை செய்யும்.",
+    cta="Google Play-இல் பெறுங்கள்", cta_note="இலவசம் · பதிவு தேவையில்லை · Android",
+    demo_today="இன்றைய வருகை", demo_marked="3-இல் 2 குறிக்கப்பட்டது", demo_present="வந்தார்", demo_absent="வரவில்லை", demo_half="அரை நாள்",
+    how_title="எப்படி வேலை செய்கிறது",
+    s1t="உங்கள் ஊழியர்களைச் சேர்க்கவும்", s1d="பெயர், மாத அல்லது தினசரி சம்பளம், வார விடுமுறை. வேண்டுமானால் தொலைபேசி தொடர்புகளிலிருந்து தேர்வு செய்யலாம்.",
+    s2t="தினமும் வருகையைக் குறியுங்கள்", s2d="வந்தால் P, வராவிட்டால் A, அரை நாளுக்கு ½ தட்டுங்கள். ஒருவருக்கு ஒரு தட்டல். சாதாரண நாளில் அனைவரையும் ஒரே நேரத்தில் வந்ததாகக் குறிக்கலாம்.",
+    s3t="சம்பளம் தயார்", s3d="ஒவ்வொருவரும் எவ்வளவு சம்பாதித்தார், அட்வான்ஸ் போக எவ்வளவு நிலுவை என்று பாருங்கள். மாத இறுதியில் PDF ஸ்லிப்பை WhatsApp-இல் அனுப்புங்கள்.",
+    features_title="செயலியில் என்ன இருக்கிறது", why_title="உரிமையாளர்கள் ஏன் விரும்புகிறார்கள்",
+    data_title="உங்கள் தரவு உங்களுடையதாகவே இருக்கும்",
+    data_d="பதிவுகள் உங்கள் தொலைபேசியில் இருக்கும், எங்கள் சேவையகத்தில் அல்ல. காப்புப்பிரதியை இயக்கினால், ஒரு நகல் உங்கள் சொந்த Google Drive-இல், இந்த செயலி மட்டுமே பார்க்கக்கூடிய கோப்புறையில் சேமிக்கப்பட்டு, புதிய தொலைபேசியில் உள்நுழையும்போது திரும்ப வரும்.",
+    lang_title="உங்கள் மொழியில்",
+    lang_sub="நினைவூட்டல்கள், சம்பள ஸ்லிப் உட்பட முழு செயலியும் இந்த மொழிகளில் உள்ளது. ஒன்றைத் தட்டி இந்தப் பக்கத்தை அந்த மொழியில் படியுங்கள்.",
+    faq_title="பொதுவான கேள்விகள்",
+    q1="உண்மையிலேயே இலவசமா?", a1="ஆம். சந்தா இல்லை, திறக்க வேண்டியது எதுவும் இல்லை.",
+    q2="இணையம் தேவையா?", a2="இல்லை. எல்லாம் உங்கள் தொலைபேசியில் சேமிக்கப்பட்டு ஆஃப்லைனில் வேலை செய்யும். Google Drive காப்புப்பிரதி அல்லது AI மாத சுருக்கத்தை இயக்கினால் மட்டுமே இணையம் பயன்படும்.",
+    q3="தொலைபேசியை மாற்றினால் அல்லது மீண்டும் நிறுவினால்?", a3="அமைப்புகளில் தானியங்கி காப்புப்பிரதியை இயக்குங்கள். செயலி தினமும் உங்கள் சொந்த Google Drive-இல் நகலைச் சேமித்து, புதிய தொலைபேசியில் உள்நுழையும்போது மீட்டெடுக்கும். காப்புப்பிரதி கோப்பை ஏற்றுமதி செய்து WhatsApp-இலும் வைத்துக்கொள்ளலாம்.",
+    q4="என் ஊழியர்கள் செயலியைப் பார்க்க முடியுமா?", a4="இல்லை. இது உரிமையாளரின் பதிவேடு. நீங்கள் பகிரும்போது ஊழியர்களுக்கு சம்பள ஸ்லிப் PDF-ஆகக் கிடைக்கும்.",
+    q5="எனக்கு இரண்டு கடைகள் உள்ளன.", a5="அமைப்புகளில் இரண்டாவது வணிகத்தைச் சேர்த்து அவற்றுக்கிடையே மாறுங்கள். ஒவ்வொன்றுக்கும் தனி ஊழியர்களும் கேஷ்புக்கும் இருக்கும்.",
+    footer_privacy="தனியுரிமைக் கொள்கை", footer_changelog="ஒவ்வொரு பதிப்பிலும் என்ன மாறியது", footer_contact="கேள்விகள் அல்லது யோசனைகள்? எழுதுங்கள்",
+)
+T['te'] = dict(
+    tagline="సిబ్బంది హాజరు, జీతం — ఒక చిన్న యాప్‌లో",
+    sub="ప్రతిరోజూ హాజరు వేయండి. హిసాబ్ పగార్ ప్రతి ఒక్కరి జీతాన్ని లెక్కించి, అడ్వాన్స్‌లు, పేమెంట్ల లెక్క సరిగ్గా ఉంచి, WhatsApp‌లో పంపగల స్లిప్ తయారు చేస్తుంది. ఇంటర్నెట్ లేకుండా పనిచేస్తుంది.",
+    cta="Google Play నుండి పొందండి", cta_note="ఉచితం · సైన్-అప్ లేదు · Android",
+    demo_today="ఈరోజు హాజరు", demo_marked="3లో 2 వేశారు", demo_present="హాజరు", demo_absent="గైర్హాజరు", demo_half="సగం రోజు",
+    how_title="ఎలా పనిచేస్తుంది",
+    s1t="మీ సిబ్బందిని జోడించండి", s1d="పేరు, నెలవారీ లేదా రోజువారీ జీతం, వారపు సెలవు. కావాలంటే ఫోన్ కాంటాక్ట్‌ల నుండి ఎంచుకోండి.",
+    s2t="ప్రతిరోజూ హాజరు వేయండి", s2d="హాజరుకు P, గైర్హాజరుకు A, సగం రోజుకు ½ నొక్కండి. ఒక్కొక్కరికి ఒక ట్యాప్. మామూలు రోజున అందరినీ ఒకేసారి హాజరుగా వేయండి.",
+    s3t="జీతం సిద్ధం", s3d="ఎవరు ఎంత సంపాదించారో, అడ్వాన్స్ పోను ఎంత బాకీ ఉందో చూడండి. నెలాఖరున PDF స్లిప్‌ను WhatsApp‌లో పంపండి.",
+    features_title="యాప్‌లో ఏముంది", why_title="యజమానులకు ఎందుకు నచ్చుతుంది",
+    data_title="మీ డేటా మీదే",
+    data_d="రికార్డులు మీ ఫోన్‌లో ఉంటాయి, మా సర్వర్లలో కాదు. బ్యాకప్ ఆన్ చేస్తే ఒక కాపీ మీ సొంత Google Drive లో, ఈ యాప్ మాత్రమే చూడగల ఫోల్డర్‌లో సేవ్ అయి, కొత్త ఫోన్‌లో సైన్ ఇన్ చేయగానే తిరిగి వస్తుంది.",
+    lang_title="మీ భాషలో",
+    lang_sub="రిమైండర్లు, జీతం స్లిప్‌లతో సహా యాప్ మొత్తం ఈ భాషల్లో ఉంది. ఒకదానిపై ట్యాప్ చేసి ఈ పేజీని ఆ భాషలో చదవండి.",
+    faq_title="తరచూ అడిగే ప్రశ్నలు",
+    q1="నిజంగా ఉచితమా?", a1="అవును. సబ్‌స్క్రిప్షన్ లేదు, అన్‌లాక్ చేయాల్సింది ఏమీ లేదు.",
+    q2="ఇంటర్నెట్ కావాలా?", a2="అవసరం లేదు. అంతా మీ ఫోన్‌లో సేవ్ అయి ఆఫ్‌లైన్‌లో పనిచేస్తుంది. Google Drive బ్యాకప్ లేదా AI నెలవారీ సారాంశం ఆన్ చేస్తేనే ఇంటర్నెట్ వాడుతుంది.",
+    q3="ఫోన్ మార్చినా, యాప్ మళ్లీ ఇన్‌స్టాల్ చేసినా?", a3="సెట్టింగ్స్‌లో ఆటోమేటిక్ బ్యాకప్ ఆన్ చేయండి. యాప్ ప్రతిరోజూ మీ సొంత Google Drive లో కాపీ ఉంచి, కొత్త ఫోన్‌లో సైన్ ఇన్ చేయగానే తిరిగి తెస్తుంది. బ్యాకప్ ఫైల్ ఎక్స్‌పోర్ట్ చేసి WhatsApp‌లో కూడా ఉంచుకోవచ్చు.",
+    q4="నా సిబ్బంది యాప్ చూడగలరా?", a4="లేదు. ఇది యజమాని రిజిస్టర్. మీరు షేర్ చేసినప్పుడు సిబ్బందికి జీతం స్లిప్ PDF గా వస్తుంది.",
+    q5="నాకు రెండు దుకాణాలు ఉన్నాయి.", a5="సెట్టింగ్స్‌లో రెండో వ్యాపారం జోడించి రెండింటి మధ్య మారండి. ఒక్కొక్క దానికి సొంత సిబ్బంది, క్యాష్‌బుక్ ఉంటాయి.",
+    footer_privacy="గోప్యతా విధానం", footer_changelog="ప్రతి వెర్షన్‌లో ఏం మారింది", footer_contact="ప్రశ్నలు లేదా సూచనలు? రాయండి",
+)
+T['kn'] = dict(
+    tagline="ಸಿಬ್ಬಂದಿ ಹಾಜರಾತಿ ಮತ್ತು ಸಂಬಳ, ಒಂದು ಚಿಕ್ಕ ಆ್ಯಪ್‌ನಲ್ಲಿ",
+    sub="ಪ್ರತಿದಿನ ಹಾಜರಾತಿ ಹಾಕಿ. ಹಿಸಾಬ್ ಪಗಾರ್ ಪ್ರತಿಯೊಬ್ಬರ ಸಂಬಳ ಲೆಕ್ಕ ಹಾಕಿ, ಅಡ್ವಾನ್ಸ್ ಮತ್ತು ಪಾವತಿಗಳ ಲೆಕ್ಕ ಸರಿಯಾಗಿ ಇಟ್ಟು, WhatsApp‌ನಲ್ಲಿ ಕಳುಹಿಸಬಹುದಾದ ಸ್ಲಿಪ್ ತಯಾರಿಸುತ್ತದೆ. ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ.",
+    cta="Google Play ನಲ್ಲಿ ಪಡೆಯಿರಿ", cta_note="ಉಚಿತ · ಸೈನ್-ಅಪ್ ಇಲ್ಲ · Android",
+    demo_today="ಇಂದಿನ ಹಾಜರಾತಿ", demo_marked="3ರಲ್ಲಿ 2 ಹಾಕಲಾಗಿದೆ", demo_present="ಹಾಜರು", demo_absent="ಗೈರುಹಾಜರು", demo_half="ಅರ್ಧ ದಿನ",
+    how_title="ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ",
+    s1t="ನಿಮ್ಮ ಸಿಬ್ಬಂದಿಯನ್ನು ಸೇರಿಸಿ", s1d="ಹೆಸರು, ಮಾಸಿಕ ಅಥವಾ ದೈನಂದಿನ ಸಂಬಳ, ವಾರದ ರಜೆ. ಬೇಕಿದ್ದರೆ ಫೋನ್ ಸಂಪರ್ಕಗಳಿಂದ ಆಯ್ಕೆ ಮಾಡಿ.",
+    s2t="ಪ್ರತಿದಿನ ಹಾಜರಾತಿ ಹಾಕಿ", s2d="ಹಾಜರಿಗೆ P, ಗೈರುಹಾಜರಿಗೆ A, ಅರ್ಧ ದಿನಕ್ಕೆ ½ ಒತ್ತಿ. ಒಬ್ಬರಿಗೆ ಒಂದು ಟ್ಯಾಪ್. ಸಾಮಾನ್ಯ ದಿನದಲ್ಲಿ ಎಲ್ಲರನ್ನೂ ಒಮ್ಮೆಗೇ ಹಾಜರು ಮಾಡಿ.",
+    s3t="ಸಂಬಳ ಸಿದ್ಧ", s3d="ಯಾರು ಎಷ್ಟು ಗಳಿಸಿದರು, ಅಡ್ವಾನ್ಸ್ ಕಳೆದು ಎಷ್ಟು ಬಾಕಿ ಎಂದು ನೋಡಿ. ತಿಂಗಳ ಕೊನೆಯಲ್ಲಿ PDF ಸ್ಲಿಪ್ ಅನ್ನು WhatsApp‌ನಲ್ಲಿ ಕಳುಹಿಸಿ.",
+    features_title="ಆ್ಯಪ್‌ನಲ್ಲಿ ಏನಿದೆ", why_title="ಮಾಲೀಕರಿಗೆ ಏಕೆ ಇಷ್ಟ",
+    data_title="ನಿಮ್ಮ ಡೇಟಾ ನಿಮ್ಮದೇ",
+    data_d="ದಾಖಲೆಗಳು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಇರುತ್ತವೆ, ನಮ್ಮ ಸರ್ವರ್‌ನಲ್ಲಿ ಅಲ್ಲ. ಬ್ಯಾಕಪ್ ಆನ್ ಮಾಡಿದರೆ ಒಂದು ಪ್ರತಿ ನಿಮ್ಮ ಸ್ವಂತ Google Drive ನಲ್ಲಿ, ಈ ಆ್ಯಪ್ ಮಾತ್ರ ನೋಡಬಹುದಾದ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಉಳಿದು, ಹೊಸ ಫೋನ್‌ನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ ಮರಳಿ ಬರುತ್ತದೆ.",
+    lang_title="ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ",
+    lang_sub="ರಿಮೈಂಡರ್ ಮತ್ತು ಸಂಬಳ ಸ್ಲಿಪ್ ಸೇರಿದಂತೆ ಇಡೀ ಆ್ಯಪ್ ಈ ಭಾಷೆಗಳಲ್ಲಿದೆ. ಒಂದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಈ ಪುಟವನ್ನು ಆ ಭಾಷೆಯಲ್ಲಿ ಓದಿ.",
+    faq_title="ಸಾಮಾನ್ಯ ಪ್ರಶ್ನೆಗಳು",
+    q1="ನಿಜವಾಗಿಯೂ ಉಚಿತವೇ?", a1="ಹೌದು. ಯಾವುದೇ ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ಇಲ್ಲ, ಅನ್‌ಲಾಕ್ ಮಾಡುವುದೇನೂ ಇಲ್ಲ.",
+    q2="ಇಂಟರ್ನೆಟ್ ಬೇಕೇ?", a2="ಬೇಡ. ಎಲ್ಲವೂ ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಉಳಿದು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ. Google Drive ಬ್ಯಾಕಪ್ ಅಥವಾ AI ಮಾಸಿಕ ಸಾರಾಂಶ ಆನ್ ಮಾಡಿದರೆ ಮಾತ್ರ ಇಂಟರ್ನೆಟ್ ಬಳಕೆಯಾಗುತ್ತದೆ.",
+    q3="ಫೋನ್ ಬದಲಿಸಿದರೆ ಅಥವಾ ಆ್ಯಪ್ ಮತ್ತೆ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದರೆ?", a3="ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತ ಬ್ಯಾಕಪ್ ಆನ್ ಮಾಡಿ. ಆ್ಯಪ್ ಪ್ರತಿದಿನ ನಿಮ್ಮ ಸ್ವಂತ Google Drive ನಲ್ಲಿ ಪ್ರತಿ ಇಟ್ಟು, ಹೊಸ ಫೋನ್‌ನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ ಮರಳಿ ತರುತ್ತದೆ. ಬ್ಯಾಕಪ್ ಫೈಲ್ ರಫ್ತು ಮಾಡಿ WhatsApp‌ನಲ್ಲೂ ಇಟ್ಟುಕೊಳ್ಳಬಹುದು.",
+    q4="ನನ್ನ ಸಿಬ್ಬಂದಿ ಆ್ಯಪ್ ನೋಡಬಹುದೇ?", a4="ಇಲ್ಲ. ಇದು ಮಾಲೀಕರ ರಿಜಿಸ್ಟರ್. ನೀವು ಹಂಚಿಕೊಂಡಾಗ ಸಿಬ್ಬಂದಿಗೆ ಸಂಬಳ ಸ್ಲಿಪ್ PDF ಆಗಿ ಸಿಗುತ್ತದೆ.",
+    q5="ನನಗೆ ಎರಡು ಅಂಗಡಿಗಳಿವೆ.", a5="ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ ಎರಡನೇ ವ್ಯವಹಾರ ಸೇರಿಸಿ ಎರಡರ ನಡುವೆ ಬದಲಾಯಿಸಿ. ಪ್ರತಿಯೊಂದಕ್ಕೂ ಸ್ವಂತ ಸಿಬ್ಬಂದಿ ಮತ್ತು ಕ್ಯಾಶ್‌ಬುಕ್ ಇರುತ್ತದೆ.",
+    footer_privacy="ಗೌಪ್ಯತಾ ನೀತಿ", footer_changelog="ಪ್ರತಿ ಆವೃತ್ತಿಯಲ್ಲಿ ಏನು ಬದಲಾಯಿತು", footer_contact="ಪ್ರಶ್ನೆ ಅಥವಾ ಸಲಹೆ? ಬರೆಯಿರಿ",
+)
+T['od'] = dict(
+    tagline="ଷ୍ଟାଫ ହାଜିରା ଓ ଦରମା, ଗୋଟିଏ ଛୋଟ ଆପ୍‌ରେ",
+    sub="ପ୍ରତିଦିନ ହାଜିରା ଦିଅନ୍ତୁ। ହିସାବ ପଗାର ପ୍ରତ୍ୟେକଙ୍କ ଦରମା ହିସାବ କରେ, ଆଡଭାନ୍ସ ଓ ପେମେଣ୍ଟ ହିସାବ ଠିକ୍ ରଖେ, ଏବଂ WhatsApp‌ରେ ପଠାଇ ପାରିବା ଭଳି ସ୍ଲିପ ତିଆରି କରେ। ଇଣ୍ଟରନେଟ ବିନା ଚାଲେ।",
+    cta="Google Play ରୁ ନିଅନ୍ତୁ", cta_note="ମାଗଣା · ସାଇନ-ଅପ୍ ନାହିଁ · Android",
+    demo_today="ଆଜିର ହାଜିରା", demo_marked="3 ରୁ 2 ଦିଆଯାଇଛି", demo_present="ଉପସ୍ଥିତ", demo_absent="ଅନୁପସ୍ଥିତ", demo_half="ଅଧା ଦିନ",
+    how_title="କିପରି କାମ କରେ",
+    s1t="ଆପଣଙ୍କ ଷ୍ଟାଫ ଯୋଡ଼ନ୍ତୁ", s1d="ନାମ, ମାସିକ କିମ୍ବା ଦୈନିକ ଦରମା, ସାପ୍ତାହିକ ଛୁଟି। ଚାହିଁଲେ ଫୋନ କଣ୍ଟାକ୍ଟରୁ ବାଛନ୍ତୁ।",
+    s2t="ପ୍ରତିଦିନ ହାଜିରା ଦିଅନ୍ତୁ", s2d="ଉପସ୍ଥିତ ପାଇଁ P, ଅନୁପସ୍ଥିତ ପାଇଁ A, ଅଧା ଦିନ ପାଇଁ ½ ଦବାନ୍ତୁ। ପ୍ରତ୍ୟେକଙ୍କ ପାଇଁ ଗୋଟିଏ ଟ୍ୟାପ୍। ସାଧାରଣ ଦିନରେ ସମସ୍ତଙ୍କୁ ଏକାଥରେ ଉପସ୍ଥିତ କରନ୍ତୁ।",
+    s3t="ଦରମା ପ୍ରସ୍ତୁତ", s3d="କିଏ କେତେ ରୋଜଗାର କଲା ଓ ଆଡଭାନ୍ସ କାଟି କେତେ ବାକି ଅଛି ଦେଖନ୍ତୁ। ମାସ ଶେଷରେ PDF ସ୍ଲିପ WhatsApp‌ରେ ପଠାନ୍ତୁ।",
+    features_title="ଆପ୍‌ରେ କ'ଣ ଅଛି", why_title="ମାଲିକମାନେ କାହିଁକି ପସନ୍ଦ କରନ୍ତି",
+    data_title="ଆପଣଙ୍କ ଡାଟା ଆପଣଙ୍କର ହିଁ ରହେ",
+    data_d="ରେକର୍ଡ ଆପଣଙ୍କ ଫୋନରେ ରହେ, ଆମ ସର୍ଭରରେ ନୁହେଁ। ବ୍ୟାକଅପ୍ ଚାଲୁ କଲେ ଗୋଟିଏ କପି ଆପଣଙ୍କ ନିଜ Google Drive ରେ, କେବଳ ଏହି ଆପ୍ ଦେଖିପାରିବା ଫୋଲ୍ଡରରେ ରହେ, ଏବଂ ନୂଆ ଫୋନରେ ସାଇନ ଇନ କଲେ ଫେରି ଆସେ।",
+    lang_title="ଆପଣଙ୍କ ଭାଷାରେ",
+    lang_sub="ରିମାଇଣ୍ଡର ଓ ଦରମା ସ୍ଲିପ ସମେତ ପୁରା ଆପ୍ ଏହି ଭାଷାଗୁଡ଼ିକରେ ଅଛି। ଗୋଟିଏ ଉପରେ ଟ୍ୟାପ୍ କରି ଏହି ପୃଷ୍ଠା ସେହି ଭାଷାରେ ପଢ଼ନ୍ତୁ।",
+    faq_title="ସାଧାରଣ ପ୍ରଶ୍ନ",
+    q1="ପ୍ରକୃତରେ ମାଗଣା କି?", a1="ହଁ। କୌଣସି ସବସ୍କ୍ରିପସନ ନାହିଁ, କିଛି ଅନଲକ୍ କରିବାକୁ ନାହିଁ।",
+    q2="ଇଣ୍ଟରନେଟ ଦରକାର କି?", a2="ନା। ସବୁକିଛି ଆପଣଙ୍କ ଫୋନରେ ସେଭ୍ ହୁଏ ଓ ଅଫଲାଇନରେ ଚାଲେ। କେବଳ Google Drive ବ୍ୟାକଅପ୍ କିମ୍ବା AI ମାସିକ ସାରାଂଶ ଚାଲୁ କଲେ ଇଣ୍ଟରନେଟ ବ୍ୟବହୃତ ହୁଏ।",
+    q3="ଫୋନ ବଦଳାଇଲେ କିମ୍ବା ଆପ୍ ପୁଣି ଇନଷ୍ଟଲ କଲେ?", a3="ସେଟିଂସରେ ଅଟୋମେଟିକ୍ ବ୍ୟାକଅପ୍ ଚାଲୁ କରନ୍ତୁ। ଆପ୍ ପ୍ରତିଦିନ ଆପଣଙ୍କ ନିଜ Google Drive ରେ କପି ରଖେ ଓ ନୂଆ ଫୋନରେ ସାଇନ ଇନ କଲେ ଫେରାଇ ଆଣେ। ବ୍ୟାକଅପ୍ ଫାଇଲ ବାହାର କରି WhatsApp‌ରେ ମଧ୍ୟ ରଖିପାରିବେ।",
+    q4="ମୋ ଷ୍ଟାଫ ଆପ୍ ଦେଖିପାରିବେ କି?", a4="ନା। ଏହା ମାଲିକଙ୍କ ରେଜିଷ୍ଟର। ଆପଣ ଶେୟାର କଲେ ଷ୍ଟାଫଙ୍କୁ ଦରମା ସ୍ଲିପ PDF ରେ ମିଳେ।",
+    q5="ମୋର ଦୁଇଟି ଦୋକାନ।", a5="ସେଟିଂସରେ ଦ୍ୱିତୀୟ ବ୍ୟବସାୟ ଯୋଡ଼ି ଦୁଇଟି ମଧ୍ୟରେ ବଦଳାନ୍ତୁ। ପ୍ରତ୍ୟେକର ନିଜସ୍ୱ ଷ୍ଟାଫ ଓ କ୍ୟାଶବୁକ ଥାଏ।",
+    footer_privacy="ଗୋପନୀୟତା ନୀତି", footer_changelog="ପ୍ରତି ଭର୍ସନରେ କ'ଣ ବଦଳିଲା", footer_contact="ପ୍ରଶ୍ନ କିମ୍ବା ପରାମର୍ଶ? ଲେଖନ୍ତୁ",
+)
+BASE_KEYS = set(T['en'])
+for k in LANG_KEYS:
+    assert set(T[k]) == BASE_KEYS, (k, BASE_KEYS ^ set(T[k]))
+    T[k]['features'] = feat[k]['features']
+    T[k]['why'] = feat[k]['why']
+    T[k]['name'] = NAMES[k]
+    T[k]['html'] = HTML_LANG[k]
+
+PLAY = "https://play.google.com/store/apps/details?id=com.kaambook.app&referrer=utm_source%3Dwebsite%26utm_medium%3Dsite"
+
+page = r'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hisab Pagar – Staff attendance and salary app</title>
+<meta name="description" content="Free offline app for shops, factories and contractors in India: mark daily staff attendance, calculate salary, record advances and payments, share PDF salary slips on WhatsApp. In 10 Indian languages.">
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<meta property="og:title" content="Hisab Pagar – Staff attendance and salary app">
+<meta property="og:description" content="Mark haziri every day. Salary, advances and payments worked out for you. Works offline, in 10 languages.">
+<meta property="og:image" content="https://kush11.github.io/kaambook-app/assets/icon.png">
+<meta property="og:url" content="https://kush11.github.io/kaambook-app/">
+<style>
+  :root{
+    --paper:#FAFAF5; --ink:#1F2933; --muted:#5B6672; --line:#E4E1D8;
+    --orange:#EA580C; --orange-dark:#C2410C; --green:#16A34A; --red:#DC2626; --amber:#D97706;
+    --card:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Nirmala UI",sans-serif;
+    font-size:17px;line-height:1.6}
+  a{color:var(--orange-dark)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);background:var(--paper);position:sticky;top:0;z-index:5}
+  .bar{display:flex;align-items:center;gap:12px;padding:12px 0}
+  .bar img{width:36px;height:36px;border-radius:9px}
+  .bar b{font-size:18px}
+  .bar .spacer{flex:1}
+  select{font:inherit;font-size:15px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  h1{font-size:34px;line-height:1.2;margin:0 0 14px;letter-spacing:-0.01em}
+  h2{font-size:24px;margin:0 0 8px;letter-spacing:-0.01em}
+  h3{font-size:18px;margin:0 0 4px}
+  p{margin:0 0 12px}
+  .muted{color:var(--muted)}
+  section{padding:48px 0;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  .hero{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center;padding:56px 0}
+  .btn{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;font-weight:700;
+    padding:14px 22px;border-radius:12px;font-size:17px}
+  .btn:hover{background:var(--orange-dark)}
+  .note{display:block;margin-top:10px;font-size:15px}
+  /* the register demo mirrors the app's home screen rows */
+  .demo{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .demo .head{background:var(--orange);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline}
+  .demo .head b{font-size:16px}
+  .demo .head span{font-size:14px;opacity:.9}
+  .row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}
+  .avatar{width:38px;height:38px;border-radius:50%;background:#FDE7D8;color:var(--orange-dark);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .who{flex:1;min-width:0}
+  .who b{display:block;font-size:16px}
+  .who small{color:var(--muted);font-size:13px}
+  .chips{display:flex;gap:6px}
+  .chip{width:40px;height:40px;border-radius:11px;background:#F1EFE8;color:var(--muted);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .chip.p{background:var(--green);color:#fff}
+  .chip.a{background:var(--red);color:#fff}
+  .chip.h{background:var(--amber);color:#fff}
+  .legend{display:flex;gap:16px;padding:10px 12px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);background:#FCFBF7}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-1px;margin-right:5px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;counter-reset:s}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .step::before{counter-increment:s;content:counter(s);display:inline-flex;width:30px;height:30px;border-radius:50%;
+    background:var(--orange);color:#fff;font-weight:700;align-items:center;justify-content:center;margin-bottom:10px}
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 28px;margin:16px 0 0;padding:0;list-style:none}
+  .features li b{display:block}
+  .features li span{color:var(--muted);font-size:15px}
+  .why{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 28px;margin:10px 0 0;padding:0;list-style:none}
+  .why li{padding-left:22px;position:relative}
+  .why li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .langs{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .langs button{font:inherit;font-size:16px;padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;cursor:pointer;color:var(--ink)}
+  .langs button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  details{border-top:1px solid var(--line);padding:12px 0}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer;font-weight:600;font-size:17px;list-style:none;display:flex;justify-content:space-between}
+  summary::after{content:"+";color:var(--muted)}
+  details[open] summary::after{content:"–"}
+  details p{margin:8px 0 0;color:var(--muted)}
+  footer{padding:32px 0 48px;color:var(--muted);font-size:15px}
+  footer .links{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:8px}
+  @media (max-width:720px){
+    body{font-size:16px}
+    h1{font-size:28px}
+    .hero{grid-template-columns:1fr;gap:28px;padding:32px 0}
+    .steps,.features,.why{grid-template-columns:1fr}
+    section{padding:36px 0}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <img src="assets/icon.png" alt="">
+    <b>Hisab Pagar</b>
+    <span class="spacer"></span>
+    <label><span class="sr" hidden>Language</span>
+      <select id="langSelect" aria-label="Language">__OPTIONS__</select>
+    </label>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <h1 data-t="tagline"></h1>
+      <p class="muted" data-t="sub" style="font-size:18px"></p>
+      <a class="btn" href="__PLAY__" rel="noopener" data-t="cta"></a>
+      <span class="note muted" data-t="cta_note"></span>
+    </div>
+    <div class="demo" aria-hidden="true">
+      <div class="head"><b data-t="demo_today"></b><span data-t="demo_marked"></span></div>
+      <div class="row"><div class="avatar">R</div><div class="who"><b>Ramesh</b><small>₹12,000 / month</small></div>
+        <div class="chips"><span class="chip p">P</span><span class="chip">A</span><span class="chip">½</span></div></div>
+      <div class="row"><div class="avatar">S</div><div class="who"><b>Sunita</b><small>₹450 / day</small></div>
+        <div class="chips"><span class="chip">P</span><span class="chip">A</span><span class="chip h">½</span></div></div>
+      <div class="row"><div class="avatar">A</div><div class="who"><b>Aslam</b><small>₹3,000 / week</small></div>
+        <div class="chips"><span class="chip">P</span><span class="chip">A</span><span class="chip">½</span></div></div>
+      <div class="legend"><span><i style="background:var(--green)"></i><span data-t="demo_present"></span></span>
+        <span><i style="background:var(--red)"></i><span data-t="demo_absent"></span></span>
+        <span><i style="background:var(--amber)"></i><span data-t="demo_half"></span></span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-t="how_title"></h2>
+    <div class="steps">
+      <div class="step"><h3 data-t="s1t"></h3><p class="muted" data-t="s1d"></p></div>
+      <div class="step"><h3 data-t="s2t"></h3><p class="muted" data-t="s2d"></p></div>
+      <div class="step"><h3 data-t="s3t"></h3><p class="muted" data-t="s3d"></p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-t="features_title"></h2>
+    <ul class="features" id="features"></ul>
+  </section>
+
+  <section>
+    <h2 data-t="why_title"></h2>
+    <ul class="why" id="why"></ul>
+    <h3 style="margin-top:28px" data-t="data_title"></h3>
+    <p class="muted" data-t="data_d"></p>
+  </section>
+
+  <section>
+    <h2 data-t="lang_title"></h2>
+    <p class="muted" data-t="lang_sub"></p>
+    <div class="langs" id="langs"></div>
+  </section>
+
+  <section>
+    <h2 data-t="faq_title"></h2>
+    <details><summary data-t="q1"></summary><p data-t="a1"></p></details>
+    <details><summary data-t="q2"></summary><p data-t="a2"></p></details>
+    <details><summary data-t="q3"></summary><p data-t="a3"></p></details>
+    <details><summary data-t="q4"></summary><p data-t="a4"></p></details>
+    <details><summary data-t="q5"></summary><p data-t="a5"></p></details>
+    <p style="margin-top:24px"><a class="btn" href="__PLAY__" rel="noopener" data-t="cta"></a></p>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="links">
+    <a href="privacy-policy.html" data-t="footer_privacy"></a>
+    <a href="https://github.com/kush11/kaambook-app/blob/master/CHANGELOG.md" rel="noopener" data-t="footer_changelog"></a>
+  </div>
+  <div><span data-t="footer_contact"></span> <a href="mailto:kushkumar636@gmail.com">kushkumar636@gmail.com</a></div>
+  <div style="margin-top:6px">© 2026 Hisab Pagar</div>
+</footer>
+
+<script>
+const T = __T__;
+const ORDER = __ORDER__;
+function pick() {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q && T[q]) return q;
+  try { const s = localStorage.getItem('lang'); if (s && T[s]) return s; } catch (e) {}
+  const nav = (navigator.languages || [navigator.language || 'en']).map(l => l.toLowerCase().split('-')[0]);
+  for (const l of nav) { if (T[l]) return l; if (l === 'or' && T.od) return 'od'; }
+  return 'en';
+}
+function render(k) {
+  const t = T[k];
+  document.documentElement.lang = t.html;
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t[el.dataset.t]; });
+  document.getElementById('features').innerHTML = t.features.map(([b, d]) => `<li><b>${b}</b><span>${d}</span></li>`).join('');
+  document.getElementById('why').innerHTML = t.why.map(([b, d]) => `<li><b>${b}</b> <span class="muted">${d}</span></li>`).join('');
+  document.getElementById('langs').innerHTML = ORDER.map(x => `<button type="button" data-lang="${x}" aria-pressed="${x === k}">${T[x].name}</button>`).join('');
+  document.getElementById('langSelect').value = k;
+  try { localStorage.setItem('lang', k); } catch (e) {}
+  const u = new URL(location.href); u.searchParams.set('lang', k); history.replaceState(null, '', u);
+}
+document.getElementById('langSelect').addEventListener('change', e => render(e.target.value));
+document.getElementById('langs').addEventListener('click', e => { const b = e.target.closest('button[data-lang]'); if (b) render(b.dataset.lang); });
+render(pick());
+</script>
+</body>
+</html>
+'''
+options = ''.join(f'<option value="{k}">{NAMES[k]}</option>' for k in LANG_KEYS)
+out = (page.replace('__OPTIONS__', options)
+           .replace('__PLAY__', PLAY)
+           .replace('__T__', json.dumps(T, ensure_ascii=False))
+           .replace('__ORDER__', json.dumps(LANG_KEYS)))
+open('docs/index.html', 'w', encoding='utf-8').write(out)
+print('wrote docs/index.html', len(out), 'bytes')

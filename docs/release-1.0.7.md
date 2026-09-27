@@ -2,7 +2,8 @@
 
 - **Version:** 1.0.7 (EAS auto-increments versionCode; expected 12)
 - **Bundle:** built on Expo (EAS), `eas build --platform android --profile production` — build `0b179a4d-b3b6-491d-bd2b-3fa985d4d372`, versionCode 12
-- **Submitted:** to Internal testing by `eas submit` (submission `317a1588`, 28 Sept 02:27 IST) using the service-account key stored in EAS credentials
+- **CI release:** tag `v1.0.7` → EAS workflow run `01a0e4ad` → build versionCode **13** → submitted to Internal testing (SUCCESS, 02:53 IST). This is the release to promote.
+- **Manual (superseded):** build `0b179a4d` (versionCode 12) submitted (submission `317a1588`, 28 Sept 02:27 IST) using the service-account key stored in EAS credentials
 - **Signed with:** the EAS-managed upload key; Play re-signs with the app-signing key,
   which is the SHA-1 registered on the Google OAuth client — so **only Play-installed
   builds can connect Google Drive**. A sideloaded EAS artefact will fail at sign-in.
