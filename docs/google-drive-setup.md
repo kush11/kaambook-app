@@ -51,6 +51,12 @@ at https://console.cloud.google.com — signed in as the Play Console owner acco
   `06:49:DD:11:D6:08:59:53:34:37:3E:58:25:C7:16:A7:F9:A3:46:2A`
   (SHA-256 `9B:A9:10:B0:BF:CE:EB:FA:F5:AB:A3:E6:50:D9:21:63:77:88:E0:A6:DD:61:F9:EE:DA:66:1F:08:36:55:63:83`).
 
+- **Advanced settings → Enable custom URI scheme: ON.** Without it Google shows
+  *"Error 400: invalid_request — Custom URI scheme is not enabled for your Android client"*
+  the moment the sign-in sheet opens (found on the first device test of 1.0.7). The app
+  redirects to `com.kaambook.app:/oauth2redirect`, which is a custom scheme. Changes can
+  take five minutes to a few hours to take effect.
+
 Copy the Client ID (looks like `1234567890-abc…xyz.apps.googleusercontent.com`).
 
 Optional: a second Android client with the EAS upload key SHA-1
