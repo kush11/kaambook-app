@@ -6,11 +6,21 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 
 | Version | versionCode | Date | EAS build | Play status |
 |---|---|---|---|---|
-| 1.0.7 | 13 (12 manual) | 2026-09-28 | CI run `01a0e4ad` (vc 13); manual `0b179a4d` (vc 12) | Internal testing |
+| 1.0.8 | 14 | 2026-09-28 | CI (tag `v1.0.8`) | Internal testing |
+| 1.0.7 | 13 (12 manual) | 2026-09-28 | CI run `01a0e4ad` (vc 13); manual `0b179a4d` (vc 12) | Internal testing (not promoted) |
 | 1.0.6 | 11 | 2026-09-27 | `08fa496d` | Production |
 | 1.0.5 | 10 | 2026-09-21 | `b7ee5040` | Production (superseded) |
 | 1.0.4 | 8, 9 | 2026-06-26 | — | Production (superseded) |
 | ≤ 1.0.3 | 1–7 | 2026-03 → 2026-06 | — | superseded |
+
+## 1.0.8 — 2026-09-28 · [release sheet](docs/release-1.0.8.md)
+
+### Fixed
+- Google Drive sign-in on a real phone: the OAuth redirect no longer shows "Unmatched
+  Route", and a sign-in survives the app being killed while Google's sheet is open
+  (state + PKCE verifier persisted, code exchanged on cold start).
+- Google Cloud: Android OAuth client now has "Enable custom URI scheme" on, which the
+  browser-based flow requires.
 
 ## 1.0.7 — 2026-09-28 · [release sheet](docs/release-1.0.7.md)
 

@@ -14,6 +14,7 @@ import * as AuthSession from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
 import dayjs from 'dayjs';
 import { GOOGLE_ANDROID_CLIENT_ID, DRIVE_BACKUP_FILE_NAME, AUTO_BACKUP_MIN_HOURS } from '../config/googleDrive';
 import { PACKAGE } from '../config/links';
@@ -29,6 +30,18 @@ WebBrowser.maybeCompleteAuthSession();
 // never the user's real files. openid+email just tells us which account it is.
 const SCOPES = ['https://www.googleapis.com/auth/drive.appdata', 'openid', 'email'];
 const TOKENS_KEY = 'drive_tokens';
+// The PKCE verifier + state of an in-flight sign-in. Some phones (MIUI in
+// particular) kill the app while Google's sheet is open; the redirect then
+// cold-starts the app and the in-memory request is gone, so we finish from here.
+const PENDING_KEY = 'drive_pending_auth';
+const PENDING_MAX_AGE_MS = 10 * 60 * 1000;
+
+interface PendingAuth {
+  state: string;
+  codeVerifier?: string;
+  source: DriveConnectSource;
+  createdAt: number;
+}
 const DRIVE_API = 'https://www.googleapis.com/drive/v3';
 const DRIVE_UPLOAD = 'https://www.googleapis.com/upload/drive/v3';
 
@@ -222,6 +235,62 @@ export async function disconnectDrive(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Cold-start completion
+
+async function finishSignIn(tokens: AuthSession.TokenResponse, source: string, coldStart: boolean): Promise<void> {
+  await saveTokens(tokens);
+  const email = emailFromIdToken(tokens.idToken);
+  await useSettingsStore.getState().setDriveAccount(email);
+  track('drive_connected', { source, has_email: !!email, cold_start: coldStart });
+}
+
+/**
+ * Called once at app start. If the app was launched by Google's redirect URL and
+ * a sign-in was pending, exchanges the code and connects the account, then does
+ * what the user originally asked for: restore (onboarding) or a first backup.
+ * Returns true when it handled a redirect.
+ */
+export async function completeColdStartAuth(): Promise<boolean> {
+  if (!isDriveConfigured()) return false;
+  try {
+    const url = await Linking.getInitialURL();
+    if (!url || !url.includes('oauth2redirect')) return false;
+    const raw = await SecureStore.getItemAsync(PENDING_KEY);
+    if (!raw) return false;
+    await SecureStore.deleteItemAsync(PENDING_KEY);
+    const pending = JSON.parse(raw) as PendingAuth;
+    const { code, state, error } = Linking.parse(url).queryParams ?? {};
+    if (error || typeof code !== 'string' || state !== pending.state) {
+      track('drive_connect_cold_start_rejected', { reason: error ? String(error) : 'state_mismatch' });
+      return false;
+    }
+    if (Date.now() - pending.createdAt > PENDING_MAX_AGE_MS) {
+      track('drive_connect_cold_start_rejected', { reason: 'expired' });
+      return false;
+    }
+    const tokens = await AuthSession.exchangeCodeAsync(
+      {
+        clientId: GOOGLE_ANDROID_CLIENT_ID,
+        code,
+        redirectUri,
+        extraParams: pending.codeVerifier ? { code_verifier: pending.codeVerifier } : {},
+      },
+      Google.discovery,
+    );
+    await finishSignIn(tokens, pending.source, true);
+    if (pending.source === 'onboarding') {
+      await restoreFromDrive();
+    } else {
+      await uploadBackupToDrive(false);
+    }
+    return true;
+  } catch (e) {
+    trackError('drive_connect_cold_start', e);
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Automatic backup
 
 let autoBackupInFlight = false;
@@ -271,10 +340,8 @@ export function useDriveConnect(source: DriveConnectSource) {
         // The provider exchanges the code itself; wait for the token response.
         if (!response.authentication) return;
         try {
-          await saveTokens(response.authentication);
-          const email = emailFromIdToken(response.authentication.idToken);
-          await useSettingsStore.getState().setDriveAccount(email);
-          track('drive_connected', { source, has_email: !!email });
+          await SecureStore.deleteItemAsync(PENDING_KEY).catch(() => {});
+          await finishSignIn(response.authentication, source, false);
           pending.current?.(true);
         } catch (e) {
           trackError('drive_connect', e);
@@ -293,6 +360,13 @@ export function useDriveConnect(source: DriveConnectSource) {
   const connect = useCallback(async (): Promise<boolean> => {
     if (!isDriveConfigured() || !request) return false;
     setBusy(true);
+    const pendingAuth: PendingAuth = {
+      state: request.state,
+      codeVerifier: request.codeVerifier,
+      source,
+      createdAt: Date.now(),
+    };
+    await SecureStore.setItemAsync(PENDING_KEY, JSON.stringify(pendingAuth)).catch(() => {});
     return new Promise<boolean>((resolve) => {
       pending.current = resolve;
       promptAsync().catch((e) => {
@@ -302,7 +376,7 @@ export function useDriveConnect(source: DriveConnectSource) {
         resolve(false);
       });
     });
-  }, [request, promptAsync]);
+  }, [request, promptAsync, source]);
 
   return { connect, busy, ready: isDriveConfigured() && !!request };
 }
