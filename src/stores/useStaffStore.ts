@@ -21,6 +21,9 @@ interface AddStaffInput {
 interface StaffState {
   staffList: Staff[];
   isLoading: boolean;
+  /** Id of the very first staff added in this session; Home shows a "mark today" card for them. */
+  firstStaffNudgeId: string | null;
+  clearFirstStaffNudge: () => void;
   loadStaff: (businessId: string) => Promise<void>;
   addStaff: (businessId: string, input: AddStaffInput) => Promise<string>;
   updateStaff: (id: string, updates: Partial<Staff>) => Promise<void>;
@@ -32,6 +35,8 @@ interface StaffState {
 export const useStaffStore = create<StaffState>((set, get) => ({
   staffList: [],
   isLoading: false,
+  firstStaffNudgeId: null,
+  clearFirstStaffNudge: () => set({ firstStaffNudgeId: null }),
 
   loadStaff: async (businessId: string) => {
     set({ isLoading: true });
@@ -61,6 +66,7 @@ export const useStaffStore = create<StaffState>((set, get) => ({
       createdAt: dayjs().toISOString(),
     });
     await get().loadStaff(businessId);
+    if (get().staffList.length === 1) set({ firstStaffNudgeId: id });
     track('staff_added', {
       salary_type: input.salaryType,
       has_phone: !!input.phone,

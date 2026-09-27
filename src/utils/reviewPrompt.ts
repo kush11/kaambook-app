@@ -8,13 +8,16 @@
  */
 import * as StoreReview from 'expo-store-review';
 import dayjs from 'dayjs';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../db/client';
 import { attendance, settings } from '../db/schema';
 import { track } from './analytics';
 
 const REVIEW_GAP_DAYS = 90;
-const ATTENDANCE_DAYS_BEFORE_ASKING = 7;
+// Enough to show the habit has started, early enough that the engaged first-week
+// users (who are the ones that rate) are still around.
+const ATTENDANCE_MARKS_BEFORE_ASKING = 5;
+const ATTENDANCE_DAYS_BEFORE_ASKING = 2;
 const SETTING_KEY = 'review_requested_at';
 
 type ReviewTrigger = 'report_shared' | 'attendance_streak';
@@ -29,8 +32,13 @@ export async function maybeAskForReview(trigger: ReviewTrigger): Promise<void> {
   try {
     if (await askedRecently()) return;
     if (trigger === 'attendance_streak') {
-      const days = await db.select({ date: attendance.date }).from(attendance).groupBy(attendance.date);
-      if (days.length < ATTENDANCE_DAYS_BEFORE_ASKING) return;
+      const [row] = await db
+        .select({
+          marks: sql<number>`count(*)`,
+          days: sql<number>`count(distinct ${attendance.date})`,
+        })
+        .from(attendance);
+      if (!row || row.marks < ATTENDANCE_MARKS_BEFORE_ASKING || row.days < ATTENDANCE_DAYS_BEFORE_ASKING) return;
     }
     if (!(await StoreReview.isAvailableAsync())) return;
 

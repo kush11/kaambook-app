@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import dayjs from 'dayjs';
 import i18n, { setLocale } from '../i18n';
 import { track, identifyOwner, flushAnalytics } from '../utils/analytics';
-import { scheduleAttendanceReminder } from '../utils/notifications';
+import { scheduleAttendanceReminder, requestNotificationPermissions } from '../utils/notifications';
 
 interface SettingsState {
   language: string;
@@ -23,6 +23,8 @@ interface SettingsState {
   setLanguage: (lang: string) => Promise<void>;
   setActiveBusinessId: (id: string) => Promise<void>;
   setReminderEnabled: (enabled: boolean) => Promise<void>;
+  /** Turns the daily reminder on from a flow other than Settings; false if permission was refused. */
+  autoEnableReminder: (source: 'first_staff') => Promise<boolean>;
   setReminderTime: (time: string) => Promise<void>;
   completeOnboarding: () => Promise<void>;
   setOwnerPhone: (phone: string, source: 'onboarding' | 'home_prompt' | 'settings') => Promise<void>;
@@ -91,6 +93,20 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     await get().setSetting('reminder_enabled', enabled ? '1' : '0');
     set({ reminderEnabled: enabled });
     track('reminder_toggled', { enabled });
+  },
+
+  // Users who add staff but never mark attendance are the biggest drop-off, and
+  // the reminder was off by default, so the first staff add switches it on.
+  autoEnableReminder: async (source) => {
+    if (get().reminderEnabled) return true;
+    const granted = await requestNotificationPermissions();
+    track('reminder_auto_enabled', { source, granted });
+    if (!granted) return false;
+    const [h, m] = get().reminderTime.split(':').map(Number);
+    await scheduleAttendanceReminder(h, m);
+    await get().setSetting('reminder_enabled', '1');
+    set({ reminderEnabled: true });
+    return true;
   },
 
   setReminderTime: async (time: string) => {

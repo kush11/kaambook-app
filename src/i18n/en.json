@@ -217,5 +217,10 @@
     "thu": "Thu",
     "fri": "Fri",
     "sat": "Sat"
+  },
+  "first_attendance": {
+    "title": "Mark today's attendance for %{name}",
+    "subtitle": "Do this every day and salary and dues are calculated automatically.",
+    "reminder_on": "We'll remind you every day at %{time}."
   }
 }

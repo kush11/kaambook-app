@@ -10,7 +10,7 @@ import i18n from '@/src/i18n';
 
 export default function AddStaffScreen() {
   const { addStaff, isPhoneTaken } = useStaffStore();
-  const { activeBusinessId } = useSettingsStore();
+  const { activeBusinessId, autoEnableReminder } = useSettingsStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,7 +20,12 @@ export default function AddStaffScreen() {
       return;
     }
     setLoading(true);
-    const id = await addStaff(activeBusinessId, data);
+    await addStaff(activeBusinessId, data);
+    // First staff ever: ask for notification permission now, while the user is
+    // invested, so tomorrow's attendance gets a nudge without a trip to Settings.
+    if (useStaffStore.getState().staffList.length === 1) {
+      await autoEnableReminder('first_staff');
+    }
     setLoading(false);
     router.back();
   };
