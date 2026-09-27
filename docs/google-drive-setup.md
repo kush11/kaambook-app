@@ -66,8 +66,10 @@ uses one client ID, so this is rarely worth it.
 3. Build on EAS and install from Play (Internal testing is fine — Play re-signs it with
    the app signing key, which is what the OAuth client checks).
 4. Branding note: Google refused `play.google.com` as the home page ("Missing domain:
-   google.com"), so the home page and privacy link both point at the GitHub Pages
-   privacy policy, with `kush11.github.io` as the authorised domain.
+   google.com"), so the home page is the GitHub Pages site https://kush11.github.io/kaambook-app/
+   and the privacy link is privacy-policy.html there, with `kush11.github.io` as the
+   authorised domain. The optional "Verify branding" step on that page can be done now
+   that a real home page exists.
 
 ## 4. Verify on a phone
 
