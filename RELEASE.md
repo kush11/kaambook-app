@@ -36,8 +36,8 @@ git push origin v1.0.7
   tester lists** and **View app information** (done 2026-09-28). It deliberately does
   **not** have *Release to production*; promote by hand. If it ever needs to go straight
   to production, add that permission and change `track` in eas.json.
-- **TODO (expo.dev):** project → Settings → GitHub → install the Expo GitHub app and link
-  `kush11/kaambook-app`. Tag pushes only trigger the workflow after this.
+- expo.dev → project → GitHub: `kush11/kaambook-app` is linked through the Expo GitHub app
+  (done 2026-09-28). Tag pushes now trigger the workflow.
 
 ---
 
