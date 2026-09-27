@@ -1,7 +1,7 @@
 # Hisab Pagar 1.0.6 — release sheet
 
 - **Version:** 1.0.6 (versionCode is auto-incremented by EAS; local Gradle says 11)
-- **Bundle:** built on Expo (EAS), `eas build --platform android --profile production`
+- **Bundle:** built on Expo (EAS), `eas build --platform android --profile production` — build `08fa496d-751c-4a3c-b226-26ba551890e3`, versionCode 11, commit f48a734
 - **Signed with:** the EAS-managed upload key Play has on file (see `RELEASE.md`)
 
 ## Why this release
