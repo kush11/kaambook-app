@@ -44,8 +44,10 @@ at https://console.cloud.google.com — signed in as the Play Console owner acco
 - Name: `Hisab Pagar (Play)`
 - Package name: `com.kaambook.app`
 - SHA-1: the **App signing key certificate** fingerprint from Play Console →
-  *Test and release → App integrity → App signing*. This is the key Google re-signs the
-  app with on users' phones, **not** the EAS upload key.
+  *Protected with Play → App signing*. This is the key Google re-signs the app with on
+  users' phones, **not** the EAS upload key. As of 28 Sept 2026 it is
+  `06:49:DD:11:D6:08:59:53:34:37:3E:58:25:C7:16:A7:F9:A3:46:2A`
+  (SHA-256 `9B:A9:10:B0:BF:CE:EB:FA:F5:AB:A3:E6:50:D9:21:63:77:88:E0:A6:DD:61:F9:EE:DA:66:1F:08:36:55:63:83`).
 
 Copy the Client ID (looks like `1234567890-abc…xyz.apps.googleusercontent.com`).
 
