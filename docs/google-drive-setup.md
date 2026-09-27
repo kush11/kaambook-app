@@ -1,8 +1,10 @@
 # Google Drive automatic backup — one-time setup
 
-The app code is done; the feature stays hidden until `GOOGLE_ANDROID_CLIENT_ID` in
-`src/config/googleDrive.ts` is filled in. That needs an OAuth client in Google Cloud.
-About 15 minutes, no cost.
+**Status (28 Sept 2026): done.** Drive API enabled, consent screen "Hisab Pagar" published
+to production with the three non-sensitive scopes, Android client
+`172168001236-bql8gqbjupgusussd2mm7vg4s005iv6r.apps.googleusercontent.com` created for
+`com.kaambook.app` + the Play app-signing SHA-1, and the ID is in `src/config/googleDrive.ts`.
+The steps below are kept for reference (e.g. a new package name or a key rotation).
 
 ## How it works (for reference)
 
@@ -63,6 +65,9 @@ uses one client ID, so this is rarely worth it.
    `com.kaambook.app:/oauth2redirect`. Nothing else to change.
 3. Build on EAS and install from Play (Internal testing is fine — Play re-signs it with
    the app signing key, which is what the OAuth client checks).
+4. Branding note: Google refused `play.google.com` as the home page ("Missing domain:
+   google.com"), so the home page and privacy link both point at the GitHub Pages
+   privacy policy, with `kush11.github.io` as the authorised domain.
 
 ## 4. Verify on a phone
 
