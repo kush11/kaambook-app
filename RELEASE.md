@@ -31,11 +31,11 @@ git push origin v1.0.7
   uploaded to EAS credentials and assigned to `com.kaambook.app` for submissions. The JSON
   is **not** in the repo; a copy lives in `~/Downloads/kaambook-app-f68f1049fadc.json`.
 - `eas.json` → `submit.production.android` uses the EAS-stored key, track `internal`.
-- **TODO (Play Console):** Users and permissions → Invite new users → the service-account
-  email above → App permissions → add *Hisab Pagar* with **Release apps to testing tracks**,
-  **Manage testing tracks and edit tester lists**, **View app information** (and
-  **Release to production** if you ever want the workflow to go straight to production).
-  Until this is done `eas submit` fails with "The caller does not have permission".
+- Play Console → Users and permissions: the service account is an Active user on
+  *Hisab Pagar* with **Release apps to testing tracks**, **Manage testing tracks and edit
+  tester lists** and **View app information** (done 2026-09-28). It deliberately does
+  **not** have *Release to production*; promote by hand. If it ever needs to go straight
+  to production, add that permission and change `track` in eas.json.
 - **TODO (expo.dev):** project → Settings → GitHub → install the Expo GitHub app and link
   `kush11/kaambook-app`. Tag pushes only trigger the workflow after this.
 
