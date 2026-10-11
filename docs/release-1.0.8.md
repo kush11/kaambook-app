@@ -36,4 +36,6 @@ PostHog shows zero successful `drive_connected` there — the one attempt, 2026-
 ## Status
 
 - 2026-09-28 03:47 IST: vc 14 on Internal testing (EAS workflow).
-- 2026-10-11: still on Internal testing, 0% install base; promotion to Production pending.
+- 2026-10-11 (afternoon check): still on Internal testing, 0% install base.
+- 2026-10-11 21:28 IST: promoted to **Production**, 100% rollout, status "In review"
+  (3 countries/regions, same as 1.0.7). Replaces 1.0.7 vc 12 once Play finishes review.
