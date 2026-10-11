@@ -29,4 +29,11 @@
 - Uninstall / reinstall → onboarding → Restore from Google Drive → Home shows staff.
 
 ## Play Console → Release notes
-Same as 1.0.7 (the feature is new to users); 1.0.7 was never promoted to Production.
+Same as 1.0.7 (the Drive feature is still new to users: 1.0.7 vc 12 is in Production, but
+PostHog shows zero successful `drive_connected` there — the one attempt, 2026-10-01, ended in
+`drive_connect_cancelled`, i.e. the redirect bug this release fixes).
+
+## Status
+
+- 2026-09-28 03:47 IST: vc 14 on Internal testing (EAS workflow).
+- 2026-10-11: still on Internal testing, 0% install base; promotion to Production pending.

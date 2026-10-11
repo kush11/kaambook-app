@@ -7,8 +7,8 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 | Version | versionCode | Date | EAS build | Play status |
 |---|---|---|---|---|
 | 1.0.8 | 14 | 2026-09-28 | CI (tag `v1.0.8`) | Internal testing |
-| 1.0.7 | 13 (12 manual) | 2026-09-28 | CI run `01a0e4ad` (vc 13); manual `0b179a4d` (vc 12) | Internal testing (not promoted) |
-| 1.0.6 | 11 | 2026-09-27 | `08fa496d` | Production |
+| 1.0.7 | 12 (13 CI) | 2026-09-28 | manual `0b179a4d` (vc 12); CI run `01a0e4ad` (vc 13) | **Production** (vc 12, promoted by hand 2026-09-28 03:10 IST); vc 13 stayed on Internal testing |
+| 1.0.6 | 11 | 2026-09-27 | `08fa496d` | Production (superseded) |
 | 1.0.5 | 10 | 2026-09-21 | `b7ee5040` | Production (superseded) |
 | 1.0.4 | 8, 9 | 2026-06-26 | — | Production (superseded) |
 | ≤ 1.0.3 | 1–7 | 2026-03 → 2026-06 | — | superseded |
@@ -38,7 +38,8 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
   backups share one code path.
 - Release process now runs on EAS Workflows: pushing a `v*` tag builds and submits to
   the Internal testing track (`.eas/workflows/release-android.yml`). First run: tag
-  `v1.0.7` → workflow run `01a0e4ad` → versionCode 13 on Internal testing.
+  `v1.0.7` → workflow run `01a0e4ad` → versionCode 13 on Internal testing. (Production got
+  the manual versionCode 12 build instead, promoted by hand on 2026-09-28; see release sheet.)
 - Website at https://kush11.github.io/kaambook-app/ (docs/index.html, 10 languages).
 
 ## 1.0.6 — 2026-09-27 · [release sheet](docs/release-1.0.6.md)
