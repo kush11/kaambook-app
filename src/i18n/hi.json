@@ -42,7 +42,10 @@
     "mark_all_present": "सभी हाज़िर",
     "mark_holiday": "छुट्टी",
     "switch_business": "बिज़नेस बदलने के लिए टैप करें",
-    "no_business": "कृपया पहले एक बिज़नेस चुनें"
+    "no_business": "कृपया पहले एक बिज़नेस चुनें",
+    "no_active_staff": "कोई सक्रिय स्टाफ नहीं",
+    "no_active_staff_hint": "काम छोड़ चुके स्टाफ नीचे दिखे हैं। नया स्टाफ जोड़ने के लिए + दबाएँ।",
+    "no_search_results": "कोई स्टाफ नहीं मिला"
   },
   "staff": {
     "add": "स्टाफ जोड़ें",
@@ -72,7 +75,10 @@
     "pdf_report": "PDF रिपोर्ट",
     "contact_permission_title": "संपर्क की अनुमति चाहिए",
     "contact_permission_msg": "स्टाफ का नाम और नंबर चुनने के लिए संपर्क की अनुमति दें। आप इसे सेटिंग्स से चालू कर सकते हैं।",
-    "duplicate_phone": "यह मोबाइल नंबर पहले से किसी अन्य स्टाफ के लिए जोड़ा गया है।"
+    "duplicate_phone": "यह मोबाइल नंबर पहले से किसी अन्य स्टाफ के लिए जोड़ा गया है।",
+    "inactive_list": "निष्क्रिय स्टाफ (%{count})",
+    "inactive_badge": "निष्क्रिय",
+    "joining_date_hint": "इस तिथि से पहले के दिन वेतन में नहीं गिने जाते।"
   },
   "attendance": {
     "title": "हाजिरी",
@@ -103,7 +109,8 @@
     "bank": "बैंक ट्रांसफर",
     "date": "तारीख",
     "note": "नोट (वैकल्पिक)",
-    "no_payments": "कोई भुगतान दर्ज नहीं"
+    "no_payments": "कोई भुगतान दर्ज नहीं",
+    "delete_confirm": "यह भुगतान हटाएं? इसे वापस नहीं लाया जा सकता।"
   },
   "salary": {
     "title": "वेतन",
@@ -208,7 +215,9 @@
       "sales": "बिक्री",
       "payment_received": "भुगतान मिला",
       "other_income": "अन्य आमदनी"
-    }
+    },
+    "delete_confirm": "यह एंट्री हटाएं? इसे वापस नहीं लाया जा सकता।",
+    "date": "तारीख"
   },
   "ai": {
     "summary_btn": "AI समरी",
@@ -240,6 +249,23 @@
     "promo_title": "अपना रिकॉर्ड कभी न खोएं",
     "promo_subtitle": "अपने Google Drive में ऑटोमैटिक बैकअप चालू करें। स्टाफ, हाज़िरी और पेमेंट रोज़ सेव होते हैं और ऐप दोबारा इंस्टॉल करने या फ़ोन बदलने पर वापस मिल जाते हैं।",
     "onboarding_restore": "पहले से Hisab Pagar इस्तेमाल किया है? Google Drive से डेटा वापस लाएं",
-    "error": "Google Drive बैकअप नहीं हो पाया। फिर से कोशिश करें।"
+    "error": "Google Drive बैकअप नहीं हो पाया। फिर से कोशिश करें।",
+    "title_short": "Google Drive",
+    "auto_on": "नई एंट्री अपने आप बैकअप होती हैं",
+    "settings_title": "बैकअप सेटिंग्स",
+    "account": "Google खाता",
+    "change_account": "Google खाता बदलें",
+    "change_note": "पुराना बैकअप पुराने खाते में ही रहेगा। इस फ़ोन का डेटा नए खाते में बैकअप होगा।",
+    "storage": "Google स्टोरेज",
+    "storage_used": "%{total} में से %{used} इस्तेमाल हुआ",
+    "storage_used_unlimited": "%{used} इस्तेमाल हुआ",
+    "storage_error": "स्टोरेज नहीं दिख पाया। फिर से कोशिश करने के लिए टैप करें।",
+    "disconnect_confirm": "अपने आप बैकअप बंद हो जाएगा। आपका आखिरी बैकअप Google Drive में रहेगा।",
+    "storage_full": "आपका Google स्टोरेज भर गया है। जगह खाली करें या और स्टोरेज लें, फिर अभी बैकअप करें दबाएँ।",
+    "storage_full_paused": "Google स्टोरेज भर गया है, इसलिए बैकअप रुका हुआ है",
+    "scope_title": "Google Drive की अनुमति दें",
+    "scope_missing": "बैकअप के लिए आपके Google Drive में सेव करने की अनुमति चाहिए। Google स्क्रीन पर Google Drive वाले बॉक्स पर टिक करें और फिर Continue दबाएँ।",
+    "scope_retry": "फिर से कोशिश करें",
+    "scope_lost": "Google Drive की अनुमति बंद है, इसलिए बैकअप रुक गया है। \"Google Drive जोड़ें\" दबाएँ और Google Drive वाले बॉक्स पर टिक करें।"
   }
 }

@@ -11,7 +11,8 @@ interface StaffCardProps {
   staff: Staff;
   todayStatus?: AttendanceStatus;
   onPress: () => void;
-  onMarkAttendance: (status: AttendanceStatus) => void;
+  /** Omit for staff who can't be marked (inactive) — the P / A / ½ buttons are hidden. */
+  onMarkAttendance?: (status: AttendanceStatus) => void;
   /** Rows sit in one grouped list; the ends get the rounded corners. */
   isFirst?: boolean;
   isLast?: boolean;
@@ -41,23 +42,25 @@ export function StaffCard({ staff, todayStatus, onPress, onMarkAttendance, isFir
               {formatCurrency(staff.salaryAmount)}{i18n.t(suffixKey)}
             </Text>
           </View>
-          <View style={styles.actions}>
-            {marks.map((m) => {
-              const selected = todayStatus === m.status;
-              return (
-                <Pressable
-                  key={m.status}
-                  onPress={() => onMarkAttendance(m.status)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${i18n.t(m.labelKey)}: ${staff.name}`}
-                  accessibilityState={{ selected }}
-                  style={[styles.chip, selected && { backgroundColor: m.color }]}
-                >
-                  <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{m.letter}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
+          {onMarkAttendance ? (
+            <View style={styles.actions}>
+              {marks.map((m) => {
+                const selected = todayStatus === m.status;
+                return (
+                  <Pressable
+                    key={m.status}
+                    onPress={() => onMarkAttendance(m.status)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${i18n.t(m.labelKey)}: ${staff.name}`}
+                    accessibilityState={{ selected }}
+                    style={[styles.chip, selected && { backgroundColor: m.color }]}
+                  >
+                    <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{m.letter}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : null}
         </View>
       </TouchableRipple>
     </View>

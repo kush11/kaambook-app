@@ -3,12 +3,14 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
 import { AmountInput } from '../ui/AmountInput';
 import { SegmentedToggle } from '../ui/SegmentedToggle';
+import { DatePickerField } from '../ui/DatePickerField';
+import { today } from '@/src/utils/date';
 import { colors } from '@/src/theme/colors';
 import type { PaymentType, PaymentMode } from '@/src/types';
 import i18n from '@/src/i18n';
 
 interface PaymentFormProps {
-  onSubmit: (data: { amount: number; type: PaymentType; mode: PaymentMode; note: string }) => void;
+  onSubmit: (data: { amount: number; type: PaymentType; mode: PaymentMode; note: string; date: string }) => void;
   isLoading?: boolean;
 }
 
@@ -17,6 +19,7 @@ export function PaymentForm({ onSubmit, isLoading }: PaymentFormProps) {
   const [type, setType] = useState<PaymentType>('salary');
   const [mode, setMode] = useState<PaymentMode>('cash');
   const [note, setNote] = useState('');
+  const [date, setDate] = useState(today());
   const [error, setError] = useState(false);
 
   const handleSubmit = () => {
@@ -24,7 +27,7 @@ export function PaymentForm({ onSubmit, isLoading }: PaymentFormProps) {
       setError(true);
       return;
     }
-    onSubmit({ amount, type, mode, note });
+    onSubmit({ amount, type, mode, note, date });
   };
 
   return (
@@ -59,6 +62,13 @@ export function PaymentForm({ onSubmit, isLoading }: PaymentFormProps) {
           { value: 'bank', label: i18n.t('payment.bank') },
         ]}
         style={styles.segment}
+      />
+
+      <DatePickerField
+        value={date}
+        onChange={setDate}
+        label={i18n.t('payment.date')}
+        style={styles.input}
       />
 
       <TextInput

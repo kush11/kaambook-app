@@ -11,6 +11,7 @@ import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { colors } from '@/src/theme/colors';
 import { formatCurrency } from '@/src/utils/formatters';
 import { calculateSalary } from '@/src/utils/salary';
+import { getMonthYear } from '@/src/utils/date';
 import { gatherMonthSummary, fetchAiSummary, isAiConfigured } from '@/src/utils/aiSummary';
 import { trackError } from '@/src/utils/analytics';
 import { db } from '@/src/db/client';
@@ -47,14 +48,19 @@ export default function SalaryDueScreen() {
 
       const results: StaffDue[] = [];
       // Earned and paid cover every active staff member, including those fully settled.
+      // Inactive staff (left the job) still count while something is owed either way —
+      // that final settlement is exactly what this screen is for.
       let earned = 0;
       let paid = 0;
-      for (const s of staffList.filter(s => s.status === 'active')) {
+      // Read the list loadStaff just fetched; the `staffList` captured by this callback
+      // can be stale (e.g. right after a salary edit).
+      for (const s of useStaffStore.getState().staffList) {
         const att = await db.select().from(attendance)
           .where(and(eq(attendance.staffId, s.id), gte(attendance.date, startDate), lte(attendance.date, endDate))) as Attendance[];
         const pay = await db.select().from(payments)
           .where(and(eq(payments.staffId, s.id), gte(payments.date, startDate), lte(payments.date, endDate))) as Payment[];
         const breakdown = calculateSalary(s, att, pay, year, month);
+        if (s.status !== 'active' && breakdown.balanceDue === 0) continue;
         earned += breakdown.earnedSalary;
         paid += breakdown.totalPaid;
         if (breakdown.balanceDue !== 0) {
@@ -67,7 +73,7 @@ export default function SalaryDueScreen() {
     } catch (e) {
       console.error('Failed to load salary dues:', e);
     }
-  }, [activeBusinessId, year, month, staffList.length]);
+  }, [activeBusinessId, year, month]);
 
   useFocusEffect(useCallback(() => { loadDues(); }, [loadDues]));
 
@@ -153,7 +159,12 @@ export default function SalaryDueScreen() {
                 <View style={styles.rowContent}>
                   <StaffAvatar name={item.staff.name} photoUri={item.staff.photoUri} size={40} />
                   <View style={styles.rowInfo}>
-                    <Text style={styles.rowName} numberOfLines={1}>{item.staff.name}</Text>
+                    <Text style={styles.rowName} numberOfLines={1}>
+                      {item.staff.name}
+                      {item.staff.status !== 'active' ? (
+                        <Text style={styles.rowInactive}>{`  · ${i18n.t('staff.inactive_badge')}`}</Text>
+                      ) : null}
+                    </Text>
                     <Text style={styles.rowMeta} numberOfLines={1}>
                       {i18n.t('salary.earned')} {formatCurrency(earnedSalary)} · {i18n.t('salary.paid')} {formatCurrency(totalPaid)}
                     </Text>
@@ -189,7 +200,7 @@ export default function SalaryDueScreen() {
             <IconButton icon="close" size={20} onPress={() => setAiVisible(false)} />
           </View>
           <Text variant="bodySmall" style={styles.modalMonth}>
-            {dayjs().year(year).month(month).format('MMMM YYYY')}
+            {getMonthYear(year, month)}
           </Text>
 
           {aiLoading ? (
@@ -246,6 +257,7 @@ const styles = StyleSheet.create({
   rowContent: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   rowInfo: { flex: 1, gap: 3 },
   rowName: { fontSize: 16, fontWeight: '600', color: colors.text },
+  rowInactive: { fontSize: 13, fontWeight: '400', color: colors.textSecondary },
   rowMeta: { fontSize: 13, color: colors.textSecondary },
   rowTrack: { height: 4, borderRadius: 2, backgroundColor: colors.divider, overflow: 'hidden', marginTop: 2 },
   rowFill: { height: 4, backgroundColor: colors.success },

@@ -24,6 +24,7 @@ export function EmptyState({ icon, title, subtitle }: EmptyStateProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
-  title: { marginTop: 16, color: colors.textSecondary, textAlign: 'center' },
-  subtitle: { marginTop: 8, color: colors.textSecondary, textAlign: 'center' },
+  // Full width: Android measured centred Devanagari titles too narrow and dropped the last word.
+  title: { marginTop: 16, color: colors.textSecondary, textAlign: 'center', alignSelf: 'stretch' },
+  subtitle: { marginTop: 8, color: colors.textSecondary, textAlign: 'center', alignSelf: 'stretch' },
 });

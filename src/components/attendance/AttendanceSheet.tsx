@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Button, TextInput, Portal, Modal } from 'react-native-paper';
 import { colors } from '@/src/theme/colors';
 import type { AttendanceStatus } from '@/src/types';
 import { formatDate } from '@/src/utils/date';
+import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
 import i18n from '@/src/i18n';
 
 interface AttendanceSheetProps {
@@ -28,6 +29,7 @@ export function AttendanceSheet({ visible, date, currentStatus, onMark, onDismis
   const [selected, setSelected] = useState<AttendanceStatus | undefined>(currentStatus);
   const [note, setNote] = useState('');
   const [overtime, setOvertime] = useState('');
+  const keyboardHeight = useKeyboardHeight();
 
   const handleSave = () => {
     if (!selected) return;
@@ -38,43 +40,50 @@ export function AttendanceSheet({ visible, date, currentStatus, onMark, onDismis
 
   return (
     <Portal>
-      <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modal}>
-        <Text variant="titleMedium" style={styles.title}>
-          {formatDate(date)}
-        </Text>
-        <View style={styles.statusGrid}>
-          {STATUSES.map(s => (
-            <Button
-              key={s.key}
-              mode={selected === s.key ? 'contained' : 'outlined'}
-              onPress={() => setSelected(s.key)}
-              style={styles.statusBtn}
-              buttonColor={selected === s.key ? s.color : undefined}
-              textColor={selected === s.key ? '#fff' : s.color}
-              compact
-            >
-              {i18n.t(`attendance.${s.key}`)}
-            </Button>
-          ))}
-        </View>
-        <TextInput
-          mode="outlined"
-          label={i18n.t('attendance.note')}
-          value={note}
-          onChangeText={setNote}
-          style={styles.input}
-        />
-        <TextInput
-          mode="outlined"
-          label={i18n.t('attendance.overtime')}
-          value={overtime}
-          onChangeText={setOvertime}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <Button mode="contained" onPress={handleSave} disabled={!selected} style={styles.saveBtn}>
-          {i18n.t('attendance.mark_attendance')}
-        </Button>
+      <Modal
+        visible={visible}
+        onDismiss={onDismiss}
+        style={{ paddingBottom: keyboardHeight }}
+        contentContainerStyle={styles.modal}
+      >
+        <ScrollView keyboardShouldPersistTaps="handled">
+          <Text variant="titleMedium" style={styles.title}>
+            {formatDate(date)}
+          </Text>
+          <View style={styles.statusGrid}>
+            {STATUSES.map(s => (
+              <Button
+                key={s.key}
+                mode={selected === s.key ? 'contained' : 'outlined'}
+                onPress={() => setSelected(s.key)}
+                style={styles.statusBtn}
+                buttonColor={selected === s.key ? s.color : undefined}
+                textColor={selected === s.key ? '#fff' : s.color}
+                compact
+              >
+                {i18n.t(`attendance.${s.key}`)}
+              </Button>
+            ))}
+          </View>
+          <TextInput
+            mode="outlined"
+            label={i18n.t('attendance.note')}
+            value={note}
+            onChangeText={setNote}
+            style={styles.input}
+          />
+          <TextInput
+            mode="outlined"
+            label={i18n.t('attendance.overtime')}
+            value={overtime}
+            onChangeText={setOvertime}
+            keyboardType="numeric"
+            style={styles.input}
+          />
+          <Button mode="contained" onPress={handleSave} disabled={!selected} style={styles.saveBtn}>
+            {i18n.t('attendance.mark_attendance')}
+          </Button>
+        </ScrollView>
       </Modal>
     </Portal>
   );
@@ -86,6 +95,7 @@ const styles = StyleSheet.create({
     margin: 20,
     borderRadius: 16,
     padding: 20,
+    flexShrink: 1, // lets the ScrollView scroll when the keyboard leaves little room
   },
   title: { textAlign: 'center', marginBottom: 16 },
   statusGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },

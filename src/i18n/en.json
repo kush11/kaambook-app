@@ -42,7 +42,10 @@
     "mark_all_present": "Present all",
     "mark_holiday": "Holiday",
     "switch_business": "Tap to switch business",
-    "no_business": "Please select a business first"
+    "no_business": "Please select a business first",
+    "no_active_staff": "No active staff",
+    "no_active_staff_hint": "Staff who left are listed below. Tap + to add new staff.",
+    "no_search_results": "No staff found"
   },
   "staff": {
     "add": "Add Staff",
@@ -72,7 +75,10 @@
     "pdf_report": "PDF Report",
     "contact_permission_title": "Contacts permission needed",
     "contact_permission_msg": "Allow contacts access to pick a staff member's name and number. You can enable it from Settings.",
-    "duplicate_phone": "This mobile number is already added for another staff member."
+    "duplicate_phone": "This mobile number is already added for another staff member.",
+    "inactive_list": "Inactive staff (%{count})",
+    "inactive_badge": "Inactive",
+    "joining_date_hint": "Days before this date are not counted in salary."
   },
   "attendance": {
     "title": "Attendance",
@@ -103,7 +109,8 @@
     "bank": "Bank Transfer",
     "date": "Date",
     "note": "Note (optional)",
-    "no_payments": "No payments recorded"
+    "no_payments": "No payments recorded",
+    "delete_confirm": "Delete this payment? This cannot be undone."
   },
   "salary": {
     "title": "Salary",
@@ -154,7 +161,9 @@
       "sales": "Sales",
       "payment_received": "Payment Received",
       "other_income": "Other Income"
-    }
+    },
+    "delete_confirm": "Delete this entry? This cannot be undone.",
+    "date": "Date"
   },
   "settings": {
     "title": "Settings",
@@ -240,6 +249,23 @@
     "promo_title": "Never lose your records",
     "promo_subtitle": "Turn on automatic backup to your Google Drive. Staff, attendance and payments are saved every day and come back when you reinstall or change phones.",
     "onboarding_restore": "Already used Hisab Pagar? Restore from Google Drive",
-    "error": "Google Drive backup failed. Please try again."
+    "error": "Google Drive backup failed. Please try again.",
+    "title_short": "Google Drive",
+    "auto_on": "New entries are backed up automatically",
+    "settings_title": "Backup settings",
+    "account": "Google Account",
+    "change_account": "Change Google account",
+    "change_note": "Your old backup stays in the old account. Data on this phone will be backed up to the new account.",
+    "storage": "Google Storage",
+    "storage_used": "%{used} of %{total} used",
+    "storage_used_unlimited": "%{used} used",
+    "storage_error": "Couldn't load storage. Tap to retry.",
+    "disconnect_confirm": "Automatic backup will stop. Your last backup stays in Google Drive.",
+    "storage_full": "Your Google storage is full. Free up space or get more storage, then tap Back up now.",
+    "storage_full_paused": "Google storage is full, so backups are paused",
+    "scope_title": "Allow Google Drive access",
+    "scope_missing": "Backup needs permission to save to your Google Drive. On the Google screen, tick the Google Drive box and then tap Continue.",
+    "scope_retry": "Try again",
+    "scope_lost": "Google Drive access was turned off, so backup stopped. Tap \"Connect Google Drive\" and tick the Google Drive box."
   }
 }

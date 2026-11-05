@@ -38,7 +38,7 @@ export function PaymentCard({ payment, onDelete }: PaymentCardProps) {
           {isDeduction ? '-' : '+'}{formatCurrency(payment.amount)}
         </Text>
         {onDelete && (
-          <IconButton icon="delete-outline" size={20} onPress={onDelete} />
+          <IconButton icon="delete-outline" size={20} onPress={onDelete} accessibilityLabel={i18n.t('common.delete')} />
         )}
       </Card.Content>
     </Card>

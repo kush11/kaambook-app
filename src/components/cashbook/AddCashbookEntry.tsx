@@ -3,12 +3,14 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { Button, TextInput, Text, Chip } from 'react-native-paper';
 import { SegmentedToggle } from '../ui/SegmentedToggle';
 import { AmountInput } from '../ui/AmountInput';
+import { DatePickerField } from '../ui/DatePickerField';
+import { today } from '@/src/utils/date';
 import { colors } from '@/src/theme/colors';
 import type { CashbookType, CashbookCategory } from '@/src/types';
 import i18n from '@/src/i18n';
 
 interface Props {
-  onSubmit: (data: { amount: number; type: CashbookType; category: CashbookCategory; description: string }) => void;
+  onSubmit: (data: { amount: number; type: CashbookType; category: CashbookCategory; description: string; date: string }) => void;
   isLoading?: boolean;
 }
 
@@ -32,6 +34,7 @@ export function AddCashbookEntry({ onSubmit, isLoading }: Props) {
   const [type, setType] = useState<CashbookType>('expense');
   const [category, setCategory] = useState<CashbookCategory>('material');
   const [description, setDescription] = useState('');
+  const [date, setDate] = useState(today());
   const [error, setError] = useState(false);
 
   const categories = type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
@@ -43,7 +46,7 @@ export function AddCashbookEntry({ onSubmit, isLoading }: Props) {
 
   const handleSubmit = () => {
     if (amount <= 0) { setError(true); return; }
-    onSubmit({ amount, type, category, description });
+    onSubmit({ amount, type, category, description, date });
   };
 
   return (
@@ -81,6 +84,13 @@ export function AddCashbookEntry({ onSubmit, isLoading }: Props) {
           </Chip>
         ))}
       </View>
+
+      <DatePickerField
+        value={date}
+        onChange={setDate}
+        label={i18n.t('cashbook.date')}
+        style={styles.input}
+      />
 
       <TextInput
         mode="outlined"

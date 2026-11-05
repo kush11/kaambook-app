@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, Linking } from 'react-native';
 import Constants from 'expo-constants';
-import { List, Switch, Text, Divider } from 'react-native-paper';
+import { List, Switch, Text, Divider, Portal, Dialog, Chip, Button } from 'react-native-paper';
 import { getLanguageLabel } from '@/src/components/settings/LanguagePicker';
 import { BackupRestore } from '@/src/components/settings/BackupRestore';
 import { DriveBackupSection } from '@/src/components/settings/DriveBackupSection';
@@ -16,9 +16,22 @@ import { track } from '@/src/utils/analytics';
 import { shareApp } from '@/src/utils/shareApp';
 import { PACKAGE } from '@/src/config/links';
 
+// Hourly choices for the daily reminder, 07:00 to 22:00.
+const REMINDER_TIMES = Array.from({ length: 16 }, (_, i) => `${String(i + 7).padStart(2, '0')}:00`);
+
 export default function SettingsScreen() {
-  const { language, reminderEnabled, setReminderEnabled, reminderTime, ownerPhone } = useSettingsStore();
+  const { language, reminderEnabled, setReminderEnabled, reminderTime, setReminderTime, ownerPhone } = useSettingsStore();
   const [showPhoneDialog, setShowPhoneDialog] = useState(false);
+  const [showTimeDialog, setShowTimeDialog] = useState(false);
+
+  const handleReminderTime = async (time: string) => {
+    setShowTimeDialog(false);
+    await setReminderTime(time);
+    if (reminderEnabled) {
+      const [h, m] = time.split(':').map(Number);
+      await scheduleAttendanceReminder(h, m);
+    }
+  };
 
   const handleReminderToggle = async (enabled: boolean) => {
     if (enabled) {
@@ -84,6 +97,7 @@ export default function SettingsScreen() {
         <List.Item
           title={i18n.t('settings.attendance_reminder')}
           description={reminderEnabled ? `${i18n.t('settings.reminder_time')}: ${reminderTime}` : undefined}
+          onPress={reminderEnabled ? () => setShowTimeDialog(true) : undefined}
           right={() => (
             <Switch value={reminderEnabled} onValueChange={handleReminderToggle} color={colors.primary} />
           )}
@@ -122,10 +136,36 @@ export default function SettingsScreen() {
         />
       </List.Section>
       <OwnerPhoneDialog visible={showPhoneDialog} onDismiss={() => setShowPhoneDialog(false)} />
+      <Portal>
+        <Dialog visible={showTimeDialog} onDismiss={() => setShowTimeDialog(false)}>
+          <Dialog.Title>{i18n.t('settings.reminder_time')}</Dialog.Title>
+          <Dialog.Content style={styles.timeGrid}>
+            {REMINDER_TIMES.map((t) => (
+              <Chip
+                key={t}
+                selected={t === reminderTime}
+                showSelectedCheck={false}
+                onPress={() => handleReminderTime(t)}
+                style={[styles.timeChip, t === reminderTime && styles.timeChipSelected]}
+                textStyle={t === reminderTime ? styles.timeChipTextSelected : undefined}
+              >
+                {t}
+              </Chip>
+            ))}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setShowTimeDialog(false)}>{i18n.t('common.cancel')}</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  timeChip: { backgroundColor: colors.surfaceVariant },
+  timeChipSelected: { backgroundColor: colors.primary },
+  timeChipTextSelected: { color: '#fff' },
 });

@@ -42,7 +42,10 @@
     "mark_all_present": "ਸਾਰੇ ਹਾਜ਼ਰ",
     "mark_holiday": "ਛੁੱਟੀ",
     "switch_business": "ਕਾਰੋਬਾਰ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ",
-    "no_business": "ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਇੱਕ ਕਾਰੋਬਾਰ ਚੁਣੋ"
+    "no_business": "ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਇੱਕ ਕਾਰੋਬਾਰ ਚੁਣੋ",
+    "no_active_staff": "ਕੋਈ ਸਰਗਰਮ ਸਟਾਫ ਨਹੀਂ",
+    "no_active_staff_hint": "ਕੰਮ ਛੱਡ ਚੁੱਕਾ ਸਟਾਫ ਹੇਠਾਂ ਹੈ। ਨਵਾਂ ਸਟਾਫ ਜੋੜਨ ਲਈ + ਦਬਾਓ।",
+    "no_search_results": "ਕੋਈ ਸਟਾਫ ਨਹੀਂ ਮਿਲਿਆ"
   },
   "staff": {
     "add": "ਸਟਾਫ ਜੋੜੋ",
@@ -72,7 +75,10 @@
     "pdf_report": "PDF ਰਿਪੋਰਟ",
     "contact_permission_title": "ਸੰਪਰਕਾਂ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ",
     "contact_permission_msg": "ਸਟਾਫ਼ ਦਾ ਨਾਮ ਅਤੇ ਨੰਬਰ ਚੁਣਨ ਲਈ ਸੰਪਰਕਾਂ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਤੋਂ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।",
-    "duplicate_phone": "ਇਹ ਮੋਬਾਈਲ ਨੰਬਰ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਸਟਾਫ਼ ਲਈ ਜੋੜਿਆ ਗਿਆ ਹੈ।"
+    "duplicate_phone": "ਇਹ ਮੋਬਾਈਲ ਨੰਬਰ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਸਟਾਫ਼ ਲਈ ਜੋੜਿਆ ਗਿਆ ਹੈ।",
+    "inactive_list": "ਅਸਰਗਰਮ ਸਟਾਫ (%{count})",
+    "inactive_badge": "ਅਸਰਗਰਮ",
+    "joining_date_hint": "ਇਸ ਤਾਰੀਖ ਤੋਂ ਪਹਿਲਾਂ ਦੇ ਦਿਨ ਤਨਖਾਹ ਵਿੱਚ ਨਹੀਂ ਗਿਣੇ ਜਾਂਦੇ।"
   },
   "attendance": {
     "title": "ਹਾਜ਼ਰੀ",
@@ -103,7 +109,8 @@
     "bank": "ਬੈਂਕ ਟ੍ਰਾਂਸਫਰ",
     "date": "ਤਾਰੀਖ",
     "note": "ਨੋਟ (ਵਿਕਲਪਿਕ)",
-    "no_payments": "ਕੋਈ ਭੁਗਤਾਨ ਰਿਕਾਰਡ ਨਹੀਂ"
+    "no_payments": "ਕੋਈ ਭੁਗਤਾਨ ਰਿਕਾਰਡ ਨਹੀਂ",
+    "delete_confirm": "ਕੀ ਇਹ ਭੁਗਤਾਨ ਮਿਟਾਉਣਾ ਹੈ? ਇਸਨੂੰ ਵਾਪਸ ਨਹੀਂ ਲਿਆਂਦਾ ਜਾ ਸਕਦਾ।"
   },
   "salary": {
     "title": "ਤਨਖਾਹ",
@@ -208,7 +215,9 @@
       "sales": "ਵਿਕਰੀ",
       "payment_received": "ਭੁਗਤਾਨ ਮਿਲਿਆ",
       "other_income": "ਹੋਰ ਆਮਦਨ"
-    }
+    },
+    "delete_confirm": "ਕੀ ਇਹ ਐਂਟਰੀ ਮਿਟਾਉਣੀ ਹੈ? ਇਸਨੂੰ ਵਾਪਸ ਨਹੀਂ ਲਿਆਂਦਾ ਜਾ ਸਕਦਾ।",
+    "date": "ਤਾਰੀਖ"
   },
   "ai": {
     "summary_btn": "AI ਸਾਰ",
@@ -240,6 +249,23 @@
     "promo_title": "ਆਪਣਾ ਰਿਕਾਰਡ ਕਦੇ ਨਾ ਗੁਆਓ",
     "promo_subtitle": "ਆਪਣੇ Google Drive ਵਿੱਚ ਆਟੋਮੈਟਿਕ ਬੈਕਅੱਪ ਚਾਲੂ ਕਰੋ। ਸਟਾਫ਼, ਹਾਜ਼ਰੀ ਅਤੇ ਪੇਮੈਂਟ ਰੋਜ਼ ਸੇਵ ਹੁੰਦੇ ਹਨ ਅਤੇ ਐਪ ਦੁਬਾਰਾ ਇੰਸਟਾਲ ਕਰਨ ਜਾਂ ਫ਼ੋਨ ਬਦਲਣ 'ਤੇ ਵਾਪਸ ਮਿਲ ਜਾਂਦੇ ਹਨ।",
     "onboarding_restore": "ਪਹਿਲਾਂ Hisab Pagar ਵਰਤਿਆ ਹੈ? Google Drive ਤੋਂ ਡਾਟਾ ਵਾਪਸ ਲਿਆਓ",
-    "error": "Google Drive ਬੈਕਅੱਪ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
+    "error": "Google Drive ਬੈਕਅੱਪ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "title_short": "Google Drive",
+    "auto_on": "ਨਵੀਆਂ ਐਂਟਰੀਆਂ ਆਪਣੇ ਆਪ ਬੈਕਅੱਪ ਹੁੰਦੀਆਂ ਹਨ",
+    "settings_title": "ਬੈਕਅੱਪ ਸੈਟਿੰਗਾਂ",
+    "account": "Google ਖਾਤਾ",
+    "change_account": "Google ਖਾਤਾ ਬਦਲੋ",
+    "change_note": "ਪੁਰਾਣਾ ਬੈਕਅੱਪ ਪੁਰਾਣੇ ਖਾਤੇ ਵਿੱਚ ਹੀ ਰਹੇਗਾ। ਇਸ ਫ਼ੋਨ ਦਾ ਡਾਟਾ ਨਵੇਂ ਖਾਤੇ ਵਿੱਚ ਬੈਕਅੱਪ ਹੋਵੇਗਾ।",
+    "storage": "Google ਸਟੋਰੇਜ",
+    "storage_used": "%{total} ਵਿੱਚੋਂ %{used} ਵਰਤਿਆ",
+    "storage_used_unlimited": "%{used} ਵਰਤਿਆ",
+    "storage_error": "ਸਟੋਰੇਜ ਲੋਡ ਨਹੀਂ ਹੋਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।",
+    "disconnect_confirm": "ਆਪਣੇ ਆਪ ਬੈਕਅੱਪ ਬੰਦ ਹੋ ਜਾਵੇਗਾ। ਤੁਹਾਡਾ ਆਖਰੀ ਬੈਕਅੱਪ Google Drive ਵਿੱਚ ਰਹੇਗਾ।",
+    "storage_full": "ਤੁਹਾਡੀ Google ਸਟੋਰੇਜ ਭਰ ਗਈ ਹੈ। ਥਾਂ ਖਾਲੀ ਕਰੋ ਜਾਂ ਹੋਰ ਸਟੋਰੇਜ ਲਓ, ਫਿਰ ਹੁਣੇ ਬੈਕਅੱਪ ਕਰੋ ਦਬਾਓ।",
+    "storage_full_paused": "Google ਸਟੋਰੇਜ ਭਰ ਗਈ ਹੈ, ਇਸ ਲਈ ਬੈਕਅੱਪ ਰੁਕਿਆ ਹੋਇਆ ਹੈ",
+    "scope_title": "Google Drive ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ",
+    "scope_missing": "ਬੈਕਅੱਪ ਲਈ ਤੁਹਾਡੇ Google Drive ਵਿੱਚ ਸੇਵ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। Google ਸਕ੍ਰੀਨ 'ਤੇ Google Drive ਵਾਲੇ ਬਾਕਸ 'ਤੇ ਟਿਕ ਕਰੋ ਅਤੇ ਫਿਰ Continue ਦਬਾਓ।",
+    "scope_retry": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+    "scope_lost": "Google Drive ਦੀ ਇਜਾਜ਼ਤ ਬੰਦ ਹੈ, ਇਸ ਲਈ ਬੈਕਅੱਪ ਰੁਕ ਗਿਆ ਹੈ। \"Google Drive ਜੋੜੋ\" ਦਬਾਓ ਅਤੇ Google Drive ਵਾਲੇ ਬਾਕਸ 'ਤੇ ਟਿਕ ਕਰੋ।"
   }
 }

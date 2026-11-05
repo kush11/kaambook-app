@@ -16,6 +16,8 @@ import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import dayjs from 'dayjs';
+import { Alert } from 'react-native';
+import i18n from '../i18n';
 import { GOOGLE_ANDROID_CLIENT_ID, DRIVE_BACKUP_FILE_NAME, AUTO_BACKUP_MIN_HOURS } from '../config/googleDrive';
 import { PACKAGE } from '../config/links';
 import { buildBackupData, restoreBackupData, type BackupData } from './backup';
@@ -28,7 +30,35 @@ WebBrowser.maybeCompleteAuthSession();
 
 // drive.appdata is a non-sensitive scope: only the app's own hidden folder,
 // never the user's real files. openid+email just tells us which account it is.
-const SCOPES = ['https://www.googleapis.com/auth/drive.appdata', 'openid', 'email'];
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+const SCOPES = [DRIVE_SCOPE, 'openid', 'email'];
+
+/**
+ * Thrown when the Google account is connected without Drive access. Google's
+ * consent screen lets people untick the Drive box while still signing in, and
+ * every Drive call then answers 403 "insufficient authentication scopes".
+ */
+export class DriveScopeError extends Error {
+  constructor() {
+    super('drive_scope_missing');
+    this.name = 'DriveScopeError';
+  }
+}
+
+export function isDriveScopeError(e: unknown): boolean {
+  return e instanceof DriveScopeError || (e as Error)?.name === 'DriveScopeError';
+}
+
+/** True when the granted scope string includes Drive. A missing string means Google didn't say, so assume granted. */
+export function hasDriveScope(scope: string | undefined): boolean {
+  if (scope === undefined || scope === null) return true;
+  return scope.split(/[\s,]+/).includes(DRIVE_SCOPE);
+}
+
+/** True for Drive's 403 when the token lacks the Drive scope (not for storage-full, which is also 403). */
+export function isInsufficientScopeResponse(status: number, body: string): boolean {
+  return status === 403 && /insufficient authentication scopes|ACCESS_TOKEN_SCOPE_INSUFFICIENT|insufficientPermissions/i.test(body);
+}
 const TOKENS_KEY = 'drive_tokens';
 // The PKCE verifier + state of an in-flight sign-in. Some phones (MIUI in
 // particular) kill the app while Google's sheet is open; the redirect then
@@ -121,9 +151,22 @@ async function driveFetch(token: string, url: string, init: RequestInit = {}): P
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
+    if (isInsufficientScopeResponse(res.status, body)) {
+      // The saved grant can never work; drop it so the app asks to connect again
+      // instead of failing silently on every app open.
+      await forgetDriveConnection();
+      track('drive_scope_lost');
+      throw new DriveScopeError();
+    }
     throw new Error(`Drive ${res.status}: ${body.slice(0, 200)}`);
   }
   return res;
+}
+
+/** Removes the stored tokens and account so the UI shows "Connect" again. */
+async function forgetDriveConnection(): Promise<void> {
+  await SecureStore.deleteItemAsync(TOKENS_KEY).catch(() => {});
+  await useSettingsStore.getState().setDriveAccount('');
 }
 
 async function findBackupFile(token: string): Promise<{ id: string; modifiedTime: string } | null> {
@@ -217,18 +260,57 @@ export async function restoreFromDrive(): Promise<RestoreResult> {
   return 'restored';
 }
 
-export async function disconnectDrive(): Promise<void> {
-  const tokens = await loadTokens();
-  if (tokens?.refreshToken || tokens?.accessToken) {
-    try {
-      await AuthSession.revokeAsync(
-        { token: tokens.refreshToken || tokens.accessToken, clientId: GOOGLE_ANDROID_CLIENT_ID },
-        Google.discovery,
-      );
-    } catch (e) {
-      trackError('drive_revoke', e);
-    }
+export interface DriveStorage {
+  /** Bytes used across the whole Google account (Drive, Gmail, Photos). */
+  usage: number;
+  /** Bytes available in total, or null when the account has unlimited storage. */
+  limit: number | null;
+}
+
+/** The Google account's storage quota, or null when not connected. */
+export async function getDriveStorage(): Promise<DriveStorage | null> {
+  const token = await getAccessToken();
+  if (!token) return null;
+  const res = await driveFetch(token, `${DRIVE_API}/about?fields=storageQuota(limit,usage)`);
+  const { storageQuota } = await res.json();
+  return {
+    usage: Number(storageQuota?.usage ?? 0),
+    limit: storageQuota?.limit ? Number(storageQuota.limit) : null,
+  };
+}
+
+async function revokeTokens(tokens: StoredTokens | null): Promise<void> {
+  if (!tokens?.refreshToken && !tokens?.accessToken) return;
+  try {
+    await AuthSession.revokeAsync(
+      { token: tokens.refreshToken || tokens.accessToken, clientId: GOOGLE_ANDROID_CLIENT_ID },
+      Google.discovery,
+    );
+  } catch (e) {
+    trackError('drive_revoke', e);
   }
+}
+
+/**
+ * Switches the backup to another Google account. `connect` comes from
+ * useDriveConnect(..., { selectAccount: true }). The old account keeps its last
+ * backup; its access is revoked only after the new account is connected, so a
+ * cancelled switch leaves backup running as before.
+ */
+export async function changeDriveAccount(connect: () => Promise<boolean>): Promise<boolean> {
+  const previous = await loadTokens();
+  const previousEmail = useSettingsStore.getState().driveEmail;
+  const ok = await connect();
+  if (!ok) return false;
+  const email = useSettingsStore.getState().driveEmail;
+  // Revoking ends the whole grant for that account, so skip it when the same account was picked again.
+  if (email !== previousEmail) await revokeTokens(previous);
+  track('drive_account_changed', { same_account: email === previousEmail });
+  return true;
+}
+
+export async function disconnectDrive(): Promise<void> {
+  await revokeTokens(await loadTokens());
   await SecureStore.deleteItemAsync(TOKENS_KEY).catch(() => {});
   await useSettingsStore.getState().setDriveAccount('');
   track('drive_disconnected');
@@ -238,6 +320,13 @@ export async function disconnectDrive(): Promise<void> {
 // Cold-start completion
 
 async function finishSignIn(tokens: AuthSession.TokenResponse, source: string, coldStart: boolean): Promise<void> {
+  if (!hasDriveScope(tokens.scope)) {
+    // Signed in but the Drive box was unticked. Revoke so the next attempt shows
+    // the full consent screen again, and never save a grant that can't back up.
+    track('drive_scope_denied', { source, cold_start: coldStart });
+    await revokeTokens({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, expiresAt: 0 });
+    throw new DriveScopeError();
+  }
   await saveTokens(tokens);
   const email = emailFromIdToken(tokens.idToken);
   await useSettingsStore.getState().setDriveAccount(email);
@@ -285,9 +374,26 @@ export async function completeColdStartAuth(): Promise<boolean> {
     }
     return true;
   } catch (e) {
-    trackError('drive_connect_cold_start', e);
+    if (isDriveScopeError(e)) showDriveScopeAlert();
+    else trackError('drive_connect_cold_start', e);
     return false;
   }
+}
+
+/**
+ * Tells the owner the Drive box was unticked on Google's screen. `retry`
+ * reopens the sign-in; without it (cold start, no hook yet) there is only OK.
+ */
+export function showDriveScopeAlert(retry?: () => void, onCancel?: () => void): void {
+  const buttons: { text: string; style?: 'cancel'; onPress?: () => void }[] = [
+    { text: i18n.t(retry ? 'common.cancel' : 'common.ok'), style: 'cancel', onPress: onCancel },
+  ];
+  if (retry) buttons.push({ text: i18n.t('drive.scope_retry'), onPress: retry });
+  // Back button / tapping outside also counts as cancel, so connect() never hangs.
+  Alert.alert(i18n.t('drive.scope_title'), i18n.t('drive.scope_missing'), buttons, {
+    cancelable: true,
+    onDismiss: onCancel,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -305,7 +411,8 @@ export async function maybeAutoBackup(): Promise<void> {
   try {
     await uploadBackupToDrive(true);
   } catch (e) {
-    trackError('drive_auto_backup', e);
+    // A scope error already disconnected Drive and was tracked as drive_scope_lost.
+    if (!isDriveScopeError(e)) trackError('drive_auto_backup', e);
   } finally {
     autoBackupInFlight = false;
   }
@@ -319,7 +426,13 @@ export async function maybeAutoBackup(): Promise<void> {
  * stored and the account email is saved in settings, false if the user
  * cancelled or sign-in failed.
  */
-export function useDriveConnect(source: DriveConnectSource) {
+// Module-level so the auth request isn't rebuilt on every render.
+const CONNECT_PARAMS = { access_type: 'offline' };
+// Account picker every time, and consent so Google returns a refresh token even
+// for an account that connected before.
+const SWITCH_PARAMS = { access_type: 'offline', prompt: 'select_account consent' };
+
+export function useDriveConnect(source: DriveConnectSource, options: { selectAccount?: boolean } = {}) {
   const [request, response, promptAsync] = Google.useAuthRequest({
     // The hook needs a client id even when the feature is off; connect() is gated below.
     androidClientId: GOOGLE_ANDROID_CLIENT_ID || 'unconfigured',
@@ -328,10 +441,37 @@ export function useDriveConnect(source: DriveConnectSource) {
     // Authorization-code flow with PKCE: Google returns a refresh token, so the
     // daily upload never needs the sign-in sheet again.
     responseType: AuthSession.ResponseType.Code,
-    extraParams: { access_type: 'offline' },
+    extraParams: options.selectAccount ? SWITCH_PARAMS : CONNECT_PARAMS,
   });
   const [busy, setBusy] = useState(false);
   const pending = useRef<((ok: boolean) => void) | null>(null);
+
+  /** Opens Google's sheet; the effect below settles pending.current when it answers. */
+  const startPrompt = useCallback(async (): Promise<void> => {
+    if (!request) return;
+    const pendingAuth: PendingAuth = {
+      state: request.state,
+      codeVerifier: request.codeVerifier,
+      source,
+      createdAt: Date.now(),
+    };
+    await SecureStore.setItemAsync(PENDING_KEY, JSON.stringify(pendingAuth)).catch(() => {});
+    try {
+      await promptAsync();
+    } catch (e) {
+      trackError('drive_prompt', e);
+      settle(false);
+    }
+  }, [request, promptAsync, source]);
+  // The scope alert's "Try again" runs after this render's closure is stale.
+  const startPromptRef = useRef(startPrompt);
+  startPromptRef.current = startPrompt;
+
+  function settle(ok: boolean) {
+    pending.current?.(ok);
+    pending.current = null;
+    setBusy(false);
+  }
 
   useEffect(() => {
     if (!response) return;
@@ -342,41 +482,40 @@ export function useDriveConnect(source: DriveConnectSource) {
         try {
           await SecureStore.deleteItemAsync(PENDING_KEY).catch(() => {});
           await finishSignIn(response.authentication, source, false);
-          pending.current?.(true);
+          settle(true);
         } catch (e) {
-          trackError('drive_connect', e);
-          pending.current?.(false);
+          if (isDriveScopeError(e)) {
+            // Keep the caller's connect() open: "Try again" reopens Google's
+            // sheet and, once Drive is allowed, the caller carries on with its
+            // backup or restore as if the first attempt had worked.
+            showDriveScopeAlert(
+              () => {
+                track('drive_scope_retry', { source });
+                startPromptRef.current();
+              },
+              () => settle(false),
+            );
+          } else {
+            trackError('drive_connect', e);
+            settle(false);
+          }
         }
       } else {
         if (response.type === 'error') trackError('drive_connect', response.error);
         else track('drive_connect_cancelled', { source, type: response.type });
-        pending.current?.(false);
+        settle(false);
       }
-      pending.current = null;
-      setBusy(false);
     })();
   }, [response]);
 
   const connect = useCallback(async (): Promise<boolean> => {
     if (!isDriveConfigured() || !request) return false;
     setBusy(true);
-    const pendingAuth: PendingAuth = {
-      state: request.state,
-      codeVerifier: request.codeVerifier,
-      source,
-      createdAt: Date.now(),
-    };
-    await SecureStore.setItemAsync(PENDING_KEY, JSON.stringify(pendingAuth)).catch(() => {});
     return new Promise<boolean>((resolve) => {
       pending.current = resolve;
-      promptAsync().catch((e) => {
-        trackError('drive_prompt', e);
-        pending.current = null;
-        setBusy(false);
-        resolve(false);
-      });
+      startPrompt();
     });
-  }, [request, promptAsync, source]);
+  }, [request, startPrompt]);
 
   return { connect, busy, ready: isDriveConfigured() && !!request };
 }

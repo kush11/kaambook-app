@@ -7,10 +7,12 @@ import { MonthNavigator } from '@/src/components/attendance/MonthNavigator';
 import { CashbookEntryCard } from '@/src/components/cashbook/CashbookEntryCard';
 import { AddCashbookEntry } from '@/src/components/cashbook/AddCashbookEntry';
 import { EmptyState } from '@/src/components/ui/EmptyState';
+import { ConfirmDialog } from '@/src/components/ui/ConfirmDialog';
 import { useCashbookStore } from '@/src/stores/useCashbookStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { colors } from '@/src/theme/colors';
 import { formatCurrency } from '@/src/utils/formatters';
+import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
 import i18n from '@/src/i18n';
 import dayjs from 'dayjs';
 
@@ -21,6 +23,8 @@ export default function CashbookScreen() {
   const [month, setMonth] = useState(dayjs().month());
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const keyboardHeight = useKeyboardHeight();
 
   useFocusEffect(
     useCallback(() => {
@@ -42,6 +46,9 @@ export default function CashbookScreen() {
     setLoading(true);
     try {
       await addEntry({ businessId: activeBusinessId, ...data });
+      // addEntry reloads the entry's own month; an entry dated in another month must not
+      // replace the list for the month being viewed.
+      await loadEntries(activeBusinessId, year, month);
     } catch (e) {
       console.error('Failed to add cashbook entry:', e);
     }
@@ -49,8 +56,9 @@ export default function CashbookScreen() {
     setShowAdd(false);
   };
 
-  const handleDelete = async (id: string) => {
-    await deleteEntry(id, activeBusinessId, year, month);
+  const handleDelete = async () => {
+    if (deleteId && activeBusinessId) await deleteEntry(deleteId, activeBusinessId, year, month);
+    setDeleteId(null);
   };
 
   return (
@@ -90,7 +98,7 @@ export default function CashbookScreen() {
         data={entries}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <CashbookEntryCard entry={item} onDelete={() => handleDelete(item.id)} />
+          <CashbookEntryCard entry={item} onDelete={() => setDeleteId(item.id)} />
         )}
         contentContainerStyle={entries.length === 0 ? styles.emptyContainer : styles.list}
         ListEmptyComponent={
@@ -98,7 +106,13 @@ export default function CashbookScreen() {
         }
       />
 
-      <TouchableOpacity style={styles.fab} onPress={() => setShowAdd(true)} activeOpacity={0.7}>
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setShowAdd(true)}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={i18n.t('cashbook.add_entry')}
+      >
         <MaterialCommunityIcons name="plus" size={24} color="#fff" />
       </TouchableOpacity>
 
@@ -106,11 +120,22 @@ export default function CashbookScreen() {
         <Modal
           visible={showAdd}
           onDismiss={() => setShowAdd(false)}
+          style={{ paddingBottom: keyboardHeight }}
           contentContainerStyle={styles.modal}
         >
           <AddCashbookEntry onSubmit={handleAdd} isLoading={loading} />
         </Modal>
       </Portal>
+
+      <ConfirmDialog
+        visible={!!deleteId}
+        title={i18n.t('common.delete')}
+        message={i18n.t('cashbook.delete_confirm')}
+        confirmLabel={i18n.t('common.delete')}
+        onConfirm={handleDelete}
+        onDismiss={() => setDeleteId(null)}
+        destructive
+      />
     </View>
   );
 }

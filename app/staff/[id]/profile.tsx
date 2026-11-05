@@ -26,6 +26,8 @@ export default function ProfileScreen() {
       phone: data.phone || null,
       salaryType: data.salaryType,
       salaryAmount: data.salaryAmount,
+      overtimeRate: data.overtimeRate,
+      joiningDate: data.joiningDate,
       weekOffDays: (data.weekOffDays as number[]).join(','),
       weekOff: (data.weekOffDays as number[])[0] ?? -1, // keep legacy column in sync
     });
@@ -41,7 +43,9 @@ export default function ProfileScreen() {
           phone: staffMember.phone || '',
           salaryType: staffMember.salaryType,
           salaryAmount: staffMember.salaryAmount,
+          overtimeRate: staffMember.overtimeRate,
           weekOffDays: initialWeekOffDays,
+          joiningDate: staffMember.joiningDate,
         }}
         onSubmit={handleSubmit}
         submitLabel={i18n.t('common.save')}

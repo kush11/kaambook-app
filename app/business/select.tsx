@@ -9,6 +9,7 @@ import { useStaffStore } from '@/src/stores/useStaffStore';
 import { colors } from '@/src/theme/colors';
 import type { Business } from '@/src/types';
 import i18n from '@/src/i18n';
+import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
 
 export default function SelectBusinessScreen() {
   const { businesses, activeBusiness, loadBusinesses, setActiveBusiness, updateBusiness, deleteBusiness } = useBusinessStore();
@@ -18,6 +19,7 @@ export default function SelectBusinessScreen() {
   const [renameTarget, setRenameTarget] = useState<Business | null>(null);
   const [renameText, setRenameText] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Business | null>(null);
+  const keyboardHeight = useKeyboardHeight();
 
   useEffect(() => {
     loadBusinesses();
@@ -90,7 +92,11 @@ export default function SelectBusinessScreen() {
       />
 
       <Portal>
-        <Dialog visible={!!renameTarget} onDismiss={() => setRenameTarget(null)}>
+        <Dialog
+          visible={!!renameTarget}
+          onDismiss={() => setRenameTarget(null)}
+          style={keyboardHeight ? { marginBottom: keyboardHeight + 44 } : undefined}
+        >
           <Dialog.Title>{i18n.t('business.rename')}</Dialog.Title>
           <Dialog.Content>
             <TextInput

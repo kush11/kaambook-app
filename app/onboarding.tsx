@@ -8,7 +8,7 @@ import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { colors } from '@/src/theme/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import i18n from '@/src/i18n';
-import { isDriveConfigured, useDriveConnect, restoreFromDrive } from '@/src/utils/googleDrive';
+import { isDriveConfigured, useDriveConnect, restoreFromDrive, isDriveScopeError } from '@/src/utils/googleDrive';
 import { trackError } from '@/src/utils/analytics';
 
 export default function OnboardingScreen() {
@@ -35,8 +35,12 @@ export default function OnboardingScreen() {
       }
       setMessage(i18n.t(result === 'none' ? 'drive.restore_none' : 'drive.error'));
     } catch (e) {
-      trackError('drive_restore', e);
-      setMessage(i18n.t('drive.error'));
+      if (isDriveScopeError(e)) {
+        setMessage(i18n.t('drive.scope_lost'));
+      } else {
+        trackError('drive_restore', e);
+        setMessage(i18n.t('drive.error'));
+      }
     } finally {
       setRestoring(false);
     }

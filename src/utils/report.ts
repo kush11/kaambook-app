@@ -1,6 +1,7 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { Linking, Platform } from 'react-native';
+import { File, Paths } from 'expo-file-system';
 import type { Staff, SalaryBreakdown, Payment } from '../types';
 import { formatCurrency } from './formatters';
 import { getMonthYear } from './date';
@@ -31,7 +32,7 @@ function generateSalarySlipHTML(
   year: number,
   month: number,
 ): string {
-  const period = getMonthYear(year, month);
+  const period = getMonthYear(year, month, 'en');
   const generatedDate = dayjs().format('DD MMM YYYY');
 
   const salaryLabel = staffMember.salaryType === 'monthly' ? 'Monthly Salary'
@@ -216,6 +217,23 @@ function generateSalarySlipHTML(
 </html>`;
 }
 
+// expo-print names the file with a random UUID, and that name is what the recipient sees,
+// so rename it to something like "Salary-Slip-Ramesh-Kumar-Oct-2026.pdf".
+async function printSlip(html: string, staffMember: Staff, year: number, month: number): Promise<string> {
+  const { uri } = await Print.printToFileAsync({ html });
+  const safeName = staffMember.name.trim().replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '-') || 'Staff';
+  const period = dayjs().year(year).month(month).locale('en').format('MMM-YYYY');
+  try {
+    const target = new File(Paths.cache, `Salary-Slip-${safeName}-${period}.pdf`);
+    if (target.exists) target.delete();
+    const printed = new File(uri);
+    printed.move(target);
+    return printed.uri;
+  } catch {
+    return uri; // keep the UUID name rather than fail the share
+  }
+}
+
 export async function generateAndShareReport(
   businessName: string,
   staffMember: Staff,
@@ -226,7 +244,7 @@ export async function generateAndShareReport(
 ): Promise<void> {
   const html = generateSalarySlipHTML(businessName, staffMember, breakdown, payments, year, month);
 
-  const { uri } = await Print.printToFileAsync({ html });
+  const uri = await printSlip(html, staffMember, year, month);
   track('report_generated', { salary_type: staffMember.salaryType });
 
   await Sharing.shareAsync(uri, {
@@ -247,7 +265,7 @@ export async function generateReport(
   month: number,
 ): Promise<string> {
   const html = generateSalarySlipHTML(businessName, staffMember, breakdown, payments, year, month);
-  const { uri } = await Print.printToFileAsync({ html });
+  const uri = await printSlip(html, staffMember, year, month);
   track('report_generated', { salary_type: staffMember.salaryType });
   return uri;
 }
@@ -258,7 +276,7 @@ export async function shareReportWhatsApp(
   year: number,
   month: number,
 ): Promise<void> {
-  const period = getMonthYear(year, month);
+  const period = getMonthYear(year, month, 'en');
   const message = `Salary Slip for ${staffMember.name} - ${period}`;
 
   // Share the PDF file - WhatsApp will be available in the share sheet

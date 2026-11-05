@@ -29,6 +29,7 @@ export default function HomeScreen() {
   const [todayRecords, setTodayRecords] = useState<Map<string, AttendanceStatus>>(new Map());
   const [markingAll, setMarkingAll] = useState(false);
   const [markingHoliday, setMarkingHoliday] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
 
   const loadData = useCallback(async () => {
     if (activeBusinessId) {
@@ -94,6 +95,11 @@ export default function HomeScreen() {
   const filtered = staffList.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase()) && s.status === 'active'
   );
+  // Staff who left stay reachable here — their detail page is the only place to settle
+  // dues, view old records or mark them active again.
+  const inactiveFiltered = staffList.filter(s =>
+    s.name.toLowerCase().includes(search.toLowerCase()) && s.status !== 'active'
+  );
 
   return (
     <View style={styles.container}>
@@ -138,11 +144,54 @@ export default function HomeScreen() {
         )}
         contentContainerStyle={filtered.length === 0 ? styles.emptyContainer : styles.list}
         ListEmptyComponent={
-          <EmptyState
-            icon="account-plus"
-            title={i18n.t('home.no_staff')}
-            subtitle={i18n.t('home.add_first_staff')}
-          />
+          search.trim() && activeStaff.length > 0 ? (
+            <EmptyState icon="account-search" title={i18n.t('home.no_search_results')} />
+          ) : activeStaff.length === 0 && staffList.length > 0 ? (
+            // Everyone left: the inactive list below is still there, so "no staff added yet" would be wrong.
+            <EmptyState
+              icon="account-plus"
+              title={i18n.t('home.no_active_staff')}
+              subtitle={i18n.t('home.no_active_staff_hint')}
+            />
+          ) : (
+            <EmptyState
+              icon="account-plus"
+              title={i18n.t('home.no_staff')}
+              subtitle={i18n.t('home.add_first_staff')}
+            />
+          )
+        }
+        ListFooterComponent={
+          inactiveFiltered.length > 0 ? (
+            <View style={styles.inactiveSection}>
+              <TouchableRipple
+                onPress={() => setShowInactive((v) => !v)}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: showInactive }}
+                style={styles.inactiveToggle}
+              >
+                <View style={styles.inactiveToggleRow}>
+                  <Text style={styles.inactiveToggleText}>
+                    {i18n.t('staff.inactive_list', { count: inactiveFiltered.length })}
+                  </Text>
+                  <MaterialCommunityIcons
+                    name={showInactive ? 'chevron-up' : 'chevron-down'}
+                    size={22}
+                    color={colors.textSecondary}
+                  />
+                </View>
+              </TouchableRipple>
+              {showInactive && inactiveFiltered.map((item, index) => (
+                <StaffCard
+                  key={item.id}
+                  staff={item}
+                  isFirst={index === 0}
+                  isLast={index === inactiveFiltered.length - 1}
+                  onPress={() => router.push(`/staff/${item.id}`)}
+                />
+              ))}
+            </View>
+          ) : null
         }
       />
       {/* Paper's extended FAB clips its label on some OEM fonts, so this is a plain pill. */}
@@ -164,7 +213,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   list: { paddingBottom: 96 },
-  emptyContainer: { flex: 1 },
+  // paddingBottom keeps the inactive-staff footer clear of the Add Staff button.
+  emptyContainer: { flexGrow: 1, paddingBottom: 96 },
+  inactiveSection: { marginTop: 12 },
+  inactiveToggle: { marginHorizontal: 16, borderRadius: 12 },
+  inactiveToggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, paddingHorizontal: 4 },
+  inactiveToggleText: { fontSize: 14, fontWeight: '600', color: colors.textSecondary },
   fab: {
     position: 'absolute',
     right: 16,

@@ -15,7 +15,7 @@ import i18n from '@/src/i18n';
 export default function AttendanceScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { records, loadMonthAttendance, markAttendance, getMonthSummary } = useAttendanceStore();
-  const { getStaffById } = useStaffStore();
+  const { getStaffById, updateStaff } = useStaffStore();
   const [year, setYear] = useState(dayjs().year());
   const [month, setMonth] = useState(dayjs().month());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -43,6 +43,12 @@ export default function AttendanceScreen() {
   const handleMark = async (status: AttendanceStatus, note?: string, overtimeHours?: number) => {
     if (selectedDate) {
       await markAttendance(id, selectedDate, status, note, overtimeHours);
+      // Salary ignores days before the joining date, so a day marked earlier than it
+      // (e.g. back-filling the month after installing the app) would silently not count.
+      // Marking attendance means they were working then — move the joining date back.
+      if (staffMember && dayjs(selectedDate).isBefore(staffMember.joiningDate, 'day')) {
+        await updateStaff(id, { joiningDate: selectedDate });
+      }
       const s = await getMonthSummary(id, year, month);
       setSummary(s);
       setSelectedDate(null);

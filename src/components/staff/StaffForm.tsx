@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
 import { TextInput, Button, Text, Chip, HelperText } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SegmentedToggle } from '../ui/SegmentedToggle';
 import { AmountInput } from '../ui/AmountInput';
+import { DatePickerField } from '../ui/DatePickerField';
 import { colors } from '@/src/theme/colors';
 import type { SalaryType } from '@/src/types';
 import i18n from '@/src/i18n';
 import * as Contacts from 'expo-contacts';
+import dayjs from 'dayjs';
 import { track, trackError } from '@/src/utils/analytics';
 
 interface StaffFormData {
@@ -16,6 +19,7 @@ interface StaffFormData {
   salaryAmount: number;
   overtimeRate: number;
   weekOffDays: number[];
+  joiningDate: string; // YYYY-MM-DD
 }
 
 interface StaffFormProps {
@@ -38,12 +42,14 @@ const DAY_OPTIONS = [
 ];
 
 export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.save'), isLoading, isPhoneTaken }: StaffFormProps) {
+  const insets = useSafeAreaInsets();
   const [name, setName] = useState(initialData?.name || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
   const [salaryType, setSalaryType] = useState<SalaryType>(initialData?.salaryType || 'monthly');
   const [salaryAmount, setSalaryAmount] = useState(initialData?.salaryAmount || 0);
   const [overtimeRate, setOvertimeRate] = useState(initialData?.overtimeRate || 0);
   const [weekOffDays, setWeekOffDays] = useState<number[]>(initialData?.weekOffDays ?? []);
+  const [joiningDate, setJoiningDate] = useState(initialData?.joiningDate || dayjs().format('YYYY-MM-DD'));
   const [nameError, setNameError] = useState(false);
   const [salaryError, setSalaryError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
@@ -100,11 +106,13 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
       salaryAmount,
       overtimeRate,
       weekOffDays: [...weekOffDays].sort((a, b) => a - b),
+      joiningDate,
     });
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    // Edge-to-edge: pad by the gesture bar so Save isn't half under it.
+    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 16 }]}>
       <Button
         mode="outlined"
         icon="account-box-multiple-outline"
@@ -139,6 +147,13 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
           {i18n.t('staff.duplicate_phone')}
         </HelperText>
       )}
+
+      <DatePickerField
+        value={joiningDate}
+        onChange={setJoiningDate}
+        label={i18n.t('staff.joining_date')}
+      />
+      <Text style={[styles.hint, styles.joiningHint]}>{i18n.t('staff.joining_date_hint')}</Text>
 
       <Text variant="labelLarge" style={styles.label}>{i18n.t('staff.salary_type')}</Text>
       <SegmentedToggle
@@ -217,6 +232,7 @@ const styles = StyleSheet.create({
   label: { marginBottom: 8, color: colors.textSecondary },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
   hint: { fontSize: 12, color: colors.textSecondary, marginBottom: 8 },
+  joiningHint: { marginTop: 4, marginBottom: 16 },
   chip: { marginRight: 8, marginBottom: 8, backgroundColor: colors.surfaceVariant },
   chipSelected: { backgroundColor: colors.primary },
   chipTextSelected: { color: '#fff' },

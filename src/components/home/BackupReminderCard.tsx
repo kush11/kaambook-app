@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { createBackup } from '@/src/utils/backup';
-import { isDriveConfigured, useDriveConnect, uploadBackupToDrive } from '@/src/utils/googleDrive';
+import { isDriveConfigured, useDriveConnect, uploadBackupToDrive, isDriveScopeError } from '@/src/utils/googleDrive';
 import { track, trackError } from '@/src/utils/analytics';
 import { colors } from '@/src/theme/colors';
 import i18n from '@/src/i18n';
@@ -79,7 +79,7 @@ export function BackupReminderCard() {
         await createBackup();
       }
     } catch (e) {
-      trackError(driveMode ? 'drive_backup' : 'backup_create', e);
+      if (!isDriveScopeError(e)) trackError(driveMode ? 'drive_backup' : 'backup_create', e);
     }
     setLoading(false);
   };

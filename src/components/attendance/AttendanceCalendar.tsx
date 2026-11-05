@@ -11,6 +11,8 @@ interface AttendanceCalendarProps {
   month: number;
   records: Attendance[];
   onDayPress: (date: string) => void;
+  /** Highlights one day (used when the calendar is a date picker). */
+  selectedDate?: string;
 }
 
 const STATUS_COLORS: Record<AttendanceStatus, string> = {
@@ -25,7 +27,7 @@ const STATUS_COLORS: Record<AttendanceStatus, string> = {
 
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-export function AttendanceCalendar({ year, month, records, onDayPress }: AttendanceCalendarProps) {
+export function AttendanceCalendar({ year, month, records, onDayPress, selectedDate }: AttendanceCalendarProps) {
   const days = getDaysInMonth(year, month);
   const firstDayOfWeek = dayjs(days[0]).day();
   const attendanceMap = new Map<string, AttendanceStatus>();
@@ -50,19 +52,21 @@ export function AttendanceCalendar({ year, month, records, onDayPress }: Attenda
           const status = attendanceMap.get(date);
           const future = isFuture(date);
           const todayDate = isToday(date);
+          const selected = date === selectedDate;
           return (
             <TouchableOpacity
               key={date}
               style={[
                 styles.cell,
                 todayDate && styles.todayCell,
+                selected && styles.selectedCell,
               ]}
               onPress={() => !future && onDayPress(date)}
               disabled={future}
             >
               <Text
                 variant="bodySmall"
-                style={[styles.dayText, future && styles.futureText]}
+                style={[styles.dayText, future && styles.futureText, selected && styles.selectedText]}
               >
                 {day}
               </Text>
@@ -85,6 +89,8 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cell: { width: '14.28%' as `${number}%`, alignItems: 'center', paddingVertical: 8 },
   todayCell: { backgroundColor: colors.surfaceVariant, borderRadius: 20 },
+  selectedCell: { backgroundColor: colors.primary, borderRadius: 20 },
+  selectedText: { color: '#fff', fontWeight: '700' },
   dayText: { fontSize: 14 },
   futureText: { color: colors.border },
   dot: { width: 6, height: 6, borderRadius: 3, marginTop: 4 },

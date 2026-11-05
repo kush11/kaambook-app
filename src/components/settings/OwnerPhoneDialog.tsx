@@ -4,6 +4,7 @@ import { Dialog, Portal, Button, Text, TextInput } from 'react-native-paper';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { colors } from '@/src/theme/colors';
 import i18n from '@/src/i18n';
+import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
 
 interface OwnerPhoneDialogProps {
   visible: boolean;
@@ -15,6 +16,7 @@ export function OwnerPhoneDialog({ visible, onDismiss }: OwnerPhoneDialogProps) 
   const { ownerPhone, setOwnerPhone } = useSettingsStore();
   const [phone, setPhone] = useState(ownerPhone);
   const [error, setError] = useState(false);
+  const keyboardHeight = useKeyboardHeight();
 
   useEffect(() => {
     if (visible) {
@@ -34,7 +36,7 @@ export function OwnerPhoneDialog({ visible, onDismiss }: OwnerPhoneDialogProps) 
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={onDismiss}>
+      <Dialog visible={visible} onDismiss={onDismiss} style={keyboardHeight ? { marginBottom: keyboardHeight + 44 } : undefined}>
         <Dialog.Title>{i18n.t('settings.owner_phone')}</Dialog.Title>
         <Dialog.Content>
           <Text variant="bodySmall" style={styles.help}>

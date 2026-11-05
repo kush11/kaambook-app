@@ -6,12 +6,45 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 
 | Version | versionCode | Date | EAS build | Play status |
 |---|---|---|---|---|
+| 1.0.9 | — | unreleased | — | not built yet (branch `fix/device-test-bugs`) |
 | 1.0.8 | 14 | 2026-09-28 | CI (tag `v1.0.8`) | **Production** (promoted from Internal testing 2026-10-11 21:28 IST, 100% rollout, in Play review) |
 | 1.0.7 | 12 (13 CI) | 2026-09-28 | manual `0b179a4d` (vc 12); CI run `01a0e4ad` (vc 13) | Production 2026-09-28 → 2026-10-11 (vc 12, promoted by hand 03:10 IST; superseded by 1.0.8); vc 13 stayed on Internal testing |
 | 1.0.6 | 11 | 2026-09-27 | `08fa496d` | Production (superseded) |
 | 1.0.5 | 10 | 2026-09-21 | `b7ee5040` | Production (superseded) |
 | 1.0.4 | 8, 9 | 2026-06-26 | — | Production (superseded) |
 | ≤ 1.0.3 | 1–7 | 2026-03 → 2026-06 | — | superseded |
+
+## 1.0.9 — unreleased
+
+### Fixed
+- **Google Drive backup "403 insufficient authentication scopes".** Google's consent
+  screen lets people untick the Drive box and still sign in; the app then said
+  "Connected" and every backup failed (all 3 users who connected Drive between Oct 19 and
+  Nov 5 hit it, 40 errors). Sign-in now checks the granted scopes, revokes a grant without
+  Drive, and explains how to allow it with a "Try again" that resumes the backup/restore.
+  An existing grant that answers 403 for scopes is dropped, so the app asks to connect again
+  instead of failing every day. New events: `drive_scope_denied`, `drive_scope_retry`,
+  `drive_scope_lost`.
+- Edit staff now keeps the overtime rate and joining date; back-filled attendance before
+  the joining date moves the joining date back.
+- Payment and cashbook deletes ask for confirmation; delete icons have accessibility labels.
+- Keyboard no longer covers dialogs and sheets on Android 15+.
+- Home: when every staff member is inactive it says "No active staff" (not "No staff added
+  yet"), and a search with no match says "No staff found". Add/Edit staff Save button no
+  longer sits under the gesture bar.
+
+### Added
+- Joining date on the staff form; date fields open a calendar (future dates disabled).
+- Back-dating for payments and cashbook entries.
+- Inactive staff: hidden from the daily list, kept in a collapsible "Inactive staff" section.
+- Attendance reminder time picker in Settings.
+- Drive backup settings: storage used, change Google account, storage-full message.
+
+### Changed
+- Release builds are minified and obfuscated with R8 (`expo-build-properties`:
+  `enableMinifyInReleaseBuilds`, `enableShrinkResourcesInReleaseBuilds`). Play flagged
+  obfuscation at 1% (needs 25% by Feb 2027). Upload `mapping.txt` with the bundle so
+  Play's crash stacks stay readable.
 
 ## 1.0.8 — 2026-09-28 · [release sheet](docs/release-1.0.8.md)
 

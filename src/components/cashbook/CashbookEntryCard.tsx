@@ -5,6 +5,7 @@ import { colors } from '@/src/theme/colors';
 import { formatCurrency } from '@/src/utils/formatters';
 import { formatDate } from '@/src/utils/date';
 import type { CashbookEntry } from '@/src/types';
+import i18n from '@/src/i18n';
 
 interface Props {
   entry: CashbookEntry;
@@ -23,25 +24,13 @@ const CATEGORY_ICONS: Record<string, string> = {
   other_income: 'cash-plus',
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  wages: 'Wages',
-  material: 'Material',
-  transport: 'Transport',
-  food: 'Food',
-  rent: 'Rent',
-  other: 'Other',
-  sales: 'Sales',
-  payment_received: 'Payment Received',
-  other_income: 'Other Income',
-};
-
 export function CashbookEntryCard({ entry, onDelete }: Props) {
   const isExpense = entry.type === 'expense';
   return (
     <Card style={styles.card}>
       <Card.Content style={styles.content}>
         <View style={styles.left}>
-          <Text variant="titleSmall">{CATEGORY_LABELS[entry.category] || entry.category}</Text>
+          <Text variant="titleSmall">{i18n.t(`cashbook.categories.${entry.category}`, { defaultValue: entry.category })}</Text>
           <Text variant="bodySmall" style={styles.meta}>
             {formatDate(entry.date)}
           </Text>
@@ -53,7 +42,7 @@ export function CashbookEntryCard({ entry, onDelete }: Props) {
         >
           {isExpense ? '-' : '+'}{formatCurrency(entry.amount)}
         </Text>
-        {onDelete && <IconButton icon="delete-outline" size={20} onPress={onDelete} />}
+        {onDelete && <IconButton icon="delete-outline" size={20} onPress={onDelete} accessibilityLabel={i18n.t('common.delete')} />}
       </Card.Content>
     </Card>
   );

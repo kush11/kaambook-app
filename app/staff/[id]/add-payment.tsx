@@ -11,7 +11,7 @@ export default function AddPaymentScreen() {
   const { addPayment } = usePaymentStore();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (data: { amount: number; type: PaymentType; mode: PaymentMode; note: string }) => {
+  const handleSubmit = async (data: { amount: number; type: PaymentType; mode: PaymentMode; note: string; date: string }) => {
     setLoading(true);
     await addPayment({
       staffId: id,
