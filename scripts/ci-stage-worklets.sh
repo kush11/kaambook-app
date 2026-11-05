@@ -11,9 +11,12 @@ found=0
 for so in "$W"/cxx/RelWithDebInfo/*/obj/*/libworklets.so; do
   [ -f "$so" ] || continue
   abi="$(basename "$(dirname "$so")")"
-  mkdir -p "$W/cmake/release/obj/$abi"
-  cp "$so" "$W/cmake/release/obj/$abi/"
-  echo "staged libworklets.so for $abi"
+  dest="$W/cmake/release/obj/$abi/libworklets.so"
   found=1
+  # On Linux the cmake/ tree is already linked to cxx/, so the file is in place.
+  if [ "$so" -ef "$dest" ]; then echo "libworklets.so already in place for $abi"; continue; fi
+  mkdir -p "$(dirname "$dest")"
+  cp "$so" "$dest"
+  echo "staged libworklets.so for $abi"
 done
 [ "$found" = 1 ] || { echo "libworklets.so not found under $W/cxx" >&2; exit 1; }
