@@ -44,3 +44,7 @@ play-store-key.json
 # generated native folders
 /ios
 /android
+
+# EAS credentials download (eas credentials -> credentials.json); never commit
+credentials.json
+credentials/
