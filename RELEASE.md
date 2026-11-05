@@ -1,43 +1,75 @@
 # Hisab Pagar — Android Release Guide
 
-> **Production builds are made on Expo (EAS), not locally.**
-> Every Play upload so far (versionCode 6 onwards) was built with
-> `eas build --platform android --profile production`, and Play has the **EAS-managed key**
-> registered as the upload key (SHA-1 `85:C4:16:FF:…:27:B0`). EAS also auto-increments the versionCode.
-> The local Gradle build described below is signed with a different keystore, so Play
-> **rejects** its bundles — use it only for test APKs to sideload on a phone.
+> **Production builds are made on GitHub Actions** (since 1.0.9, 2026-11-06).
+> Play's registered **upload key is the EAS-managed keystore** (SHA-1 `85:C4:16:FF:…:DB:27:B0`).
+> GitHub Actions signs with that same keystore (stored as repo secrets). The local
+> `android/app/hisabpagar-upload.keystore` (SHA-1 `E9:F4:…:81:35`) is **not** Play's upload key —
+> Play rejects bundles signed with it; use it only for test APKs to sideload on a phone.
 
-## Automated release (EAS Workflows) — the normal path
+## Releasing (the normal path)
 
-`.eas/workflows/release-android.yml` builds and submits to the **Internal testing** track
-whenever a `v*` tag is pushed. Nothing runs on merges to master.
+`.github/workflows/release-android.yml` builds, signs and uploads to the **Internal testing**
+track whenever a `v*` tag is pushed. **Merging to master does not release anything.**
 
-```bash
-# 1. bump "version" in app.json, commit, merge to master
-# 2. tag the release
-git tag v1.0.7
-git push origin v1.0.7
-# 3. ~15 min later the build is on Play → Internal testing
-# 4. Play Console → Internal testing → Promote release → Production, paste release notes
-```
+1. Bump `"version"` in `app.json` (e.g. `1.0.9` → `1.0.10`), add a CHANGELOG entry, merge to master.
+2. Create the tag — either:
+   - GitHub website (works from any device): **Releases → Draft a new release → Choose a tag →
+     type `v1.0.10` → target `master` → Publish release**, or
+   - terminal: `git tag v1.0.10 && git push origin v1.0.10`
+3. ~20 min later the build is on **Play → Internal testing** (watch it at
+   https://github.com/kush11/kaambook-app/actions). The R8 `mapping.txt` is uploaded with it.
+4. Test it from the Internal testing track, then **Play Console → Internal testing → Promote
+   release → Production** and paste the release notes from `docs/release-<version>.md`.
 
-- Watch runs at https://expo.dev/accounts/kush636/projects/kaambook-app/workflows
-- Run it without a tag: `eas workflow:run release-android.yml`
-- Release notes are **not** set by EAS submit; paste them from `docs/release-<version>.md`.
+Rules the workflow enforces:
+- The tag must equal `v` + `app.json` version, or the run stops before building.
+- **versionCode = major×10000 + minor×100 + patch** (1.0.9 → 10009, 1.0.10 → 10010). Play refuses
+  a versionCode it has seen, so every release needs a new version. To re-release the same
+  version, run the workflow by hand (Actions → Release Android → Run workflow) with a
+  `version_code` override.
+- The bundle must be signed with the upload key, not the debug key (checked before upload).
 
-### One-time setup (done 2026-09-28 unless marked TODO)
+### What is stored where (no secrets in this repo)
 
-- Google Service Account key (`play-console-service-account@kaambook-app.iam.gserviceaccount.com`)
-  uploaded to EAS credentials and assigned to `com.kaambook.app` for submissions. The JSON
-  is **not** in the repo; a copy lives in `~/Downloads/kaambook-app-f68f1049fadc.json`.
-- `eas.json` → `submit.production.android` uses the EAS-stored key, track `internal`.
-- Play Console → Users and permissions: the service account is an Active user on
-  *Hisab Pagar* with **Release apps to testing tracks**, **Manage testing tracks and edit
-  tester lists** and **View app information** (done 2026-09-28). It deliberately does
-  **not** have *Release to production*; promote by hand. If it ever needs to go straight
-  to production, add that permission and change `track` in eas.json.
-- expo.dev → project → GitHub: `kush11/kaambook-app` is linked through the Expo GitHub app
-  (done 2026-09-28). Tag pushes now trigger the workflow.
+| What | Where |
+|---|---|
+| Upload keystore + passwords + alias | GitHub repo secrets `ANDROID_UPLOAD_KEYSTORE_BASE64`, `ANDROID_UPLOAD_KEYSTORE_PASSWORD`, `ANDROID_UPLOAD_KEY_ALIAS`, `ANDROID_UPLOAD_KEY_PASSWORD`; master copy on EAS (expo.dev → kaambook-app → Credentials → Android → production); offline backup: password-protected zip `hisabpagar-play-upload-key.zip` in Kush's **personal** Google Drive (zip password with Kush) |
+| Play service account key (`play-console-service-account@kaambook-app.iam.gserviceaccount.com`, key id `f68f1049…`) | GitHub secret `PLAY_SERVICE_ACCOUNT_JSON`; also EAS credentials (Submissions); Google Cloud project `kaambook-app` → IAM → Service accounts |
+| Play permissions of that account | Play Console → Users and permissions: release to **testing tracks** only (no production — promote by hand). To publish straight to production, add *Release to production* there and change `track:` in the workflow |
+
+### Recovering / rotating
+
+- **Lost the GitHub secrets?** Download the keystore again: `npx eas-cli credentials -p android`
+  → production → *credentials.json: Upload/Download…* → **Download credentials from EAS to
+  credentials.json** (writes `credentials.json` + `credentials/android/keystore.jks`; both are
+  gitignored), then:
+  ```bash
+  gh secret set ANDROID_UPLOAD_KEYSTORE_BASE64 -R kush11/kaambook-app --body "$(base64 -i credentials/android/keystore.jks)"
+  gh secret set ANDROID_UPLOAD_KEYSTORE_PASSWORD -R kush11/kaambook-app --body "$(python3 -c "import json;print(json.load(open('credentials.json'))['android']['keystore']['keystorePassword'])")"
+  gh secret set ANDROID_UPLOAD_KEY_ALIAS -R kush11/kaambook-app --body "$(python3 -c "import json;print(json.load(open('credentials.json'))['android']['keystore']['keyAlias'])")"
+  gh secret set ANDROID_UPLOAD_KEY_PASSWORD -R kush11/kaambook-app --body "$(python3 -c "import json;print(json.load(open('credentials.json'))['android']['keystore']['keyPassword'])")"
+  rm -r credentials credentials.json
+  ```
+  (`gh` must be logged in as **kush11**; Kush's office account `kushsingh11` can't see this repo.
+  `gh auth switch -u kush11` / `gh auth switch -u kushsingh11`.)
+- **Lost the upload key everywhere?** Play Console → Setup → App signing → *Request upload key
+  reset* with a new keystore's certificate. App signing itself (Google-held) is unaffected.
+- **Service account key revoked?** Google Cloud → kaambook-app → IAM → Service accounts →
+  play-console-service-account → Keys → Add key (JSON) → `gh secret set PLAY_SERVICE_ACCOUNT_JSON -R kush11/kaambook-app < key.json`.
+
+### CI workarounds (why the workflow has extra steps)
+
+- `scripts/ci-stage-worklets.sh`: on a clean checkout Reanimated 4.1 can link before
+  `libworklets.so` is where it expects; worklets is built first and the `.so` staged.
+- `scripts/ci-release-signing.py`: `expo prebuild` makes release builds use the debug key; this
+  points them at the upload key from environment variables.
+
+### EAS (fallback, manual only)
+
+`.eas/workflows/release-android.yml` no longer runs on tags (the free tier queues ~20 min).
+Run it by hand with `eas workflow:run release-android.yml`. Its remote versionCode counter is
+behind GitHub's numbering, so first run `eas build:version:set -p android` and set it above the
+last GitHub versionCode.
 
 ---
 
