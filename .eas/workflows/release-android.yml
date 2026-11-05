@@ -1,19 +1,11 @@
-# Release to Google Play (internal track) whenever a version tag is pushed.
+# Fallback release on EAS (manual only). Tag pushes now build on GitHub Actions
+# (.github/workflows/release-android.yml), which skips Expo's free-tier queue.
 #
-#   git tag v1.0.7 && git push origin v1.0.7
+# Manual run:  eas workflow:run release-android.yml
 #
-# Build runs on EAS with the EAS-managed upload key and remote versionCode
-# auto-increment (see eas.json "production" profile). Submit uses the Google
-# Service Account key stored in EAS credentials (not in this repo).
-# Promote internal -> production by hand in Play Console.
-#
-# Manual run without a tag:  eas workflow:run release-android.yml
+# If you switch back to EAS for good: its remote versionCode counter is far behind
+# GitHub's (1.0.9 -> 10009), so first run `eas build:version:set -p android`.
 name: Release Android
-
-on:
-  push:
-    tags:
-      - 'v*'
 
 jobs:
   build_android:

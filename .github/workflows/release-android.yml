@@ -1,0 +1,137 @@
+# Release to Google Play (internal track) whenever a version tag is pushed:
+#
+#   git tag v1.0.10 && git push origin v1.0.10
+#
+# Builds on GitHub's runners (free for this public repo, no Expo queue), signs
+# with the Play upload key, and uploads the bundle + R8 mapping.txt straight to
+# Play Console. Promote internal -> production by hand in Play Console (the
+# service account only has testing-track permission).
+#
+# versionCode = major*10000 + minor*100 + patch (1.0.10 -> 10010), so it always
+# grows with the version. Re-releasing the same version needs a new number:
+# run the workflow by hand and set "version_code".
+#
+# Secrets (Settings -> Secrets and variables -> Actions):
+#   ANDROID_UPLOAD_KEYSTORE_BASE64   base64 of android/app/hisabpagar-upload.keystore
+#   ANDROID_UPLOAD_KEYSTORE_PASSWORD
+#   ANDROID_UPLOAD_KEY_ALIAS         hisabpagar
+#   ANDROID_UPLOAD_KEY_PASSWORD
+#   PLAY_SERVICE_ACCOUNT_JSON        play-console-service-account@kaambook-app key (JSON)
+name: Release Android
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: 'Override versionCode (leave empty to derive it from app.json version)'
+        required: false
+
+concurrency:
+  group: release-android
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check tag matches app.json version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          APP_VERSION=$(node -p "require('./app.json').expo.version")
+          if [ "v$APP_VERSION" != "${GITHUB_REF_NAME}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match app.json version $APP_VERSION"
+            exit 1
+          fi
+
+      - name: Set versionCode
+        env:
+          OVERRIDE: ${{ inputs.version_code }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const cfg = JSON.parse(fs.readFileSync("app.json", "utf8"));
+            const [a, b, c] = cfg.expo.version.split(".").map(Number);
+            const code = Number(process.env.OVERRIDE) || a * 10000 + b * 100 + c;
+            cfg.expo.android.versionCode = code;
+            fs.writeFileSync("app.json", JSON.stringify(cfg, null, 2));
+            console.log(`version ${cfg.expo.version} versionCode ${code}`);
+          '
+
+      - name: Generate native project
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Decode upload keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
+
+      - name: Sign release builds with the upload key
+        # prebuild's build.gradle signs release with the debug key; rewrite that block.
+        run: python3 scripts/ci-release-signing.py android/app/build.gradle
+
+      - name: Build signed app bundle
+        working-directory: android
+        env:
+          UPLOAD_STORE_FILE: ${{ runner.temp }}/upload.keystore
+          UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+        run: |
+          # Clean checkouts: Reanimated links against a libworklets.so path that
+          # nothing fills first. Build worklets, stage the .so, then the bundle.
+          # (see scripts/ci-stage-worklets.sh)
+          ./gradlew :react-native-worklets:assembleRelease --no-daemon
+          (cd .. && scripts/ci-stage-worklets.sh)
+          ./gradlew bundleRelease --no-daemon
+
+      - name: Check the bundle is signed with the upload key
+        run: |
+          keytool -printcert -jarfile android/app/build/outputs/bundle/release/app-release.aab | tee "$RUNNER_TEMP/cert.txt"
+          if grep -q "CN=Android Debug" "$RUNNER_TEMP/cert.txt"; then
+            echo "::error::Bundle is signed with the debug key"; exit 1
+          fi
+
+      - name: Keep bundle + mapping as build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ github.ref_name }}
+          path: |
+            android/app/build/outputs/bundle/release/app-release.aab
+            android/app/build/outputs/mapping/release/mapping.txt
+          retention-days: 30
+
+      - name: Upload to Play Console (internal testing)
+        uses: r0adkll/upload-google-play@v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.kaambook.app
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          mappingFile: android/app/build/outputs/mapping/release/mapping.txt
+          track: internal
+          status: completed
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.keystore"
