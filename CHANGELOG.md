@@ -6,7 +6,7 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 
 | Version | versionCode | Date | EAS build | Play status |
 |---|---|---|---|---|
-| 1.0.9 | 10009 | 2026-11-06 | GitHub Actions run `42119000160` (tag `v1.0.9`); EAS run `01a1ada1` cancelled in queue | Internal testing (uploaded 2026-11-06 04:35 IST); promote to Production by hand |
+| 1.0.9 | 10009 | 2026-11-06 | GitHub Actions run `42119000160` (tag `v1.0.9`); EAS run `01a1ada1` cancelled in queue | **Production** — promoted 2026-11-06 04:31 IST, 100% rollout, in Play review |
 | 1.0.8 | 14 | 2026-09-28 | CI (tag `v1.0.8`) | **Production** (promoted from Internal testing 2026-10-11 21:28 IST, 100% rollout, in Play review) |
 | 1.0.7 | 12 (13 CI) | 2026-09-28 | manual `0b179a4d` (vc 12); CI run `01a0e4ad` (vc 13) | Production 2026-09-28 → 2026-10-11 (vc 12, promoted by hand 03:10 IST; superseded by 1.0.8); vc 13 stayed on Internal testing |
 | 1.0.6 | 11 | 2026-09-27 | `08fa496d` | Production (superseded) |

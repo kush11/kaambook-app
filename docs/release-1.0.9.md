@@ -63,6 +63,12 @@ Google's real 403 bodies (scope vs storage-full).
 • डिलीट करने से पहले पुष्टि; बग सुधार
 ```
 
+## Production
+- Promoted from Internal testing to Production on 2026-11-06 04:31 IST, 100% rollout, all countries, release
+  notes en-GB / en-IN / hi-IN. Sent for Google review; managed publishing is off, so it goes live
+  as soon as review passes. Only warning: no native debug symbols uploaded (not blocking).
+- Not yet verified on a Play-installed build: the Drive "untick the Drive box" flow.
+
 ## After promoting
 - The R8 `mapping.txt` is uploaded by the workflow; check the obfuscation warning clears on
   the release dashboard.
