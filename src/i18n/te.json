@@ -267,5 +267,14 @@
     "scope_missing": "బ్యాకప్ కోసం మీ Google Drive లో సేవ్ చేయడానికి అనుమతి కావాలి. Google స్క్రీన్‌లో Google Drive బాక్స్‌ను టిక్ చేసి, ఆపై Continue నొక్కండి.",
     "scope_retry": "మళ్లీ ప్రయత్నించండి",
     "scope_lost": "Google Drive అనుమతి ఆఫ్‌లో ఉంది, కాబట్టి బ్యాకప్ ఆగిపోయింది. \"Google Drive కనెక్ట్ చేయండి\" నొక్కి Google Drive బాక్స్‌ను టిక్ చేయండి."
+  },
+  "app_check": {
+    "title": "Hisab Pagar‌ను మెరుగుపరచడంలో సహాయం చేయండి",
+    "body": "మీ ఫోన్‌లో WhatsApp, PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar లేదా PagarBook ఉందో లేదో Hisab Pagar చూడవచ్చా? ఈ యాప్‌లను మాత్రమే చూస్తాం — మీ ఇతర యాప్‌లు, మెసేజ్‌లు లేదా డేటా ఎప్పుడూ కాదు. వ్యాపారాలు సిబ్బందికి ఎలా చెల్లిస్తాయో, తర్వాత ఏమి తయారు చేయాలో తెలుసుకోవడానికి ఇది సహాయపడుతుంది.",
+    "allow": "అనుమతించు",
+    "deny": "వద్దు, ధన్యవాదాలు",
+    "settings_section": "గోప్యత",
+    "settings_title": "ఈ ఫోన్‌లోని యాప్‌లను చూడండి",
+    "settings_desc": "WhatsApp, UPI మరియు ఖాతా యాప్‌లు మాత్రమే (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar మెరుగుపరచడానికి"
   }
 }

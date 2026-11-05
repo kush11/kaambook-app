@@ -267,5 +267,14 @@
     "scope_missing": "ବ୍ୟାକଅପ ପାଇଁ ଆପଣଙ୍କ Google Drive ରେ ସେଭ କରିବାର ଅନୁମତି ଦରକାର। Google ସ୍କ୍ରିନରେ Google Drive ବକ୍ସରେ ଟିକ୍ ଦିଅନ୍ତୁ, ତା'ପରେ Continue ଦବାନ୍ତୁ।",
     "scope_retry": "ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ",
     "scope_lost": "Google Drive ଅନୁମତି ବନ୍ଦ ଅଛି, ତେଣୁ ବ୍ୟାକଅପ ବନ୍ଦ ହୋଇଯାଇଛି। \"Google Drive ଯୋଡ଼ନ୍ତୁ\" ଦବାନ୍ତୁ ଏବଂ Google Drive ବକ୍ସରେ ଟିକ୍ ଦିଅନ୍ତୁ।"
+  },
+  "app_check": {
+    "title": "Hisab Pagar କୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ",
+    "body": "ଆପଣଙ୍କ ଫୋନରେ WhatsApp, PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar କିମ୍ବା PagarBook ଅଛି କି ନାହିଁ Hisab Pagar ଦେଖିପାରିବ କି? କେବଳ ଏହି ଆପ୍‌ଗୁଡ଼ିକୁ ଦେଖାଯାଏ — ଆପଣଙ୍କ ଅନ୍ୟ ଆପ୍, ମେସେଜ୍ କିମ୍ବା ଡାଟା କେବେ ନୁହେଁ। ବ୍ୟବସାୟ କର୍ମଚାରୀଙ୍କୁ କିପରି ଦରମା ଦିଅନ୍ତି ଏବଂ ଆଗକୁ କଣ ତିଆରି କରିବା ତାହା ବୁଝିବାରେ ଏହା ସାହାଯ୍ୟ କରେ।",
+    "allow": "ଅନୁମତି ଦିଅନ୍ତୁ",
+    "deny": "ନା, ଧନ୍ୟବାଦ",
+    "settings_section": "ଗୋପନୀୟତା",
+    "settings_title": "ଏହି ଫୋନର ଆପ୍ ଯାଞ୍ଚ କରନ୍ତୁ",
+    "settings_desc": "କେବଳ WhatsApp, UPI ଓ ଖାତା ଆପ୍ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar କୁ ଉନ୍ନତ କରିବା ପାଇଁ"
   }
 }

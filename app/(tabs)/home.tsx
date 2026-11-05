@@ -10,6 +10,7 @@ import { TodaySummaryCard } from '@/src/components/home/TodaySummaryCard';
 import { PhonePromptCard } from '@/src/components/home/PhonePromptCard';
 import { BackupReminderCard } from '@/src/components/home/BackupReminderCard';
 import { FirstAttendanceCard } from '@/src/components/home/FirstAttendanceCard';
+import { AppCheckConsentDialog } from '@/src/components/home/AppCheckConsentDialog';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useAttendanceStore } from '@/src/stores/useAttendanceStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
@@ -106,6 +107,7 @@ export default function HomeScreen() {
       <PhonePromptCard />
       <BackupReminderCard />
       <FirstAttendanceCard todayRecords={todayRecords} onMarked={loadTodayAttendance} />
+      <AppCheckConsentDialog />
       <FlatList
         data={filtered}
         keyExtractor={item => item.id}

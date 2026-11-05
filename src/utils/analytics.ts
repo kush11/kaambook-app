@@ -53,6 +53,15 @@ export function identifyOwner(phone: string, properties?: Properties): void {
 }
 
 /** Set persistent person properties (language, app version, staff count, …). */
+/** Remove person properties (e.g. when the owner withdraws consent). */
+export function unsetUserProperties(keys: string[]): void {
+  try {
+    client?.capture('$set', { $unset: keys });
+  } catch {
+    // ignore
+  }
+}
+
 export function setUserProperties(properties: Properties): void {
   try {
     client?.capture('$set', { $set: properties });

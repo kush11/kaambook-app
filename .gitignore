@@ -48,3 +48,7 @@ play-store-key.json
 # EAS credentials download (eas credentials -> credentials.json); never commit
 credentials.json
 credentials/
+
+# Local Expo module build output
+modules/*/android/build/
+modules/*/android/.cxx/

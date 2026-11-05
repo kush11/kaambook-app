@@ -20,6 +20,11 @@ import { initAnalytics, track, identifyOwner, setUserProperties } from '@/src/ut
 import { SENTRY_DSN } from '@/src/config/telemetry';
 import { maybeAutoBackup, completeColdStartAuth } from '@/src/utils/googleDrive';
 import { AppState } from 'react-native';
+import { lockPortraitOnPhones } from '@/src/utils/orientation';
+import { maybeReportInstalledApps } from '@/src/utils/installedApps';
+
+// Before anything renders, so a phone held sideways never shows a landscape frame.
+lockPortraitOnPhones();
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -61,6 +66,8 @@ function RootLayout() {
       await completeColdStartAuth();
       setDbReady(true);
       maybeAutoBackup();
+      // Only with the owner's consent; at most weekly.
+      maybeReportInstalledApps();
     }
     init();
     const sub = AppState.addEventListener('change', (state) => {

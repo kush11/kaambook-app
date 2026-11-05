@@ -267,5 +267,14 @@
     "scope_missing": "બેકઅપ માટે તમારા Google Drive માં સેવ કરવાની પરવાનગી જોઈએ. Google સ્ક્રીન પર Google Drive વાળા બોક્સમાં ટિક કરો અને પછી Continue દબાવો.",
     "scope_retry": "ફરી પ્રયાસ કરો",
     "scope_lost": "Google Drive ની પરવાનગી બંધ છે, તેથી બેકઅપ અટકી ગયું છે. \"Google Drive જોડો\" દબાવો અને Google Drive વાળા બોક્સમાં ટિક કરો."
+  },
+  "app_check": {
+    "title": "Hisab Pagar ને વધુ સારું બનાવવામાં મદદ કરો",
+    "body": "શું Hisab Pagar જોઈ શકે કે તમારા ફોનમાં WhatsApp, PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar કે PagarBook છે કે નહીં? ફક્ત આ જ એપ્સ જોવાય છે — તમારી બીજી એપ્સ, મેસેજ કે ડેટા ક્યારેય નહીં. આથી અમને સમજાય છે કે બિઝનેસ સ્ટાફને કેવી રીતે પગાર આપે છે અને આગળ શું બનાવવું.",
+    "allow": "મંજૂરી આપો",
+    "deny": "ના, આભાર",
+    "settings_section": "ગોપનીયતા",
+    "settings_title": "આ ફોનની એપ્સ તપાસો",
+    "settings_desc": "ફક્ત WhatsApp, UPI અને ખાતા એપ્સ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar ને વધુ સારું બનાવવા"
   }
 }

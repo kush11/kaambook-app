@@ -267,5 +267,14 @@
     "scope_missing": "ಬ್ಯಾಕಪ್‌ಗೆ ನಿಮ್ಮ Google Drive ನಲ್ಲಿ ಉಳಿಸಲು ಅನುಮತಿ ಬೇಕು. Google ಪರದೆಯಲ್ಲಿ Google Drive ಬಾಕ್ಸ್ ಅನ್ನು ಟಿಕ್ ಮಾಡಿ, ನಂತರ Continue ಒತ್ತಿ.",
     "scope_retry": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
     "scope_lost": "Google Drive ಅನುಮತಿ ಆಫ್ ಆಗಿದೆ, ಆದ್ದರಿಂದ ಬ್ಯಾಕಪ್ ನಿಂತಿದೆ. \"Google Drive ಸಂಪರ್ಕಿಸಿ\" ಒತ್ತಿ ಮತ್ತು Google Drive ಬಾಕ್ಸ್ ಅನ್ನು ಟಿಕ್ ಮಾಡಿ."
+  },
+  "app_check": {
+    "title": "Hisab Pagar ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ",
+    "body": "ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ WhatsApp, PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar ಅಥವಾ PagarBook ಇದೆಯೇ ಎಂದು Hisab Pagar ಪರಿಶೀಲಿಸಬಹುದೇ? ಈ ಆ್ಯಪ್‌ಗಳನ್ನು ಮಾತ್ರ ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ — ನಿಮ್ಮ ಇತರ ಆ್ಯಪ್‌ಗಳು, ಸಂದೇಶಗಳು ಅಥವಾ ಡೇಟಾ ಎಂದಿಗೂ ಇಲ್ಲ. ವ್ಯಾಪಾರಗಳು ಸಿಬ್ಬಂದಿಗೆ ಹೇಗೆ ಪಾವತಿಸುತ್ತವೆ ಮತ್ತು ಮುಂದೆ ಏನು ಮಾಡಬೇಕು ಎಂದು ತಿಳಿಯಲು ಇದು ಸಹಾಯ ಮಾಡುತ್ತದೆ.",
+    "allow": "ಅನುಮತಿಸಿ",
+    "deny": "ಬೇಡ, ಧನ್ಯವಾದ",
+    "settings_section": "ಗೌಪ್ಯತೆ",
+    "settings_title": "ಈ ಫೋನ್‌ನ ಆ್ಯಪ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ",
+    "settings_desc": "WhatsApp, UPI ಮತ್ತು ಖಾತಾ ಆ್ಯಪ್‌ಗಳು ಮಾತ್ರ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar ಉತ್ತಮಗೊಳಿಸಲು"
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View, Linking } from 'react-native';
+import { ScrollView, StyleSheet, View, Linking, Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { List, Switch, Text, Divider, Portal, Dialog, Chip, Button } from 'react-native-paper';
 import { getLanguageLabel } from '@/src/components/settings/LanguagePicker';
@@ -14,13 +14,14 @@ import { router } from 'expo-router';
 import i18n from '@/src/i18n';
 import { track } from '@/src/utils/analytics';
 import { shareApp } from '@/src/utils/shareApp';
+import { setAppCheckEnabled } from '@/src/utils/installedApps';
 import { PACKAGE } from '@/src/config/links';
 
 // Hourly choices for the daily reminder, 07:00 to 22:00.
 const REMINDER_TIMES = Array.from({ length: 16 }, (_, i) => `${String(i + 7).padStart(2, '0')}:00`);
 
 export default function SettingsScreen() {
-  const { language, reminderEnabled, setReminderEnabled, reminderTime, setReminderTime, ownerPhone } = useSettingsStore();
+  const { language, reminderEnabled, setReminderEnabled, reminderTime, setReminderTime, ownerPhone, appCheckConsent } = useSettingsStore();
   const [showPhoneDialog, setShowPhoneDialog] = useState(false);
   const [showTimeDialog, setShowTimeDialog] = useState(false);
 
@@ -113,6 +114,28 @@ export default function SettingsScreen() {
       </List.Section>
 
       <Divider />
+
+      {Platform.OS === 'android' && (
+        <>
+          <List.Section>
+            <List.Subheader>{i18n.t('app_check.settings_section')}</List.Subheader>
+            <List.Item
+              title={i18n.t('app_check.settings_title')}
+              description={i18n.t('app_check.settings_desc')}
+              descriptionNumberOfLines={3}
+              left={props => <List.Icon {...props} icon="apps" color={colors.primary} />}
+              right={() => (
+                <Switch
+                  value={appCheckConsent === 'granted'}
+                  onValueChange={(on) => setAppCheckEnabled(on)}
+                  color={colors.primary}
+                />
+              )}
+            />
+          </List.Section>
+          <Divider />
+        </>
+      )}
 
       <List.Section>
         <List.Subheader>{i18n.t('settings.about')}</List.Subheader>

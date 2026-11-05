@@ -4,7 +4,7 @@
     "slug": "kaambook-app",
     "description": "Staff attendance tracking and salary management app for small businesses. Track daily attendance, manage salaries, and generate reports effortlessly.",
     "version": "1.0.9",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": ["hisabpagar", "com.kaambook.app"],
     "userInterfaceStyle": "light",

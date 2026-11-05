@@ -27,6 +27,10 @@ on:
       version_code:
         description: 'Override versionCode (leave empty to derive it from app.json version)'
         required: false
+      dry_run:
+        description: 'Build and check everything, but do not upload to Play'
+        type: boolean
+        default: true
 
 concurrency:
   group: release-android
@@ -34,24 +38,24 @@ concurrency:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ubuntu-latest moves to 26.04 from Oct 2026
     timeout-minutes: 60
     env:
       SENTRY_DISABLE_AUTO_UPLOAD: 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: yarn
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 17
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -87,9 +91,9 @@ jobs:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
         run: echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
 
-      - name: Sign release builds with the upload key
-        # prebuild's build.gradle signs release with the debug key; rewrite that block.
-        run: python3 scripts/ci-release-signing.py android/app/build.gradle
+      - name: Patch build.gradle (upload-key signing, native debug symbols)
+        # prebuild signs release with the debug key and leaves out debug symbols.
+        run: python3 scripts/ci-patch-gradle.py android/app/build.gradle
 
       - name: Build signed app bundle
         working-directory: android
@@ -113,8 +117,15 @@ jobs:
             echo "::error::Bundle is signed with the debug key"; exit 1
           fi
 
+      - name: Check native debug symbols are in the bundle
+        run: |
+          if ! unzip -l android/app/build/outputs/bundle/release/app-release.aab | grep -q 'BUNDLE-METADATA/com.android.tools.build.debugsymbols/'; then
+            echo "::error::No native debug symbols in the bundle"; exit 1
+          fi
+          unzip -l android/app/build/outputs/bundle/release/app-release.aab | grep -c 'debugsymbols/.*\.so\.sym' | xargs echo "symbol files:"
+
       - name: Keep bundle + mapping as build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-${{ github.ref_name }}
           path: |
@@ -123,7 +134,9 @@ jobs:
           retention-days: 30
 
       - name: Upload to Play Console (internal testing)
-        uses: r0adkll/upload-google-play@v1.1.3
+        # Tag pushes always upload; manual runs only when dry_run is unticked.
+        if: ${{ github.event_name == 'push' || !inputs.dry_run }}
+        uses: r0adkll/upload-google-play@v1.1.5
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.kaambook.app

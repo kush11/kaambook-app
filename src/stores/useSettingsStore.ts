@@ -18,6 +18,10 @@ interface SettingsState {
   phonePromptDismissed: boolean;
   lastBackupAt: string;
   backupReminderSnoozedAt: string;
+  /** '' = not asked yet, 'granted' / 'denied' — consent to check which known apps are installed. */
+  appCheckConsent: '' | 'granted' | 'denied';
+  appCheckAt: string;
+  setAppCheckConsent: (granted: boolean) => Promise<void>;
   /** Google account connected for Drive auto-backup; empty when not connected. */
   driveEmail: string;
   driveLastBackupAt: string;
@@ -49,6 +53,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   phonePromptDismissed: false,
   lastBackupAt: '',
   backupReminderSnoozedAt: '',
+  appCheckConsent: '',
+  appCheckAt: '',
   driveEmail: '',
   driveLastBackupAt: '',
 
@@ -70,6 +76,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       phonePromptDismissed: map['phone_prompt_dismissed'] === '1',
       lastBackupAt: map['last_backup_at'] || '',
       backupReminderSnoozedAt: map['backup_reminder_snoozed_at'] || '',
+      appCheckConsent: (map['app_check_consent'] as '' | 'granted' | 'denied') || '',
+      appCheckAt: map['app_check_at'] || '',
       driveEmail: map['drive_account_email'] || '',
       driveLastBackupAt: map['drive_last_backup_at'] || '',
       isLoading: false,
@@ -141,6 +149,13 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     identifyOwner(digits, { language: get().language });
     track('owner_phone_captured', { source });
     flushAnalytics();
+  },
+
+  setAppCheckConsent: async (granted: boolean) => {
+    const value = granted ? 'granted' : 'denied';
+    await get().setSetting('app_check_consent', value);
+    set({ appCheckConsent: value });
+    track('app_check_consent', { granted });
   },
 
   dismissPhonePrompt: async () => {

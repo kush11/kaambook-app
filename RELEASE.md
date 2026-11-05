@@ -61,8 +61,10 @@ Rules the workflow enforces:
 
 - `scripts/ci-stage-worklets.sh`: on a clean checkout Reanimated 4.1 can link before
   `libworklets.so` is where it expects; worklets is built first and the `.so` staged.
-- `scripts/ci-release-signing.py`: `expo prebuild` makes release builds use the debug key; this
-  points them at the upload key from environment variables.
+- `scripts/ci-patch-gradle.py`: `expo prebuild` makes release builds use the debug key; this
+  points them at the upload key from environment variables. It also sets
+  `ndk.debugSymbolLevel 'SYMBOL_TABLE'`, so the bundle carries native debug symbols and Play
+  can symbolicate native crashes/ANRs (no separate symbols upload needed).
 
 ### QA build next to the Play app (for testing before a release)
 

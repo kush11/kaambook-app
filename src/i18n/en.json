@@ -267,5 +267,14 @@
     "scope_missing": "Backup needs permission to save to your Google Drive. On the Google screen, tick the Google Drive box and then tap Continue.",
     "scope_retry": "Try again",
     "scope_lost": "Google Drive access was turned off, so backup stopped. Tap \"Connect Google Drive\" and tick the Google Drive box."
+  },
+  "app_check": {
+    "title": "Help us improve Hisab Pagar",
+    "body": "Can Hisab Pagar check whether you also have WhatsApp, PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar or PagarBook installed? Only these apps are checked — never your other apps, messages or data. It helps us understand how businesses pay staff and what to build next.",
+    "allow": "Allow",
+    "deny": "No thanks",
+    "settings_section": "Privacy",
+    "settings_title": "Check apps on this phone",
+    "settings_desc": "Only WhatsApp, UPI and khata apps (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — helps us improve Hisab Pagar"
   }
 }
