@@ -64,6 +64,22 @@ Rules the workflow enforces:
 - `scripts/ci-release-signing.py`: `expo prebuild` makes release builds use the debug key; this
   points them at the upload key from environment variables.
 
+### QA build next to the Play app (for testing before a release)
+
+`android/` is generated and git-ignored. After `npx expo prebuild -p android`, add this inside
+`buildTypes { release { … } }` of `android/app/build.gradle`:
+
+```gradle
+// ./gradlew assembleRelease -PqaSuffix → com.kaambook.app.qa, installs next to the Play app.
+if (project.hasProperty('qaSuffix')) {
+    applicationIdSuffix '.qa'
+    signingConfig signingConfigs.debug
+}
+```
+
+Then `cd android && ./gradlew assembleRelease -PqaSuffix && adb install -r app/build/outputs/apk/release/app-release.apk`.
+Google Drive sign-in won't work in this build (only Play-installed builds can sign in).
+
 ### EAS (fallback, manual only)
 
 `.eas/workflows/release-android.yml` no longer runs on tags (the free tier queues ~20 min).

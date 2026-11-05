@@ -43,8 +43,9 @@ src/utils       analytics, backup, googleDrive, notifications, report (PDF), sal
 src/config      telemetry.ts (PostHog key, Sentry DSN), googleDrive.ts (OAuth client id), links.ts
 ai-proxy/       Cloudflare Worker for the AI summary (README inside)
 docs/           privacy policy, Play listing copy, per-release sheets, Drive setup guide
-scripts/        verify-salary.ts — salary calculation checks
-.eas/workflows  release-android.yml — tag → EAS build → Play Internal testing
+scripts/        verify-salary.ts — salary checks; ci-*.sh/py — release CI helpers
+.github/workflows  release-android.yml — tag → GitHub Actions build → Play Internal testing
+.eas/workflows  release-android.yml — manual-only fallback on EAS
 ```
 
 ## Development
@@ -66,37 +67,28 @@ Configuration lives in `src/config/`. Every integration is a safe no-op when its
 empty: PostHog, Sentry, Google Drive (`GOOGLE_ANDROID_CLIENT_ID`), AI proxy URL. None of
 those values are secrets — they ship inside the APK — so they are committed.
 The secrets (Gemini key, Play service-account JSON, keystores) are **not** in the repo:
-Gemini lives as a Worker secret, the service account key in EAS credentials.
+Gemini lives as a Worker secret; the Play upload keystore and service-account key are
+GitHub Actions secrets (master copies on EAS, offline backup in Kush's personal Drive).
+See [RELEASE.md](RELEASE.md) → *What is stored where*.
 
 ## Releasing
 
-The normal path is the EAS workflow; the full guide is [RELEASE.md](RELEASE.md).
+Releases build on **GitHub Actions** when a `v*` tag is pushed; merging to master never
+releases anything. Follow **[docs/release-checklist.md](docs/release-checklist.md)** step by step.
+In short:
 
-1. Write `docs/release-<version>.md` (what changed, how to verify, Play release notes in
-   en-GB / en-IN / hi-IN) and add the entry to `CHANGELOG.md`.
-2. Bump `"version"` in `app.json`, commit to `master`. versionCode is assigned by EAS
-   (remote, auto-increment); `android/app/build.gradle` is only kept in sync for local builds.
-3. Tag and push — this triggers `.eas/workflows/release-android.yml`, which builds on EAS
-   and submits to **Play → Internal testing** with the service account:
-   ```bash
-   git tag -a v1.0.8 -m "1.0.8"
-   git push origin v1.0.8
-   ```
-   Watch it at https://expo.dev/accounts/kush636/projects/kaambook-app/workflows
-   (or `npx eas workflow:runs`).
-4. Install from Internal testing on a phone and run the checklist in the release sheet.
-5. Play Console → Internal testing → **Promote release → Production**, paste the release
-   notes. The service account deliberately cannot release to production.
-6. Publish the GitHub release for the tag so the history is in one place:
-   ```bash
-   gh release create v1.0.8 --title "1.0.8" --notes-file docs/release-1.0.8.md
-   ```
-7. Update the status column in `CHANGELOG.md` (Internal testing → Production) and, if the
-   privacy policy changed, check the GitHub Pages copy is live.
+1. Copy `docs/release-template.md` → `docs/release-<version>.md`, fill it in (what changed,
+   how to verify, Play "What's new" in English + Hindi) and add a `CHANGELOG.md` entry.
+2. Bump `"version"` in `app.json` and merge to `master`.
+3. Tag `v<version>` — GitHub → Releases → *Draft a new release*, or
+   `git tag -a v1.0.10 -m "1.0.10" && git push origin v1.0.10`.
+4. ~20 min: the bundle + R8 mapping are on **Play → Internal testing**
+   (https://github.com/kush11/kaambook-app/actions). versionCode = major×10000 + minor×100 + patch.
+5. Install from Internal testing, run the release sheet's checks, then Play Console →
+   **Promote release → Production** and paste the release notes.
+6. Update the `CHANGELOG.md` status column; check PostHog/Play vitals over the next days.
 
-Release history: `CHANGELOG.md` (summary table + notes), `docs/release-*.md` (full
-sheets), git tags `v*`, GitHub Releases, and the EAS build / submission ids recorded in
-each sheet.
+Keys, secrets and recovery steps: [RELEASE.md](RELEASE.md).
 
 ## Analytics
 

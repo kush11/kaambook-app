@@ -1,7 +1,10 @@
 # Hisab Pagar 1.0.9 — release sheet
 
-- **Version:** 1.0.9 · versionCode assigned by EAS (expected 15)
-- **Release:** tag `v1.0.9` → EAS workflow → Play Internal testing → promote by hand
+- **Version:** 1.0.9 · versionCode 10009
+- **Release:** tag `v1.0.9` → GitHub Actions run `42119000160` → Play Internal testing → promote by hand
+  (first GitHub Actions release; EAS run `01a1ada1` was cancelled in the free-tier queue. Attempt 1
+  failed on the worklets staging step, attempt 2 on signing with the local keystore instead of
+  Play's EAS upload key; re-run with the EAS keystore.)
 - **Why:** PostHog (Oct 19 – Nov 5) showed every user who connected Google Drive got
   `Drive 403: Request had insufficient authentication scopes` (3 users, 40 errors): Google's
   consent screen lets people untick the Drive box and still sign in. Play Console flagged
@@ -38,6 +41,28 @@ Google's real 403 bodies (scope vs storage-full).
   with "insufficient authentication scopes".
 - Smoke test the R8 build: add staff, attendance, payment, PDF report, Drive backup.
 
+## Play Console → Release notes
+
+**en-IN / en-GB**
+```
+• Google Drive backup: if Drive permission was not given, the app now explains how to allow it and lets you try again
+• Add a joining date for staff; days before it are not counted in salary
+• Mark staff who left as inactive — their records stay safe
+• Pick dates from a calendar; back-date payments and cashbook entries
+• Choose your attendance reminder time
+• Delete now asks for confirmation; bug fixes
+```
+
+**hi-IN**
+```
+• Google Drive बैकअप: अगर Drive की अनुमति नहीं दी गई थी, तो ऐप अब बताता है कैसे दें और दोबारा कोशिश करने देता है
+• स्टाफ की जॉइनिंग डेट जोड़ें; उससे पहले के दिन वेतन में नहीं गिने जाते
+• काम छोड़ चुके स्टाफ को निष्क्रिय करें — उनका रिकॉर्ड सुरक्षित रहता है
+• कैलेंडर से तारीख चुनें; पुरानी तारीख का भुगतान और कैशबुक एंट्री जोड़ें
+• हाज़िरी रिमाइंडर का समय चुनें
+• डिलीट करने से पहले पुष्टि; बग सुधार
+```
+
 ## After promoting
-- Play Console → App bundle explorer → 1.0.9 → upload the R8 `mapping.txt` if EAS didn't
-  attach it (check the obfuscation warning clears on the release dashboard).
+- The R8 `mapping.txt` is uploaded by the workflow; check the obfuscation warning clears on
+  the release dashboard.
