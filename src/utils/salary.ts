@@ -39,6 +39,10 @@ export function calculateSalary(
   let holidays = 0;
   let weekOffs = 0;
   let overtimeHours = 0;
+  // Hourly staff: worked hours (present / half day) plus paid leave at shift length.
+  let paidHours = 0;
+  let lateDays = 0;
+  const shiftHours = staffMember.shiftHours > 0 ? staffMember.shiftHours : 8;
 
   days.forEach(date => {
     const d = dayjs(date);
@@ -55,6 +59,7 @@ export function calculateSalary(
         case 'present':
           presentDays++;
           workingDays++;
+          paidHours += record.hoursWorked ?? shiftHours;
           break;
         case 'absent':
           absentDays++;
@@ -63,9 +68,11 @@ export function calculateSalary(
         case 'half_day':
           halfDays++;
           workingDays++;
+          paidHours += record.hoursWorked ?? shiftHours / 2;
           break;
         case 'paid_leave':
           paidLeaves++;
+          paidHours += shiftHours;
           break;
         case 'unpaid_leave':
           unpaidLeaves++;
@@ -78,6 +85,7 @@ export function calculateSalary(
           break;
       }
       overtimeHours += record.overtimeHours || 0;
+      if (record.isLate && (record.status === 'present' || record.status === 'half_day')) lateDays++;
     } else {
       // No record - check if it's a weekly off
       if (weekOffSet.has(dayOfWeek)) {
@@ -115,22 +123,30 @@ export function calculateSalary(
       earnedSalary = dailyRate * payableDays;
       break;
     }
+    case 'hourly': {
+      // Hourly: rate * hours worked (+ paid leave at shift length). Holidays and week offs unpaid.
+      earnedSalary = salaryAmount * paidHours;
+      break;
+    }
   }
 
   // Add overtime pay (use staff overtime rate if set, else 1.5x calculated rate)
   if (overtimeHours > 0) {
     let hourlyRate = staffMember.overtimeRate;
     if (hourlyRate <= 0) {
-      // Fallback: 1.5x calculated daily rate / 8 hours
+      // Fallback: 1.5x the calculated hourly rate (day = shift hours, 8 by default)
       switch (salaryType) {
         case 'monthly':
-          hourlyRate = (salaryAmount / totalDays / 8) * 1.5;
+          hourlyRate = (salaryAmount / totalDays / shiftHours) * 1.5;
           break;
         case 'daily':
-          hourlyRate = (salaryAmount / 8) * 1.5;
+          hourlyRate = (salaryAmount / shiftHours) * 1.5;
           break;
         case 'weekly':
-          hourlyRate = (salaryAmount / 7 / 8) * 1.5;
+          hourlyRate = (salaryAmount / 7 / shiftHours) * 1.5;
+          break;
+        case 'hourly':
+          hourlyRate = salaryAmount * 1.5;
           break;
       }
     }
@@ -139,12 +155,13 @@ export function calculateSalary(
 
   earnedSalary = Math.round(earnedSalary);
 
-  // Penalties are deductions from what the worker earned (they reduce the amount owed).
+  // Penalties and late fines are deductions from what the worker earned (they reduce the amount owed).
+  const lateFine = Math.round(lateDays * Math.max(0, staffMember.lateFine || 0));
   const totalPenalty = paymentsInMonth
     .filter(p => p.type === 'penalty')
     .reduce((sum, p) => sum + p.amount, 0);
-  if (totalPenalty > 0) {
-    earnedSalary = Math.max(0, earnedSalary - totalPenalty);
+  if (totalPenalty + lateFine > 0) {
+    earnedSalary = Math.max(0, earnedSalary - totalPenalty - lateFine);
   }
 
   // Total money actually handed to the worker (salary, advance, bonus).
@@ -165,6 +182,9 @@ export function calculateSalary(
     holidays,
     weekOffs,
     overtimeHours,
+    paidHours: Math.round(paidHours * 100) / 100,
+    lateDays,
+    lateFine,
     earnedSalary,
     totalPaid,
     balanceDue,

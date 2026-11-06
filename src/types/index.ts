@@ -1,4 +1,4 @@
-export type SalaryType = 'monthly' | 'daily' | 'weekly';
+export type SalaryType = 'monthly' | 'daily' | 'weekly' | 'hourly';
 
 export type AttendanceStatus = 'present' | 'absent' | 'half_day' | 'paid_leave' | 'unpaid_leave' | 'holiday' | 'week_off';
 
@@ -30,6 +30,11 @@ export interface Staff {
   weekOff: number; // legacy single day of week, -1 for none
   weekOffDays: string | null; // comma-separated days e.g. "0,6"
   overtimeRate: number;
+  /** Normal hours in a working day (hourly pay, and the default for "present"). */
+  shiftHours: number;
+  /** ₹ deducted per day marked late; 0 = no fine. */
+  lateFine: number;
+  upiId: string | null;
   joiningDate: string;
   status: StaffStatus;
   createdAt: string;
@@ -42,6 +47,9 @@ export interface Attendance {
   status: AttendanceStatus;
   note: string | null;
   overtimeHours: number;
+  /** Hourly staff: hours worked that day; null = the staff member's shift hours. */
+  hoursWorked: number | null;
+  isLate: number; // SQLite boolean
   createdAt: string;
 }
 
@@ -89,6 +97,10 @@ export interface SalaryBreakdown {
   holidays: number;
   weekOffs: number;
   overtimeHours: number;
+  /** Hourly staff: paid hours in the month (worked hours + paid leave at shift hours). */
+  paidHours: number;
+  lateDays: number;
+  lateFine: number;
   earnedSalary: number;
   totalPaid: number;
   balanceDue: number;

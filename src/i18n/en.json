@@ -78,7 +78,16 @@
     "duplicate_phone": "This mobile number is already added for another staff member.",
     "inactive_list": "Inactive staff (%{count})",
     "inactive_badge": "Inactive",
-    "joining_date_hint": "Days before this date are not counted in salary."
+    "joining_date_hint": "Days before this date are not counted in salary.",
+    "hourly": "Hourly",
+    "pay_per_hour": "Pay per hour",
+    "shift_hours": "Working hours per day",
+    "shift_hours_hint": "A present day counts as this many hours",
+    "late_fine": "Late fine (per late day)",
+    "late_fine_hint": "Deducted each day you mark them late. Leave empty for no fine.",
+    "upi_id": "UPI ID (optional)",
+    "upi_id_hint": "To pay salary by UPI from the app, e.g. name@okaxis",
+    "upi_invalid": "Enter a valid UPI ID, e.g. name@okaxis"
   },
   "attendance": {
     "title": "Attendance",
@@ -92,7 +101,9 @@
     "overtime": "Overtime Hours",
     "note": "Note",
     "mark_attendance": "Mark Attendance",
-    "no_records": "No attendance records"
+    "no_records": "No attendance records",
+    "late": "Late",
+    "hours_worked": "Hours worked"
   },
   "payment": {
     "title": "Payments",
@@ -127,7 +138,10 @@
     "edit_salary": "Edit Salary",
     "per_month": "/month",
     "per_day": "/day",
-    "per_week": "/week"
+    "per_week": "/week",
+    "per_hour": "/hour",
+    "late_fine_line": "Late fine (%{days} days)",
+    "paid_hours": "Hours worked"
   },
   "business": {
     "name": "Business Name",
@@ -313,5 +327,20 @@
     "tomorrow_on": "We'll remind you at %{time}",
     "tomorrow_off": "Turn on a daily reminder so you don't forget",
     "turn_on": "Turn on"
+  },
+  "upi": {
+    "pay": "Pay %{amount} by UPI",
+    "add_id_title": "Add UPI ID",
+    "add_id_body": "Add %{name}'s UPI ID to pay salary from the app.",
+    "confirm_title": "Did the payment go through?",
+    "confirm_body": "Record %{amount} paid to %{name} by UPI?",
+    "yes": "Yes, record it",
+    "no": "No",
+    "no_app": "No UPI app found on this phone.",
+    "recorded": "Payment recorded"
+  },
+  "register": {
+    "button": "Monthly register",
+    "error": "Could not create the register. Please try again."
   }
 }

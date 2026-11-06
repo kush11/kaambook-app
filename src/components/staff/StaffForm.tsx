@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, ScrollView, Alert, Linking } from 'react-native';
 import { TextInput, Button, Text, Chip, HelperText } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SegmentedToggle } from '../ui/SegmentedToggle';
-import { AmountInput } from '../ui/AmountInput';
+import { SalaryRulesFields, type SalaryRules } from './SalaryRulesFields';
 import { DatePickerField } from '../ui/DatePickerField';
 import { makeStyles } from '@/src/theme';
 import type { SalaryType } from '@/src/types';
@@ -11,6 +10,7 @@ import i18n from '@/src/i18n';
 import * as Contacts from 'expo-contacts';
 import dayjs from 'dayjs';
 import { track, trackError } from '@/src/utils/analytics';
+import { isValidUpiId } from '@/src/utils/upi';
 
 interface StaffFormData {
   name: string;
@@ -18,6 +18,9 @@ interface StaffFormData {
   salaryType: SalaryType;
   salaryAmount: number;
   overtimeRate: number;
+  shiftHours: number;
+  lateFine: number;
+  upiId: string;
   weekOffDays: number[];
   joiningDate: string; // YYYY-MM-DD
 }
@@ -46,9 +49,15 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
   const insets = useSafeAreaInsets();
   const [name, setName] = useState(initialData?.name || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
-  const [salaryType, setSalaryType] = useState<SalaryType>(initialData?.salaryType || 'monthly');
-  const [salaryAmount, setSalaryAmount] = useState(initialData?.salaryAmount || 0);
-  const [overtimeRate, setOvertimeRate] = useState(initialData?.overtimeRate || 0);
+  const [rules, setRules] = useState<SalaryRules>({
+    salaryType: initialData?.salaryType || 'monthly',
+    salaryAmount: initialData?.salaryAmount || 0,
+    overtimeRate: initialData?.overtimeRate || 0,
+    shiftHours: initialData?.shiftHours || 8,
+    lateFine: initialData?.lateFine || 0,
+  });
+  const [upiId, setUpiId] = useState(initialData?.upiId || '');
+  const [upiError, setUpiError] = useState(false);
   const [weekOffDays, setWeekOffDays] = useState<number[]>(initialData?.weekOffDays ?? []);
   const [joiningDate, setJoiningDate] = useState(initialData?.joiningDate || dayjs().format('YYYY-MM-DD'));
   const [nameError, setNameError] = useState(false);
@@ -97,15 +106,15 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
   const handleSubmit = () => {
     let hasError = false;
     if (!name.trim()) { setNameError(true); hasError = true; }
-    if (!salaryAmount || salaryAmount <= 0) { setSalaryError(true); hasError = true; }
+    if (!rules.salaryAmount || rules.salaryAmount <= 0) { setSalaryError(true); hasError = true; }
+    if (upiId.trim() && !isValidUpiId(upiId.trim())) { setUpiError(true); hasError = true; }
     if (phone.trim() && isPhoneTaken?.(phone.trim())) { setPhoneError(true); hasError = true; }
     if (hasError) return;
     onSubmit({
       name: name.trim(),
       phone: phone.trim(),
-      salaryType,
-      salaryAmount,
-      overtimeRate,
+      ...rules,
+      upiId: upiId.trim(),
       weekOffDays: [...weekOffDays].sort((a, b) => a - b),
       joiningDate,
     });
@@ -156,30 +165,26 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
       />
       <Text style={[styles.hint, styles.joiningHint]}>{i18n.t('staff.joining_date_hint')}</Text>
 
-      <Text variant="labelLarge" style={styles.label}>{i18n.t('staff.salary_type')}</Text>
-      <SegmentedToggle
-        value={salaryType}
-        onValueChange={(v) => setSalaryType(v as SalaryType)}
-        options={[
-          { value: 'monthly', label: i18n.t('staff.monthly') },
-          { value: 'daily', label: i18n.t('staff.daily') },
-          { value: 'weekly', label: i18n.t('staff.weekly') },
-        ]}
-        style={styles.input}
+      <SalaryRulesFields
+        value={rules}
+        onChange={(next) => { setRules(next); if (next.salaryAmount > 0) setSalaryError(false); }}
+        salaryError={salaryError}
       />
 
-      <AmountInput
-        value={salaryAmount}
-        onChangeValue={(v) => { setSalaryAmount(v); setSalaryError(false); }}
-        label={i18n.t('staff.salary_amount')}
-        error={salaryError}
+      <TextInput
+        mode="outlined"
+        label={i18n.t('staff.upi_id')}
+        value={upiId}
+        onChangeText={(t) => { setUpiId(t.replace(/\s/g, '')); setUpiError(false); }}
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="email-address"
+        error={upiError}
+        style={styles.upiInput}
       />
-
-      <AmountInput
-        value={overtimeRate}
-        onChangeValue={setOvertimeRate}
-        label={i18n.t('staff.overtime_rate')}
-      />
+      <HelperText type={upiError ? 'error' : 'info'} style={styles.phoneHelper}>
+        {upiError ? i18n.t('staff.upi_invalid') : i18n.t('staff.upi_id_hint')}
+      </HelperText>
 
       <Text variant="labelLarge" style={[styles.label, { marginTop: 16 }]}>{i18n.t('staff.week_off')}</Text>
       <Text style={styles.hint}>{i18n.t('staff.week_off_hint')}</Text>
@@ -230,6 +235,7 @@ const useStyles = makeStyles((colors) => ({
   input: { marginBottom: 16 },
   inputNoMargin: { marginBottom: 0 },
   phoneHelper: { marginBottom: 8 },
+  upiInput: { marginTop: 16 },
   label: { marginBottom: 8, color: colors.textSecondary },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
   hint: { fontSize: 12, color: colors.textSecondary, marginBottom: 8 },

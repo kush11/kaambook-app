@@ -78,7 +78,16 @@
     "duplicate_phone": "ਇਹ ਮੋਬਾਈਲ ਨੰਬਰ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਸਟਾਫ਼ ਲਈ ਜੋੜਿਆ ਗਿਆ ਹੈ।",
     "inactive_list": "ਅਸਰਗਰਮ ਸਟਾਫ (%{count})",
     "inactive_badge": "ਅਸਰਗਰਮ",
-    "joining_date_hint": "ਇਸ ਤਾਰੀਖ ਤੋਂ ਪਹਿਲਾਂ ਦੇ ਦਿਨ ਤਨਖਾਹ ਵਿੱਚ ਨਹੀਂ ਗਿਣੇ ਜਾਂਦੇ।"
+    "joining_date_hint": "ਇਸ ਤਾਰੀਖ ਤੋਂ ਪਹਿਲਾਂ ਦੇ ਦਿਨ ਤਨਖਾਹ ਵਿੱਚ ਨਹੀਂ ਗਿਣੇ ਜਾਂਦੇ।",
+    "hourly": "ਘੰਟੇ ਮੁਤਾਬਕ",
+    "pay_per_hour": "ਪ੍ਰਤੀ ਘੰਟਾ ਤਨਖਾਹ",
+    "shift_hours": "ਰੋਜ਼ ਕੰਮ ਦੇ ਘੰਟੇ",
+    "shift_hours_hint": "ਹਾਜ਼ਰ ਦਿਨ ਇੰਨੇ ਘੰਟੇ ਗਿਣਿਆ ਜਾਵੇਗਾ",
+    "late_fine": "ਲੇਟ ਜੁਰਮਾਨਾ (ਹਰ ਲੇਟ ਦਿਨ)",
+    "late_fine_hint": "ਹਰ ਲੇਟ ਦਿਨ ਕੱਟਿਆ ਜਾਵੇਗਾ। ਜੁਰਮਾਨਾ ਨਾ ਹੋਵੇ ਤਾਂ ਖਾਲੀ ਛੱਡੋ।",
+    "upi_id": "UPI ID (ਲਾਜ਼ਮੀ ਨਹੀਂ)",
+    "upi_id_hint": "ਐਪ ਤੋਂ UPI ਰਾਹੀਂ ਤਨਖਾਹ ਦੇਣ ਲਈ, ਜਿਵੇਂ name@okaxis",
+    "upi_invalid": "ਸਹੀ UPI ID ਪਾਓ, ਜਿਵੇਂ name@okaxis"
   },
   "attendance": {
     "title": "ਹਾਜ਼ਰੀ",
@@ -92,7 +101,9 @@
     "overtime": "ਓਵਰਟਾਈਮ ਘੰਟੇ",
     "note": "ਨੋਟ",
     "mark_attendance": "ਹਾਜ਼ਰੀ ਲਗਾਓ",
-    "no_records": "ਕੋਈ ਹਾਜ਼ਰੀ ਰਿਕਾਰਡ ਨਹੀਂ"
+    "no_records": "ਕੋਈ ਹਾਜ਼ਰੀ ਰਿਕਾਰਡ ਨਹੀਂ",
+    "late": "ਲੇਟ",
+    "hours_worked": "ਕੰਮ ਦੇ ਘੰਟੇ"
   },
   "payment": {
     "title": "ਭੁਗਤਾਨ",
@@ -127,7 +138,10 @@
     "edit_salary": "ਤਨਖਾਹ ਸੋਧੋ",
     "per_month": "/ਮਹੀਨਾ",
     "per_day": "/ਦਿਨ",
-    "per_week": "/ਹਫ਼ਤਾ"
+    "per_week": "/ਹਫ਼ਤਾ",
+    "per_hour": "/ਘੰਟਾ",
+    "late_fine_line": "ਲੇਟ ਜੁਰਮਾਨਾ (%{days} ਦਿਨ)",
+    "paid_hours": "ਕੰਮ ਦੇ ਘੰਟੇ"
   },
   "settings": {
     "title": "ਸੈਟਿੰਗਜ਼",
@@ -313,5 +327,20 @@
     "tomorrow_on": "ਅਸੀਂ ਤੁਹਾਨੂੰ %{time} ਵਜੇ ਯਾਦ ਕਰਾਵਾਂਗੇ",
     "tomorrow_off": "ਭੁੱਲੋ ਨਾ, ਇਸ ਲਈ ਰੋਜ਼ਾਨਾ ਰਿਮਾਈਂਡਰ ਚਾਲੂ ਕਰੋ",
     "turn_on": "ਚਾਲੂ ਕਰੋ"
+  },
+  "upi": {
+    "pay": "UPI ਨਾਲ %{amount} ਦਿਓ",
+    "add_id_title": "UPI ID ਜੋੜੋ",
+    "add_id_body": "ਐਪ ਤੋਂ ਤਨਖਾਹ ਦੇਣ ਲਈ %{name} ਦੀ UPI ID ਜੋੜੋ।",
+    "confirm_title": "ਕੀ ਭੁਗਤਾਨ ਹੋ ਗਿਆ?",
+    "confirm_body": "%{name} ਨੂੰ UPI ਨਾਲ %{amount} ਦਾ ਭੁਗਤਾਨ ਦਰਜ ਕਰੀਏ?",
+    "yes": "ਹਾਂ, ਦਰਜ ਕਰੋ",
+    "no": "ਨਹੀਂ",
+    "no_app": "ਇਸ ਫ਼ੋਨ ਵਿੱਚ ਕੋਈ UPI ਐਪ ਨਹੀਂ ਮਿਲੀ।",
+    "recorded": "ਭੁਗਤਾਨ ਦਰਜ ਹੋ ਗਿਆ"
+  },
+  "register": {
+    "button": "ਮਹੀਨਾਵਾਰ ਰਜਿਸਟਰ",
+    "error": "ਰਜਿਸਟਰ ਨਹੀਂ ਬਣ ਸਕਿਆ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
   }
 }

@@ -40,6 +40,9 @@ function createTables() {
       week_off INTEGER NOT NULL DEFAULT -1,
       week_off_days TEXT,
       overtime_rate REAL NOT NULL DEFAULT 0,
+      shift_hours REAL NOT NULL DEFAULT 8,
+      late_fine REAL NOT NULL DEFAULT 0,
+      upi_id TEXT,
       joining_date TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'active',
       created_at TEXT NOT NULL
@@ -73,9 +76,26 @@ function createTables() {
       status TEXT NOT NULL,
       note TEXT,
       overtime_hours REAL NOT NULL DEFAULT 0,
+      hours_worked REAL,
+      is_late INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL
     );
   `);
+
+  // 1.1.0: hourly salary, late fines, UPI pay. Each ALTER fails harmlessly once the column exists.
+  for (const sql of [
+    `ALTER TABLE staff ADD COLUMN shift_hours REAL NOT NULL DEFAULT 8;`,
+    `ALTER TABLE staff ADD COLUMN late_fine REAL NOT NULL DEFAULT 0;`,
+    `ALTER TABLE staff ADD COLUMN upi_id TEXT;`,
+    `ALTER TABLE attendance ADD COLUMN hours_worked REAL;`,
+    `ALTER TABLE attendance ADD COLUMN is_late INTEGER NOT NULL DEFAULT 0;`,
+  ]) {
+    try {
+      expo.execSync(sql);
+    } catch {
+      // Column already exists
+    }
+  }
 
   expo.execSync(`
     CREATE UNIQUE INDEX IF NOT EXISTS attendance_staff_date_idx ON attendance(staff_id, date);

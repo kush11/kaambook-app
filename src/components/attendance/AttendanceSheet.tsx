@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView } from 'react-native';
-import { Text, Button, TextInput, Portal, Modal } from 'react-native-paper';
+import { Text, Button, TextInput, Portal, Modal, Chip } from 'react-native-paper';
 import { makeStyles, useColors, type Palette } from '@/src/theme';
-import type { AttendanceStatus } from '@/src/types';
+import type { Attendance, AttendanceStatus } from '@/src/types';
+import type { MarkExtra } from '@/src/stores/useAttendanceStore';
 import { formatDate } from '@/src/utils/date';
 import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
 import i18n from '@/src/i18n';
@@ -10,8 +11,12 @@ import i18n from '@/src/i18n';
 interface AttendanceSheetProps {
   visible: boolean;
   date: string;
-  currentStatus?: AttendanceStatus;
-  onMark: (status: AttendanceStatus, note?: string, overtimeHours?: number) => void;
+  /** The day's existing record, so the sheet opens with it filled in. */
+  current?: Attendance;
+  /** Hourly staff: show "hours worked", defaulting to their shift hours. */
+  hourly?: boolean;
+  shiftHours?: number;
+  onMark: (status: AttendanceStatus, note?: string, overtimeHours?: number, extra?: MarkExtra) => void;
   onDismiss: () => void;
 }
 
@@ -25,19 +30,37 @@ const STATUSES: { key: AttendanceStatus; color: keyof Palette; icon: string }[] 
   { key: 'week_off', color: 'weekOff', icon: 'calendar-blank' },
 ];
 
-export function AttendanceSheet({ visible, date, currentStatus, onMark, onDismiss }: AttendanceSheetProps) {
+export function AttendanceSheet({ visible, date, current, hourly, shiftHours = 8, onMark, onDismiss }: AttendanceSheetProps) {
   const styles = useStyles();
   const colors = useColors();
-  const [selected, setSelected] = useState<AttendanceStatus | undefined>(currentStatus);
+  const [selected, setSelected] = useState<AttendanceStatus | undefined>(current?.status);
   const [note, setNote] = useState('');
   const [overtime, setOvertime] = useState('');
+  const [late, setLate] = useState(false);
+  const [hours, setHours] = useState('');
   const keyboardHeight = useKeyboardHeight();
+
+  // Each time the sheet opens for a day, start from that day's saved record.
+  useEffect(() => {
+    if (!visible) return;
+    setSelected(current?.status);
+    setNote(current?.note ?? '');
+    setOvertime(current?.overtimeHours ? String(current.overtimeHours) : '');
+    setLate(!!current?.isLate);
+    setHours(current?.hoursWorked != null ? String(current.hoursWorked) : '');
+  }, [visible, date, current]);
+
+  const worked = selected === 'present' || selected === 'half_day';
+  const defaultHours = selected === 'half_day' ? shiftHours / 2 : shiftHours;
 
   const handleSave = () => {
     if (!selected) return;
-    onMark(selected, note || undefined, Number(overtime) || 0);
-    setNote('');
-    setOvertime('');
+    const h = Number(hours);
+    onMark(selected, note || undefined, Number(overtime) || 0, {
+      isLate: worked && late,
+      // Empty or same as the default = follow the shift length (stored as null).
+      ...(hourly && { hoursWorked: worked && hours && h > 0 && h !== defaultHours ? h : null }),
+    });
   };
 
   return (
@@ -67,6 +90,31 @@ export function AttendanceSheet({ visible, date, currentStatus, onMark, onDismis
               </Button>
             ))}
           </View>
+          {worked && (
+            <View style={styles.extraRow}>
+              <Chip
+                icon="clock-alert-outline"
+                selected={late}
+                showSelectedCheck={false}
+                onPress={() => setLate((v) => !v)}
+                style={late ? { backgroundColor: colors.halfDay } : undefined}
+                textStyle={late ? styles.lateTextOn : undefined}
+              >
+                {i18n.t('attendance.late')}
+              </Chip>
+            </View>
+          )}
+          {hourly && worked && (
+            <TextInput
+              mode="outlined"
+              label={i18n.t('attendance.hours_worked')}
+              value={hours}
+              placeholder={String(defaultHours)}
+              onChangeText={(t) => setHours(t.replace(/[^0-9.]/g, '').slice(0, 4))}
+              keyboardType="decimal-pad"
+              style={styles.input}
+            />
+          )}
           <TextInput
             mode="outlined"
             label={i18n.t('attendance.note')}
@@ -103,5 +151,7 @@ const useStyles = makeStyles((colors) => ({
   statusGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
   statusBtn: { marginBottom: 4 },
   input: { marginBottom: 12 },
+  extraRow: { flexDirection: 'row', marginBottom: 12 },
+  lateTextOn: { color: '#fff' },
   saveBtn: { marginTop: 8 },
 }));

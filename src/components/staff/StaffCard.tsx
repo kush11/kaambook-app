@@ -26,7 +26,7 @@ const marks: { status: AttendanceStatus; letter: string; color: keyof Palette; l
   { status: 'half_day', letter: '½', color: 'halfDay', labelKey: 'attendance.half_day' },
 ];
 
-const salarySuffix = { monthly: 'salary.per_month', daily: 'salary.per_day', weekly: 'salary.per_week' } as const;
+const salarySuffix = { monthly: 'salary.per_month', daily: 'salary.per_day', weekly: 'salary.per_week', hourly: 'salary.per_hour' } as const;
 
 export function StaffCard({ staff, todayStatus, onPress, onMarkAttendance, isFirst, isLast }: StaffCardProps) {
   const styles = useStyles();

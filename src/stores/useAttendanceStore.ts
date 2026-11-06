@@ -9,11 +9,17 @@ import { track } from '../utils/analytics';
 import { maybeAskForReview } from '../utils/reviewPrompt';
 import { useSettingsStore } from './useSettingsStore';
 
+/** Set from the day sheet only; undefined leaves the stored value unchanged. */
+export interface MarkExtra {
+  isLate?: boolean;
+  hoursWorked?: number | null;
+}
+
 interface AttendanceState {
   records: Attendance[];
   isLoading: boolean;
   loadMonthAttendance: (staffId: string, year: number, month: number) => Promise<void>;
-  markAttendance: (staffId: string, date: string, status: AttendanceStatus, note?: string, overtimeHours?: number) => Promise<void>;
+  markAttendance: (staffId: string, date: string, status: AttendanceStatus, note?: string, overtimeHours?: number, extra?: MarkExtra) => Promise<void>;
   markAllStatus: (staffIds: string[], date: string, status: AttendanceStatus) => Promise<void>;
   markAllPresent: (staffIds: string[], date: string) => Promise<void>;
   getAttendanceForDate: (staffId: string, date: string) => Attendance | undefined;
@@ -38,8 +44,13 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
     set({ records: rows as Attendance[], isLoading: false });
   },
 
-  markAttendance: async (staffId: string, date: string, status: AttendanceStatus, note?: string, overtimeHours?: number) => {
+  markAttendance: async (staffId: string, date: string, status: AttendanceStatus, note?: string, overtimeHours?: number, extra?: MarkExtra) => {
     const now = dayjs().toISOString();
+    // Late / hours are set only from the day sheet; a quick P/A tap on Home leaves them as they were.
+    const extraCols = {
+      ...(extra?.isLate !== undefined && { isLate: extra.isLate && (status === 'present' || status === 'half_day') ? 1 : 0 }),
+      ...(extra?.hoursWorked !== undefined && { hoursWorked: extra.hoursWorked }),
+    };
 
     // Atomic upsert: insert, or if a row already exists for this (staff, date)
     // update it instead. Never throws a UNIQUE constraint error.
@@ -51,17 +62,22 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
         status,
         note: note || null,
         overtimeHours: overtimeHours || 0,
+        ...extraCols,
         createdAt: now,
       })
       .onConflictDoUpdate({
         target: [attendance.staffId, attendance.date],
-        set: { status, note: note || null, overtimeHours: overtimeHours || 0 },
+        set: { status, note: note || null, overtimeHours: overtimeHours || 0, ...extraCols },
       });
 
     // Reload current month
     const d = dayjs(date);
     await get().loadMonthAttendance(staffId, d.year(), d.month());
-    track('attendance_marked', { status, has_overtime: !!overtimeHours, bulk: false });
+    track('attendance_marked', {
+      status, has_overtime: !!overtimeHours, bulk: false,
+      ...(extra?.isLate && { late: true }),
+      ...(extra?.hoursWorked != null && { has_hours: true }),
+    });
     maybeAskForReview('attendance_streak');
     // Today's reminder is dropped once everyone is marked.
     useSettingsStore.getState().refreshReminders();

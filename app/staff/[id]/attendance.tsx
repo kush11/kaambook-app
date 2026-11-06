@@ -10,6 +10,7 @@ import { useStaffStore } from '@/src/stores/useStaffStore';
 import { makeStyles, useColors } from '@/src/theme';
 import dayjs from 'dayjs';
 import type { AttendanceStatus } from '@/src/types';
+import type { MarkExtra } from '@/src/stores/useAttendanceStore';
 import i18n from '@/src/i18n';
 
 export default function AttendanceScreen() {
@@ -42,9 +43,9 @@ export default function AttendanceScreen() {
     else setMonth(m => m + 1);
   };
 
-  const handleMark = async (status: AttendanceStatus, note?: string, overtimeHours?: number) => {
+  const handleMark = async (status: AttendanceStatus, note?: string, overtimeHours?: number, extra?: MarkExtra) => {
     if (selectedDate) {
-      await markAttendance(id, selectedDate, status, note, overtimeHours);
+      await markAttendance(id, selectedDate, status, note, overtimeHours, extra);
       // Salary ignores days before the joining date, so a day marked earlier than it
       // (e.g. back-filling the month after installing the app) would silently not count.
       // Marking attendance means they were working then — move the joining date back.
@@ -58,6 +59,7 @@ export default function AttendanceScreen() {
   };
 
   const currentRecord = selectedDate ? records.find(r => r.date === selectedDate) : undefined;
+  const lateDays = records.filter(r => r.isLate && (r.status === 'present' || r.status === 'half_day')).length;
 
   return (
     <View style={styles.container}>
@@ -85,6 +87,11 @@ export default function AttendanceScreen() {
               <SummaryItem label={i18n.t('attendance.half_day')} value={summary.half_day || 0} color={colors.halfDay} />
               <SummaryItem label={i18n.t('attendance.paid_leave')} value={summary.paid_leave || 0} color={colors.paidLeave} />
             </View>
+            {lateDays > 0 && (
+              <Text variant="bodySmall" style={styles.lateLine}>
+                {i18n.t('attendance.late')}: {lateDays}
+              </Text>
+            )}
           </Card.Content>
         </Card>
       </ScrollView>
@@ -92,7 +99,9 @@ export default function AttendanceScreen() {
       <AttendanceSheet
         visible={!!selectedDate}
         date={selectedDate || ''}
-        currentStatus={currentRecord?.status as AttendanceStatus | undefined}
+        current={currentRecord}
+        hourly={staffMember?.salaryType === 'hourly'}
+        shiftHours={staffMember?.shiftHours}
         onMark={handleMark}
         onDismiss={() => setSelectedDate(null)}
       />
@@ -115,6 +124,7 @@ const useStyles = makeStyles((colors) => ({
   calendarCard: { margin: 16, backgroundColor: colors.surface },
   summaryCard: { margin: 16, marginTop: 0, backgroundColor: colors.surface },
   summaryTitle: { marginBottom: 12 },
+  lateLine: { color: colors.halfDay, marginTop: 10, textAlign: 'center' },
   summaryGrid: { flexDirection: 'row', justifyContent: 'space-around' },
 }));
 

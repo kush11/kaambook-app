@@ -8,6 +8,8 @@ import i18n from '@/src/i18n';
 
 interface SalaryBreakupProps {
   breakdown: SalaryBreakdownType;
+  /** Hourly staff: also show hours worked. */
+  hourly?: boolean;
 }
 
 function StatTile({ label, value, color }: { label: string; value: string; color: string }) {
@@ -30,7 +32,7 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
   );
 }
 
-export function SalaryBreakup({ breakdown }: SalaryBreakupProps) {
+export function SalaryBreakup({ breakdown, hourly }: SalaryBreakupProps) {
   const styles = useStyles();
   const colors = useColors();
   const owes = breakdown.balanceDue > 0;
@@ -49,8 +51,18 @@ export function SalaryBreakup({ breakdown }: SalaryBreakupProps) {
           <StatTile label={i18n.t('salary.paid_leaves')} value={String(breakdown.paidLeaves)} color={colors.paidLeave} />
         </View>
 
+        {hourly && (
+          <Row label={i18n.t('salary.paid_hours')} value={String(breakdown.paidHours)} />
+        )}
         {breakdown.overtimeHours > 0 && (
           <Row label={i18n.t('salary.overtime_hours')} value={String(breakdown.overtimeHours)} />
+        )}
+        {breakdown.lateFine > 0 && (
+          <Row
+            label={i18n.t('salary.late_fine_line', { days: breakdown.lateDays })}
+            value={`− ${formatCurrency(breakdown.lateFine)}`}
+            color={colors.absent}
+          />
         )}
 
         <Divider style={styles.divider} />

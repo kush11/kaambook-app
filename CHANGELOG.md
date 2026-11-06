@@ -14,9 +14,21 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 | 1.0.4 | 8, 9 | 2026-06-26 | — | Production (superseded) |
 | ≤ 1.0.3 | 1–7 | 2026-03 → 2026-06 | — | superseded |
 
-## Unreleased (planned 1.0.10)
+## Unreleased (planned 1.1.0 — new features, so a minor version)
 
 ### Added
+- **Hourly salary.** New salary type: pay per hour × hours worked. Each staff member has a
+  "working hours per day" (default 8); present = that many hours, half day = half, paid leave =
+  full shift; hours can be changed per day in the attendance sheet.
+- **Late fines.** Per-staff "late fine per late day"; a Late toggle on present / half days in the
+  attendance sheet; deducted automatically and shown on Salary Due, the staff page and the slip.
+- **Pay by UPI.** Staff UPI ID (optional). "UPI" on each Salary Due row and "Pay ₹X by UPI" on the
+  staff page open PhonePe / GPay / Paytm with the amount filled in (`upi://pay`); on return the
+  owner confirms and the payment is recorded (salary, UPI). Events `upi_pay_*`, `upi_id_added`.
+- **Monthly register PDF** from Salary Due: every staff member's day-by-day attendance (P / A / H /
+  PL / UL / HO / WO, L = late) and the salary register (rate, days, hours, OT, late fine, earned,
+  paid, balance, totals). Event `register_shared`.
+- The attendance sheet now opens with the day's saved status, note and overtime filled in.
 - **Dark mode.** Settings → Theme: Same as phone (default), Light, Dark. All screens use the
   theme (`src/theme/ThemeProvider.tsx`: `useColors()`, `makeStyles()`); PDF salary slips and the
   splash stay light.

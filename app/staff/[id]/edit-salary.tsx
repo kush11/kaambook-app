@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { View, ScrollView } from 'react-native';
-import { Text, Button } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { router, useLocalSearchParams } from 'expo-router';
-import { AmountInput } from '@/src/components/ui/AmountInput';
-import { SegmentedToggle } from '@/src/components/ui/SegmentedToggle';
+import { SalaryRulesFields, type SalaryRules } from '@/src/components/staff/SalaryRulesFields';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { makeStyles } from '@/src/theme';
-import type { SalaryType } from '@/src/types';
 import i18n from '@/src/i18n';
 
 export default function EditSalaryScreen() {
@@ -16,44 +14,26 @@ export default function EditSalaryScreen() {
   const staffMember = getStaffById(id);
   const [loading, setLoading] = useState(false);
 
-  const [salaryType, setSalaryType] = useState<SalaryType>(staffMember?.salaryType || 'monthly');
-  const [salaryAmount, setSalaryAmount] = useState(staffMember?.salaryAmount || 0);
-  const [overtimeRate, setOvertimeRate] = useState(staffMember?.overtimeRate || 0);
+  const [rules, setRules] = useState<SalaryRules>({
+    salaryType: staffMember?.salaryType || 'monthly',
+    salaryAmount: staffMember?.salaryAmount || 0,
+    overtimeRate: staffMember?.overtimeRate || 0,
+    shiftHours: staffMember?.shiftHours || 8,
+    lateFine: staffMember?.lateFine || 0,
+  });
 
   if (!staffMember) return null;
 
   const handleSave = async () => {
     setLoading(true);
-    await updateStaff(id, { salaryType, salaryAmount, overtimeRate });
+    await updateStaff(id, rules);
     setLoading(false);
     router.back();
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text variant="labelLarge" style={styles.label}>{i18n.t('staff.salary_type')}</Text>
-      <SegmentedToggle
-        value={salaryType}
-        onValueChange={(v) => setSalaryType(v as SalaryType)}
-        options={[
-          { value: 'monthly', label: i18n.t('staff.monthly') },
-          { value: 'daily', label: i18n.t('staff.daily') },
-          { value: 'weekly', label: i18n.t('staff.weekly') },
-        ]}
-        style={styles.segment}
-      />
-
-      <AmountInput
-        value={salaryAmount}
-        onChangeValue={setSalaryAmount}
-        label={i18n.t('staff.salary_amount')}
-      />
-
-      <AmountInput
-        value={overtimeRate}
-        onChangeValue={setOvertimeRate}
-        label={i18n.t('staff.overtime_rate')}
-      />
+      <SalaryRulesFields value={rules} onChange={setRules} />
 
       <Button
         mode="contained"
@@ -71,8 +51,6 @@ export default function EditSalaryScreen() {
 const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 16 },
-  label: { marginBottom: 8, color: colors.textSecondary },
-  segment: { marginBottom: 24 },
   button: { marginTop: 24 },
   buttonContent: { paddingVertical: 6 },
 }));

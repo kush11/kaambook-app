@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, FlatList, ScrollView } from 'react-native';
-import { Text, Button, Portal, Modal, ActivityIndicator, IconButton, TouchableRipple } from 'react-native-paper';
+import { Text, Button, Portal, Modal, ActivityIndicator, IconButton, TouchableRipple, Snackbar } from 'react-native-paper';
 import { router, useFocusEffect } from 'expo-router';
 import { EmptyState } from '@/src/components/ui/EmptyState';
 import { StaffAvatar } from '@/src/components/staff/StaffAvatar';
+import { PayByUpiButton } from '@/src/components/payment/PayByUpiButton';
+import { shareMonthlyRegister } from '@/src/utils/register';
 import { MonthNavigator } from '@/src/components/attendance/MonthNavigator';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
@@ -41,6 +43,8 @@ export default function SalaryDueScreen() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiText, setAiText] = useState('');
   const [aiError, setAiError] = useState('');
+  const [registerBusy, setRegisterBusy] = useState(false);
+  const [registerError, setRegisterError] = useState('');
 
   const loadDues = useCallback(async () => {
     if (!activeBusinessId) return;
@@ -99,6 +103,24 @@ export default function SalaryDueScreen() {
   const paidPercent = (earned: number, paid: number) =>
     earned > 0 ? Math.min(100, Math.max(0, (paid / earned) * 100)) : paid > 0 ? 100 : 0;
 
+  const shareRegister = async () => {
+    setRegisterBusy(true);
+    try {
+      // Everyone working this month, plus anyone who left with money still owed either way.
+      const owedIds = new Set(dues.map((d) => d.staff.id));
+      const list = useStaffStore.getState().staffList.filter((s) => s.status === 'active' || owedIds.has(s.id));
+      await shareMonthlyRegister(activeBusiness?.name || 'Hisab Pagar', list, year, month);
+    } catch (e) {
+      trackError('register_share', e);
+      setRegisterError(i18n.t('register.error'));
+    } finally {
+      setRegisterBusy(false);
+    }
+  };
+
+  // Payments made from here land in the month on screen (today, or its last day for a past month).
+  const monthEnd = dayjs().year(year).month(month).endOf('month').format('YYYY-MM-DD');
+
   const openAiSummary = async () => {
     setAiVisible(true);
     setAiText('');
@@ -141,18 +163,34 @@ export default function SalaryDueScreen() {
         </View>
       </View>
 
-      <Button
-        mode="contained-tonal"
-        icon="creation"
-        onPress={openAiSummary}
-        buttonColor={colors.primaryTint}
-        textColor={colors.primaryDark}
-        style={styles.aiBtn}
-        contentStyle={styles.aiBtnContent}
-        labelStyle={styles.aiBtnLabel}
-      >
-        {i18n.t('ai.summary_btn')}
-      </Button>
+      <View style={styles.actionsRow}>
+        <Button
+          mode="contained-tonal"
+          icon="creation"
+          onPress={openAiSummary}
+          buttonColor={colors.primaryTint}
+          textColor={colors.primaryDark}
+          style={[styles.aiBtn, styles.actionBtn]}
+          contentStyle={styles.aiBtnContent}
+          labelStyle={styles.aiBtnLabel}
+        >
+          {i18n.t('ai.summary_btn')}
+        </Button>
+        <Button
+          mode="contained-tonal"
+          icon="file-table-outline"
+          onPress={shareRegister}
+          loading={registerBusy}
+          disabled={registerBusy}
+          buttonColor={colors.primaryTint}
+          textColor={colors.primaryDark}
+          style={[styles.aiBtn, styles.actionBtn]}
+          contentStyle={styles.aiBtnContent}
+          labelStyle={styles.aiBtnLabel}
+        >
+          {i18n.t('register.button')}
+        </Button>
+      </View>
 
       <FlatList
         data={dues}
@@ -184,6 +222,16 @@ export default function SalaryDueScreen() {
                       {formatCurrency(Math.abs(balanceDue))}
                     </Text>
                     {isAdvance ? <Text style={styles.rowDueLabel}>{i18n.t('payment.advance')}</Text> : null}
+                    {balanceDue > 0 ? (
+                      <PayByUpiButton
+                        compact
+                        staff={item.staff}
+                        amount={balanceDue}
+                        paymentDate={monthEnd}
+                        source="salary_due"
+                        onPaid={loadDues}
+                      />
+                    ) : null}
                   </View>
                 </View>
               </TouchableRipple>
@@ -195,6 +243,10 @@ export default function SalaryDueScreen() {
           <EmptyState icon="check-circle" title={i18n.t('common.no_data')} />
         }
       />
+
+      <Snackbar visible={!!registerError} onDismiss={() => setRegisterError('')} duration={3000}>
+        {registerError}
+      </Snackbar>
 
       <Portal>
         <Modal
@@ -269,11 +321,13 @@ const useStyles = makeStyles((colors) => ({
   rowMeta: { fontSize: 13, color: colors.textSecondary },
   rowTrack: { height: 4, borderRadius: 2, backgroundColor: colors.divider, overflow: 'hidden', marginTop: 2 },
   rowFill: { height: 4, backgroundColor: colors.success },
-  rowDue: { alignItems: 'flex-end' },
+  rowDue: { alignItems: 'flex-end', gap: 6 },
   rowAmount: { fontSize: 17, fontWeight: '700', color: colors.text },
   rowAmountAdvance: { color: colors.success },
   rowDueLabel: { fontSize: 12, color: colors.textSecondary },
-  aiBtn: { marginHorizontal: 16, marginVertical: 12, borderRadius: 14 },
+  aiBtn: { marginVertical: 12, borderRadius: 14 },
+  actionsRow: { flexDirection: 'row', gap: 10, marginHorizontal: 16 },
+  actionBtn: { flex: 1 },
   aiBtnContent: { paddingVertical: 4 },
   aiBtnLabel: { fontWeight: '700' },
   modal: { backgroundColor: colors.surface, margin: 20, borderRadius: 16, padding: 16, maxHeight: '80%' },

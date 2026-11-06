@@ -78,7 +78,16 @@
     "duplicate_phone": "यह मोबाइल नंबर पहले से किसी अन्य स्टाफ के लिए जोड़ा गया है।",
     "inactive_list": "निष्क्रिय स्टाफ (%{count})",
     "inactive_badge": "निष्क्रिय",
-    "joining_date_hint": "इस तिथि से पहले के दिन वेतन में नहीं गिने जाते।"
+    "joining_date_hint": "इस तिथि से पहले के दिन वेतन में नहीं गिने जाते।",
+    "hourly": "प्रति घंटा",
+    "pay_per_hour": "प्रति घंटा वेतन",
+    "shift_hours": "रोज़ काम के घंटे",
+    "shift_hours_hint": "हाज़िर दिन इतने घंटे गिना जाएगा",
+    "late_fine": "लेट फ़ाइन (हर लेट दिन)",
+    "late_fine_hint": "हर लेट दिन पर कटेगा। फ़ाइन न हो तो खाली छोड़ें।",
+    "upi_id": "UPI ID (ज़रूरी नहीं)",
+    "upi_id_hint": "ऐप से UPI द्वारा सैलरी देने के लिए, जैसे name@okaxis",
+    "upi_invalid": "सही UPI ID डालें, जैसे name@okaxis"
   },
   "attendance": {
     "title": "हाजिरी",
@@ -92,7 +101,9 @@
     "overtime": "ओवरटाइम घंटे",
     "note": "नोट",
     "mark_attendance": "हाजिरी लगाएं",
-    "no_records": "कोई हाजिरी रिकॉर्ड नहीं"
+    "no_records": "कोई हाजिरी रिकॉर्ड नहीं",
+    "late": "लेट",
+    "hours_worked": "काम के घंटे"
   },
   "payment": {
     "title": "भुगतान",
@@ -127,7 +138,10 @@
     "edit_salary": "वेतन संपादित करें",
     "per_month": "/माह",
     "per_day": "/दिन",
-    "per_week": "/सप्ताह"
+    "per_week": "/सप्ताह",
+    "per_hour": "/घंटा",
+    "late_fine_line": "लेट फ़ाइन (%{days} दिन)",
+    "paid_hours": "काम के घंटे"
   },
   "settings": {
     "title": "सेटिंग्स",
@@ -313,5 +327,20 @@
     "tomorrow_on": "हम आपको %{time} बजे याद दिलाएँगे",
     "tomorrow_off": "रोज़ का रिमाइंडर चालू करें ताकि भूलें नहीं",
     "turn_on": "चालू करें"
+  },
+  "upi": {
+    "pay": "UPI से %{amount} दें",
+    "add_id_title": "UPI ID जोड़ें",
+    "add_id_body": "ऐप से सैलरी देने के लिए %{name} की UPI ID जोड़ें।",
+    "confirm_title": "क्या भुगतान हो गया?",
+    "confirm_body": "%{name} को UPI से %{amount} का भुगतान दर्ज करें?",
+    "yes": "हाँ, दर्ज करें",
+    "no": "नहीं",
+    "no_app": "इस फ़ोन में कोई UPI ऐप नहीं मिला।",
+    "recorded": "भुगतान दर्ज हो गया"
+  },
+  "register": {
+    "button": "मासिक रजिस्टर",
+    "error": "रजिस्टर नहीं बन सका। फिर से कोशिश करें।"
   }
 }

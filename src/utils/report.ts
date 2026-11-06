@@ -35,9 +35,7 @@ function generateSalarySlipHTML(
   const period = getMonthYear(year, month, 'en');
   const generatedDate = dayjs().format('DD MMM YYYY');
 
-  const salaryLabel = staffMember.salaryType === 'monthly' ? 'Monthly Salary'
-    : staffMember.salaryType === 'daily' ? 'Daily Wage'
-    : 'Weekly Wage';
+  const salaryLabel = { monthly: 'Monthly Salary', daily: 'Daily Wage', weekly: 'Weekly Wage', hourly: 'Hourly Rate' }[staffMember.salaryType];
 
   const salaryPayments = payments.filter(p => p.type === 'salary').reduce((s, p) => s + p.amount, 0);
   const advancePayments = payments.filter(p => p.type === 'advance').reduce((s, p) => s + p.amount, 0);
@@ -151,7 +149,9 @@ function generateSalarySlipHTML(
       <tr><td><span class="badge badge-blue">Paid Leave</span></td><td>${breakdown.paidLeaves}</td></tr>
       <tr><td>Week Offs</td><td>${breakdown.weekOffs}</td></tr>
       <tr><td>Holidays</td><td>${breakdown.holidays}</td></tr>
+      ${staffMember.salaryType === 'hourly' ? `<tr><td>Hours Worked</td><td>${breakdown.paidHours}</td></tr>` : ''}
       ${breakdown.overtimeHours > 0 ? `<tr><td>Overtime Hours</td><td>${breakdown.overtimeHours}</td></tr>` : ''}
+      ${breakdown.lateDays > 0 ? `<tr><td><span class="badge badge-yellow">Late</span></td><td>${breakdown.lateDays}</td></tr>` : ''}
     </table>
   </div>
 
@@ -171,6 +171,7 @@ function generateSalarySlipHTML(
           ${advancePayments > 0 ? `<tr><td>Advance</td><td>${formatCurrency(advancePayments)}</td></tr>` : ''}
           ${bonusPayments > 0 ? `<tr><td>Bonus</td><td>${formatCurrency(bonusPayments)}</td></tr>` : ''}
           ${penaltyPayments > 0 ? `<tr><td>Penalty</td><td style="color:#DC2626">-${formatCurrency(penaltyPayments)}</td></tr>` : ''}
+          ${breakdown.lateFine > 0 ? `<tr><td>Late Fine (${breakdown.lateDays} days)</td><td style="color:#DC2626">-${formatCurrency(breakdown.lateFine)}</td></tr>` : ''}
           <tr class="total-row"><td>Total Paid</td><td>${formatCurrency(breakdown.totalPaid)}</td></tr>
         </table>
       </div>

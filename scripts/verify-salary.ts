@@ -11,13 +11,13 @@ function mkStaff(over: Partial<Staff>): Staff {
   return {
     id: 's1', businessId: 'b1', name: 'Test', phone: null, photoUri: null,
     salaryType: 'monthly', salaryAmount: 0, weekOff: -1, weekOffDays: null,
-    overtimeRate: 0, joiningDate: '2024-01-01', status: 'active', createdAt: '2024-01-01T00:00:00Z',
+    overtimeRate: 0, shiftHours: 8, lateFine: 0, upiId: null, joiningDate: '2024-01-01', status: 'active', createdAt: '2024-01-01T00:00:00Z',
     ...over,
   };
 }
-function att(day: number, status: AttendanceStatus, overtimeHours = 0): Attendance {
+function att(day: number, status: AttendanceStatus, overtimeHours = 0, extra: Partial<Attendance> = {}): Attendance {
   return { id: 'a' + day, staffId: 's1', date: `2025-01-${String(day).padStart(2, '0')}`,
-    status, note: null, overtimeHours, createdAt: '' };
+    status, note: null, overtimeHours, hoursWorked: null, isLate: 0, createdAt: '', ...extra };
 }
 function pay(amount: number, type: Payment['type']): Payment {
   return { id: 'p' + Math.random(), staffId: 's1', amount, type, mode: 'cash', date: '2025-01-15', note: null, createdAt: '' };
@@ -101,6 +101,49 @@ function check(name: string, got: number, expected: number) {
   check('Penalty -> totalPaid excludes penalty', r.totalPaid, 27000);
   check('Penalty -> earned reduced by penalty', r.earnedSalary, 30000);
   check('Penalty -> balance DUE reduced (was bug)', r.balanceDue, 3000);
+}
+
+// 9. Hourly 100/hr, 8h shift: 20 present (one at 10h worked), 2 half days, 1 paid leave, weekends off
+{
+  const recs = [
+    ...WEEKDAYS.slice(0, 20).map((d, i) => att(d, 'present', 0, i === 0 ? { hoursWorked: 10 } : {})),
+    ...WEEKDAYS.slice(20, 22).map(d => att(d, 'half_day')),
+    att(WEEKDAYS[22], 'paid_leave'),
+    ...SAT_SUN.map(d => att(d, 'week_off')),
+  ];
+  const r = calculateSalary(mkStaff({ salaryType: 'hourly', salaryAmount: 100 }), recs, [], YEAR, MONTH);
+  // hours = 19*8 + 10 + 2*4 + 8 (paid leave) = 178 -> 17800 ; week offs unpaid
+  check('Hourly paid hours', r.paidHours, 178);
+  check('Hourly earned', r.earnedSalary, 17800);
+}
+
+// 10. Hourly with a 6h shift + 4h overtime, no OT rate -> 1.5x hourly rate
+{
+  const recs = [att(WEEKDAYS[0], 'present', 4)];
+  const r = calculateSalary(mkStaff({ salaryType: 'hourly', salaryAmount: 100, shiftHours: 6 }), recs, [], YEAR, MONTH);
+  // 6h * 100 + 4h * 150 = 1200 (other weekdays unmarked = absent, unpaid)
+  check('Hourly 6h shift + 4h OT', r.earnedSalary, 1200);
+}
+
+// 11. Late fine 50/day: monthly perfect, 3 present days late + 1 absent day flagged late (ignored)
+{
+  const recs = [
+    ...WEEKDAYS.slice(0, 22).map((d, i) => att(d, 'present', 0, i < 3 ? { isLate: 1 } : {})),
+    att(WEEKDAYS[22], 'absent', 0, { isLate: 1 }),
+    ...SAT_SUN.map(d => att(d, 'week_off')),
+  ];
+  const r = calculateSalary(mkStaff({ salaryType: 'monthly', salaryAmount: 31000, lateFine: 50 }), recs, [pay(100, 'penalty')], YEAR, MONTH);
+  // payable 30 days -> 30000 ; late 3*50 = 150 ; penalty 100 -> 29750
+  check('Late days counted (present/half only)', r.lateDays, 3);
+  check('Late fine amount', r.lateFine, 150);
+  check('Earned after late fine + penalty', r.earnedSalary, 29750);
+}
+
+// 12. Late flag without a fine set -> no deduction
+{
+  const recs = [att(WEEKDAYS[0], 'present', 0, { isLate: 1 })];
+  const r = calculateSalary(mkStaff({ salaryType: 'daily', salaryAmount: 500 }), recs, [], YEAR, MONTH);
+  check('Late with no fine -> no deduction', r.earnedSalary, 500);
 }
 
 console.log(`\n==== ${pass} passed, ${fail} failed ====`);

@@ -20,6 +20,11 @@ export const staff = sqliteTable('staff', {
   weekOff: integer('week_off').notNull().default(-1), // legacy single day: -1 = none, 0=Sun, 6=Sat
   weekOffDays: text('week_off_days'), // comma-separated days e.g. "0,6" (supersedes weekOff)
   overtimeRate: real('overtime_rate').notNull().default(0),
+  // Normal working hours in a day: an hourly worker's paid hours for a "present" day.
+  shiftHours: real('shift_hours').notNull().default(8),
+  // Deducted for each day marked late (0 = no fine).
+  lateFine: real('late_fine').notNull().default(0),
+  upiId: text('upi_id'),
   joiningDate: text('joining_date').notNull(),
   status: text('status').notNull().default('active'), // active, inactive
   createdAt: text('created_at').notNull(),
@@ -32,6 +37,9 @@ export const attendance = sqliteTable('attendance', {
   status: text('status').notNull(), // present, absent, half_day, paid_leave, unpaid_leave, holiday, week_off
   note: text('note'),
   overtimeHours: real('overtime_hours').notNull().default(0),
+  // Hourly staff: hours actually worked that day; null = the staff member's shift hours.
+  hoursWorked: real('hours_worked'),
+  isLate: integer('is_late').notNull().default(0),
   createdAt: text('created_at').notNull(),
 }, (table) => [
   uniqueIndex('attendance_staff_date_idx').on(table.staffId, table.date),

@@ -78,7 +78,16 @@
     "duplicate_phone": "આ મોબાઇલ નંબર પહેલેથી જ બીજા સ્ટાફ માટે ઉમેરાયેલ છે.",
     "inactive_list": "નિષ્ક્રિય સ્ટાફ (%{count})",
     "inactive_badge": "નિષ્ક્રિય",
-    "joining_date_hint": "આ તારીખ પહેલાંના દિવસો પગારમાં ગણાતા નથી."
+    "joining_date_hint": "આ તારીખ પહેલાંના દિવસો પગારમાં ગણાતા નથી.",
+    "hourly": "કલાક મુજબ",
+    "pay_per_hour": "કલાક દીઠ પગાર",
+    "shift_hours": "રોજના કામના કલાક",
+    "shift_hours_hint": "હાજર દિવસ આટલા કલાક ગણાશે",
+    "late_fine": "મોડા આવવાનો દંડ (દરેક મોડા દિવસે)",
+    "late_fine_hint": "દરેક મોડા દિવસે કપાશે. દંડ ન હોય તો ખાલી રાખો.",
+    "upi_id": "UPI ID (વૈકલ્પિક)",
+    "upi_id_hint": "ઍપમાંથી UPI થી પગાર આપવા, દા.ત. name@okaxis",
+    "upi_invalid": "સાચો UPI ID લખો, દા.ત. name@okaxis"
   },
   "attendance": {
     "title": "હાજરી",
@@ -92,7 +101,9 @@
     "overtime": "ઓવરટાઇમ કલાકો",
     "note": "નોંધ",
     "mark_attendance": "હાજરી લગાવો",
-    "no_records": "કોઈ હાજરી રેકોર્ડ નથી"
+    "no_records": "કોઈ હાજરી રેકોર્ડ નથી",
+    "late": "મોડા",
+    "hours_worked": "કામના કલાક"
   },
   "payment": {
     "title": "ચુકવણી",
@@ -127,7 +138,10 @@
     "edit_salary": "પગાર સંપાદિત કરો",
     "per_month": "/મહિનો",
     "per_day": "/દિવસ",
-    "per_week": "/અઠવાડિયું"
+    "per_week": "/અઠવાડિયું",
+    "per_hour": "/કલાક",
+    "late_fine_line": "મોડા આવવાનો દંડ (%{days} દિવસ)",
+    "paid_hours": "કામના કલાક"
   },
   "settings": {
     "title": "સેટિંગ્સ",
@@ -313,5 +327,20 @@
     "tomorrow_on": "અમે તમને %{time} વાગ્યે યાદ કરાવીશું",
     "tomorrow_off": "ભૂલી ન જાઓ એ માટે રોજનું રિમાઇન્ડર ચાલુ કરો",
     "turn_on": "ચાલુ કરો"
+  },
+  "upi": {
+    "pay": "UPI થી %{amount} આપો",
+    "add_id_title": "UPI ID ઉમેરો",
+    "add_id_body": "ઍપમાંથી પગાર આપવા %{name} નો UPI ID ઉમેરો.",
+    "confirm_title": "ચુકવણી થઈ ગઈ?",
+    "confirm_body": "%{name} ને UPI થી %{amount} ચૂકવ્યાની નોંધ કરીએ?",
+    "yes": "હા, નોંધ કરો",
+    "no": "ના",
+    "no_app": "આ ફોનમાં કોઈ UPI ઍપ મળી નહીં.",
+    "recorded": "ચુકવણી નોંધાઈ ગઈ"
+  },
+  "register": {
+    "button": "માસિક રજિસ્ટર",
+    "error": "રજિસ્ટર બની શક્યું નહીં. ફરી પ્રયાસ કરો."
   }
 }
