@@ -17,6 +17,12 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 
 ## Unreleased
 
+### Fixed
+- **In-app rating prompt fired minutes after install** when the owner back-filled past
+  attendance (5 marks on 2 dates). It now waits until attendance was marked on two different
+  days of use, for every trigger. The only 1★ (2026-10-10, 1.0.7, OPPO A79) followed this
+  prompt plus the back-filled-days-not-counted bug that 1.0.9 fixed.
+
 ### Changed
 - **R8 optimised resource shrinking** on (`plugins/withR8Optimization.js`), for Play's memory
   recommendation on 1.0.9. R8's optimisation pass (`proguard-android-optimize.txt`) was tried and

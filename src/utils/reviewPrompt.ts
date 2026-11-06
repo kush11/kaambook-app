@@ -31,15 +31,18 @@ async function askedRecently(): Promise<boolean> {
 export async function maybeAskForReview(trigger: ReviewTrigger): Promise<void> {
   try {
     if (await askedRecently()) return;
-    if (trigger === 'attendance_streak') {
-      const [row] = await db
-        .select({
-          marks: sql<number>`count(*)`,
-          days: sql<number>`count(distinct ${attendance.date})`,
-        })
-        .from(attendance);
-      if (!row || row.marks < ATTENDANCE_MARKS_BEFORE_ASKING || row.days < ATTENDANCE_DAYS_BEFORE_ASKING) return;
-    }
+    // Only once the owner has used the app on at least two days (counted by when attendance
+    // was marked, not the dates marked): back-filling last week's attendance on install day used
+    // to trigger the prompt within minutes, before the owner had seen a salary come out right —
+    // a 1★ on 2026-10-10 followed exactly that. Applies to every trigger, slip sharing included.
+    const [row] = await db
+      .select({
+        marks: sql<number>`count(*)`,
+        days: sql<number>`count(distinct substr(${attendance.createdAt}, 1, 10))`,
+      })
+      .from(attendance);
+    if (!row || row.days < ATTENDANCE_DAYS_BEFORE_ASKING) return;
+    if (trigger === 'attendance_streak' && row.marks < ATTENDANCE_MARKS_BEFORE_ASKING) return;
     if (!(await StoreReview.isAvailableAsync())) return;
 
     const now = dayjs().toISOString();
