@@ -37,8 +37,8 @@ Xiaomi (Android 15/HyperOS), QA build `com.kaambook.app.qa`, 2026-11-06:
 - Not tested: Google Drive sign-in (only Play builds), real reminder delivery at 8 PM.
 
 ## Before promoting to Production
-- [ ] **Play Console → App content → Data safety: add App activity → "Installed apps"**
-      (collected, not shared, optional, purpose Analytics). Required for the app check.
+- [x] **Data safety: App activity → "Installed apps"** — collected, not shared, not ephemeral,
+      optional (users can choose), purpose Analytics. Saved and sent for Google review 2026-11-06 ~09:50 IST.
 
 ## Verify on Internal testing
 1. Update from the Internal testing link; app opens on existing data (migration adds columns).
