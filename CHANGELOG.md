@@ -15,6 +15,14 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 | 1.0.4 | 8, 9 | 2026-06-26 | — | Production (superseded) |
 | ≤ 1.0.3 | 1–7 | 2026-03 → 2026-06 | — | superseded |
 
+## Unreleased
+
+### Changed
+- **R8 optimised resource shrinking** on (`plugins/withR8Optimization.js`), for Play's memory
+  recommendation on 1.0.9. R8's optimisation pass (`proguard-android-optimize.txt`) was tried and
+  left off: with Expo SDK 54 the release build hung on the splash screen. AGP 9 needs a newer
+  Expo SDK.
+
 ## 1.1.0 — 2026-11-06 · [release sheet](docs/release-1.1.0.md)
 
 ### Added

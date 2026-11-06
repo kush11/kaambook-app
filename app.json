@@ -50,6 +50,7 @@
       "backgroundColor": "#FAFAF5"
     },
     "plugins": [
+      "./plugins/withR8Optimization",
       "expo-router",
       "expo-notifications",
       "expo-font",
