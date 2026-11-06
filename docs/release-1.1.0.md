@@ -1,7 +1,7 @@
 # Hisab Pagar 1.1.0 — release sheet
 
 - **Version:** 1.1.0 · versionCode 10100 (major×10000 + minor×100 + patch)
-- **Release:** tag `v1.1.0` → GitHub Actions → Play Internal testing (2026-11-06)
+- **Release:** tag `v1.1.0` → GitHub Actions run `42160878211` (success) → Play Internal testing (2026-11-06 ~09:55 IST)
 - **Production:** not yet — promote by hand after the checks below
 - **Why:** 12 of 18 users used the app on one day only (PostHog, Oct 19–Nov 5) even though all
   had the reminder on; competitors (PagarBook, SalaryBook) offer hourly pay, late fines and a
