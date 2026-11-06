@@ -5,7 +5,9 @@
 # Builds on GitHub's runners (free for this public repo, no Expo queue), signs
 # with the Play upload key, and uploads the bundle + R8 mapping.txt straight to
 # Play Console. Promote internal -> production by hand in Play Console (the
-# service account only has testing-track permission).
+# service account only has testing-track permission). After the upload it also
+# creates the GitHub Release for the tag, with notes from CHANGELOG.md
+# (scripts/release-notes.sh) — so write the CHANGELOG section before tagging.
 #
 # versionCode = major*10000 + minor*100 + patch (1.0.10 -> 10010), so it always
 # grows with the version. Re-releasing the same version needs a new number:
@@ -40,6 +42,8 @@ jobs:
   release:
     runs-on: ubuntu-24.04  # pinned: ubuntu-latest moves to 26.04 from Oct 2026
     timeout-minutes: 60
+    permissions:
+      contents: write  # create the GitHub Release
     env:
       SENTRY_DISABLE_AUTO_UPLOAD: 'true'
     steps:
@@ -144,6 +148,18 @@ jobs:
           mappingFile: android/app/build/outputs/mapping/release/mapping.txt
           track: internal
           status: completed
+
+      - name: Create GitHub Release with notes from CHANGELOG.md
+        if: ${{ github.event_name == 'push' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists"
+          else
+            gh release create "$TAG" --title "${TAG#v}" --notes "$(scripts/release-notes.sh "${TAG#v}")" --latest
+          fi
 
       - name: Remove keystore
         if: always()

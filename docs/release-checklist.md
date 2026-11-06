@@ -54,7 +54,8 @@ block from RELEASE.md.)
         target `master` → title `1.0.10` → paste the release sheet → Publish, **or**
       - terminal: `git tag -a v1.0.10 -m "1.0.10" && git push origin v1.0.10`
 - [ ] Watch https://github.com/kush11/kaambook-app/actions → *Release Android* (~20 min).
-      Green = bundle + mapping uploaded to **Internal testing**.
+      Green = bundle + mapping uploaded to **Internal testing**, and the GitHub Release for the
+      tag created from the CHANGELOG section (check https://github.com/kush11/kaambook-app/releases).
       If it fails, open the failed step's log; common causes are in RELEASE.md.
 
 ## 6. Verify on Internal testing

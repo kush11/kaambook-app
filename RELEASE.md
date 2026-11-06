@@ -17,7 +17,9 @@ track whenever a `v*` tag is pushed. **Merging to master does not release anythi
      type `v1.0.10` → target `master` → Publish release**, or
    - terminal: `git tag v1.0.10 && git push origin v1.0.10`
 3. ~20 min later the build is on **Play → Internal testing** (watch it at
-   https://github.com/kush11/kaambook-app/actions). The R8 `mapping.txt` is uploaded with it.
+   https://github.com/kush11/kaambook-app/actions). The R8 `mapping.txt` is uploaded with it,
+   and a **GitHub Release** is created for the tag with the notes from that version's
+   CHANGELOG section (`scripts/release-notes.sh`), so write the CHANGELOG first.
 4. Test it from the Internal testing track, then **Play Console → Internal testing → Promote
    release → Production** and paste the release notes from `docs/release-<version>.md`.
 
