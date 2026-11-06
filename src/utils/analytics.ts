@@ -52,19 +52,24 @@ export function identifyOwner(phone: string, properties?: Properties): void {
   }
 }
 
-/** Set persistent person properties (language, app version, staff count, …). */
-/** Remove person properties (e.g. when the owner withdraws consent). */
-export function unsetUserProperties(keys: string[]): void {
+/**
+ * Set persistent person properties (language, staff count, …).
+ * Uses the SDK method, not a hand-built `$set` event: until identify() runs the SDK
+ * sends events with `$process_person_profile: false` and PostHog ignores `$set` on them.
+ * setPersonProperties switches person processing on first.
+ */
+export function setUserProperties(properties: Record<string, string | number | boolean | null>): void {
   try {
-    client?.capture('$set', { $unset: keys });
+    client?.setPersonProperties(properties);
   } catch {
     // ignore
   }
 }
 
-export function setUserProperties(properties: Properties): void {
+/** Remove person properties (e.g. when the owner withdraws consent). */
+export function unsetUserProperties(keys: string[]): void {
   try {
-    client?.capture('$set', { $set: properties });
+    client?.unsetPersonProperties(keys);
   } catch {
     // ignore
   }
