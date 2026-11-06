@@ -74,7 +74,8 @@
         {
           "android": {
             "enableMinifyInReleaseBuilds": true,
-            "enableShrinkResourcesInReleaseBuilds": true
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "extraProguardRules": "# expo-notifications stores scheduled notifications with Java serialization; R8 strips\n# the custom writeObject/readObject, so notifications with `data` fail with\n# NotSerializableException: org.json.JSONObject.\n-keep class expo.modules.notifications.** { *; }\n-keepclassmembers class * implements java.io.Serializable {\n  static final long serialVersionUID;\n  private void writeObject(java.io.ObjectOutputStream);\n  private void readObject(java.io.ObjectInputStream);\n  java.lang.Object writeReplace();\n  java.lang.Object readResolve();\n}"
           }
         }
       ]

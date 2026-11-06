@@ -10,6 +10,7 @@ import { TodaySummaryCard } from '@/src/components/home/TodaySummaryCard';
 import { PhonePromptCard } from '@/src/components/home/PhonePromptCard';
 import { BackupReminderCard } from '@/src/components/home/BackupReminderCard';
 import { FirstAttendanceCard } from '@/src/components/home/FirstAttendanceCard';
+import { GettingStartedCard } from '@/src/components/home/GettingStartedCard';
 import { AppCheckConsentDialog } from '@/src/components/home/AppCheckConsentDialog';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useAttendanceStore } from '@/src/stores/useAttendanceStore';
@@ -126,6 +127,7 @@ export default function HomeScreen() {
                 onMarkAllPresent={handleMarkAllPresent}
                 onMarkHoliday={handleMarkHoliday}
               />
+              <GettingStartedCard markedToday={todayRecords.size} />
               <SearchBar
                 value={search}
                 onChangeText={setSearch}

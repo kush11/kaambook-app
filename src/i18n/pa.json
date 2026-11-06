@@ -276,5 +276,25 @@
     "settings_section": "ਨਿੱਜਤਾ",
     "settings_title": "ਇਸ ਫ਼ੋਨ ਦੇ ਐਪਸ ਜਾਂਚੋ",
     "settings_desc": "ਸਿਰਫ਼ WhatsApp, UPI ਅਤੇ ਖਾਤਾ ਐਪਸ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ"
+  },
+  "reminder": {
+    "title_one": "ਕੀ %{name} ਅੱਜ ਕੰਮ 'ਤੇ ਆਏ?",
+    "title_many": "ਹਾਜ਼ਰੀ ਲਗਾਓ: %{name} ਅਤੇ %{count} ਹੋਰ",
+    "body": "ਅੱਜ ਦੀ ਹਾਜ਼ਰੀ ਲਗਾਉਣ ਲਈ ਟੈਪ ਕਰੋ। ਤਨਖਾਹ ਇਸੇ ਤੋਂ ਬਣਦੀ ਹੈ।",
+    "body_day2": "ਦੂਜਾ ਦਿਨ! ਇਸ ਮਹੀਨੇ ਦੀ ਤਨਖਾਹ ਸਹੀ ਬਣੇ, ਇਸ ਲਈ ਅੱਜ ਦੀ ਹਾਜ਼ਰੀ ਲਗਾਓ।"
+  },
+  "checklist": {
+    "title": "ਸ਼ੁਰੂਆਤ ਕਰੋ",
+    "progress": "%{total} ਵਿੱਚੋਂ %{done} ਪੂਰੇ",
+    "attendance": "ਅੱਜ ਦੀ ਹਾਜ਼ਰੀ ਲਗਾਓ",
+    "attendance_hint": "ਹਰ ਸਟਾਫ ਦੇ ਅੱਗੇ P ਜਾਂ A ਦਬਾਓ",
+    "payment": "ਐਡਵਾਂਸ ਜਾਂ ਭੁਗਤਾਨ ਦਰਜ ਕਰੋ",
+    "payment_hint": "ਬਕਾਇਆ ਆਪਣੇ-ਆਪ ਗਿਣਿਆ ਜਾਂਦਾ ਹੈ",
+    "salary": "ਬਕਾਇਆ ਤਨਖਾਹ ਵੇਖੋ",
+    "salary_hint": "ਇਸ ਮਹੀਨੇ ਕਿਸ ਦਾ ਕਿੰਨਾ ਬਣਦਾ ਹੈ",
+    "tomorrow": "ਕੱਲ੍ਹ ਫਿਰ ਹਾਜ਼ਰੀ ਲਗਾਓ",
+    "tomorrow_on": "ਅਸੀਂ ਤੁਹਾਨੂੰ %{time} ਵਜੇ ਯਾਦ ਕਰਾਵਾਂਗੇ",
+    "tomorrow_off": "ਭੁੱਲੋ ਨਾ, ਇਸ ਲਈ ਰੋਜ਼ਾਨਾ ਰਿਮਾਈਂਡਰ ਚਾਲੂ ਕਰੋ",
+    "turn_on": "ਚਾਲੂ ਕਰੋ"
   }
 }

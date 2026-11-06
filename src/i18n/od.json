@@ -276,5 +276,25 @@
     "settings_section": "ଗୋପନୀୟତା",
     "settings_title": "ଏହି ଫୋନର ଆପ୍ ଯାଞ୍ଚ କରନ୍ତୁ",
     "settings_desc": "କେବଳ WhatsApp, UPI ଓ ଖାତା ଆପ୍ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar କୁ ଉନ୍ନତ କରିବା ପାଇଁ"
+  },
+  "reminder": {
+    "title_one": "%{name} ଆଜି କାମକୁ ଆସିଥିଲେ କି?",
+    "title_many": "ହାଜିରା ଦିଅନ୍ତୁ: %{name} ଓ ଆଉ %{count} ଜଣ",
+    "body": "ଆଜିର ହାଜିରା ଦେବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ। ଦରମା ଏଥିରୁ ହିସାବ ହୁଏ।",
+    "body_day2": "ଦ୍ୱିତୀୟ ଦିନ! ଏହି ମାସର ଦରମା ଠିକ୍ ହେବା ପାଇଁ ଆଜିର ହାଜିରା ଦିଅନ୍ତୁ।"
+  },
+  "checklist": {
+    "title": "ଆରମ୍ଭ କରନ୍ତୁ",
+    "progress": "%{total} ମଧ୍ୟରୁ %{done} ସମ୍ପୂର୍ଣ୍ଣ",
+    "attendance": "ଆଜିର ହାଜିରା ଦିଅନ୍ତୁ",
+    "attendance_hint": "ପ୍ରତ୍ୟେକ କର୍ମଚାରୀଙ୍କ ପାଖରେ P କିମ୍ବା A ଦବାନ୍ତୁ",
+    "payment": "ଆଗୁଆ କିମ୍ବା ପେମେଣ୍ଟ ଲେଖନ୍ତୁ",
+    "payment_hint": "ବାକି ନିଜେ ହିସାବ ହୁଏ",
+    "salary": "ବାକି ଦରମା ଦେଖନ୍ତୁ",
+    "salary_hint": "ଏହି ମାସରେ କାହାକୁ କେତେ ଦେବାକୁ ଅଛି",
+    "tomorrow": "କାଲି ପୁଣି ହାଜିରା ଦିଅନ୍ତୁ",
+    "tomorrow_on": "ଆମେ ଆପଣଙ୍କୁ %{time}ରେ ମନେ ପକାଇବୁ",
+    "tomorrow_off": "ଭୁଲି ନଯିବା ପାଇଁ ଦୈନିକ ରିମାଇଣ୍ଡର ଚାଲୁ କରନ୍ତୁ",
+    "turn_on": "ଚାଲୁ କରନ୍ତୁ"
   }
 }

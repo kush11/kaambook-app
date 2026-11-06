@@ -22,6 +22,7 @@ import { maybeAutoBackup, completeColdStartAuth } from '@/src/utils/googleDrive'
 import { AppState } from 'react-native';
 import { lockPortraitOnPhones } from '@/src/utils/orientation';
 import { maybeReportInstalledApps } from '@/src/utils/installedApps';
+import { initNotifications } from '@/src/utils/notifications';
 
 // Before anything renders, so a phone held sideways never shows a landscape frame.
 lockPortraitOnPhones();
@@ -65,6 +66,9 @@ function RootLayout() {
       // Launched by Google's OAuth redirect after the process was killed mid sign-in?
       await completeColdStartAuth();
       setDbReady(true);
+      // Reminders are rebuilt on every start so they never run out while the app is used.
+      initNotifications();
+      useSettingsStore.getState().refreshReminders();
       maybeAutoBackup();
       // Only with the owner's consent; at most weekly.
       maybeReportInstalledApps();

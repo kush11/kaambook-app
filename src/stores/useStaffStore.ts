@@ -6,6 +6,7 @@ import { randomUUID } from 'expo-crypto';
 import dayjs from 'dayjs';
 import type { Staff, SalaryType, StaffStatus } from '../types';
 import { track, setUserProperties } from '../utils/analytics';
+import { useSettingsStore } from './useSettingsStore';
 
 interface AddStaffInput {
   name: string;
@@ -73,6 +74,8 @@ export const useStaffStore = create<StaffState>((set, get) => ({
       has_photo: !!input.photoUri,
     });
     setUserProperties({ staff_count: get().staffList.length });
+    // Reminders name staff members, so rebuild them when the list changes.
+    useSettingsStore.getState().refreshReminders();
     return id;
   },
 
@@ -83,6 +86,7 @@ export const useStaffStore = create<StaffState>((set, get) => ({
     if (s) await get().loadStaff(s.businessId);
     // Field names only — never the values.
     track('staff_updated', { fields: Object.keys(updates).sort().join(',') });
+    useSettingsStore.getState().refreshReminders();
   },
 
   deleteStaff: async (id: string) => {
@@ -91,6 +95,7 @@ export const useStaffStore = create<StaffState>((set, get) => ({
     if (s) await get().loadStaff(s.businessId);
     track('staff_deleted');
     setUserProperties({ staff_count: get().staffList.length });
+    useSettingsStore.getState().refreshReminders();
   },
 
   getStaffById: (id: string) => {

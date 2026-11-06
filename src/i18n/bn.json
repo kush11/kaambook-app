@@ -276,5 +276,25 @@
     "settings_section": "গোপনীয়তা",
     "settings_title": "এই ফোনের অ্যাপ দেখুন",
     "settings_desc": "শুধু WhatsApp, UPI ও খাতা অ্যাপ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar আরও ভালো করতে"
+  },
+  "reminder": {
+    "title_one": "%{name} কি আজ কাজে এসেছেন?",
+    "title_many": "হাজিরা দিন: %{name} এবং আরও %{count} জন",
+    "body": "আজকের হাজিরা দিতে ট্যাপ করুন। বেতন এর থেকেই হিসাব হয়।",
+    "body_day2": "দ্বিতীয় দিন! এই মাসের বেতন ঠিক রাখতে আজকের হাজিরা দিন।"
+  },
+  "checklist": {
+    "title": "শুরু করুন",
+    "progress": "%{total}টির মধ্যে %{done}টি সম্পূর্ণ",
+    "attendance": "আজকের হাজিরা দিন",
+    "attendance_hint": "প্রতিটি কর্মীর পাশে P বা A চাপুন",
+    "payment": "অগ্রিম বা পেমেন্ট লিখুন",
+    "payment_hint": "বাকি নিজে থেকেই হিসাব হয়",
+    "salary": "বাকি বেতন দেখুন",
+    "salary_hint": "এই মাসে কাকে কত দিতে হবে",
+    "tomorrow": "কাল আবার হাজিরা দিন",
+    "tomorrow_on": "আমরা আপনাকে %{time}-এ মনে করিয়ে দেব",
+    "tomorrow_off": "ভুলে না যেতে রোজের রিমাইন্ডার চালু করুন",
+    "turn_on": "চালু করুন"
   }
 }

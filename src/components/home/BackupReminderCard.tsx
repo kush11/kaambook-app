@@ -23,7 +23,7 @@ let shownThisSession = false;
  * Nudges the owner to back up, since all records live only on this phone.
  *
  * With Google Drive backup configured this becomes a one-time "turn on
- * automatic backup" card, shown as soon as there is any staff to protect, and
+ * automatic backup" card, shown from the day after the first staff is added, and
  * it disappears for good once Drive is connected. Without Drive it is the
  * older periodic "share a backup file" reminder.
  *
@@ -51,7 +51,9 @@ export function BackupReminderCard() {
 
   let due: boolean;
   if (driveMode) {
-    due = !driveEmail && staffList.length > 0;
+    // From the day after the first staff member was added: day one is for learning the app
+    // (and the getting-started checklist); by day two there are records worth protecting.
+    due = !driveEmail && !!firstStaffAt && !dayjs(firstStaffAt).isSame(dayjs(), 'day');
   } else {
     due = lastBackupAt
       ? dayjs().diff(dayjs(lastBackupAt), 'day') >= REPEAT_REMINDER_DAYS

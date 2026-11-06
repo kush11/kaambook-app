@@ -8,6 +8,7 @@ import { MonthNavigator } from '@/src/components/attendance/MonthNavigator';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
+import { SEEN_SALARY_DUE_KEY } from '@/src/components/home/GettingStartedCard';
 import { colors } from '@/src/theme/colors';
 import { formatCurrency } from '@/src/utils/formatters';
 import { calculateSalary } from '@/src/utils/salary';
@@ -75,7 +76,11 @@ export default function SalaryDueScreen() {
     }
   }, [activeBusinessId, year, month]);
 
-  useFocusEffect(useCallback(() => { loadDues(); }, [loadDues]));
+  useFocusEffect(useCallback(() => {
+    loadDues();
+    // Ticks "See salary due" on the Home getting-started checklist.
+    useSettingsStore.getState().setSetting(SEEN_SALARY_DUE_KEY, '1');
+  }, [loadDues]));
 
   const prevMonth = () => {
     if (month === 0) { setMonth(11); setYear(y => y - 1); }

@@ -276,5 +276,25 @@
     "settings_section": "गोपनीयता",
     "settings_title": "या फोनमधील ॲप्स तपासा",
     "settings_desc": "फक्त WhatsApp, UPI आणि खाते ॲप्स (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar अधिक चांगले करण्यासाठी"
+  },
+  "reminder": {
+    "title_one": "%{name} आज कामावर आले का?",
+    "title_many": "हजेरी लावा: %{name} आणि आणखी %{count}",
+    "body": "आजची हजेरी लावण्यासाठी टॅप करा. पगार त्यावरूनच ठरतो.",
+    "body_day2": "दुसरा दिवस! या महिन्याचा पगार बरोबर येण्यासाठी आजची हजेरी लावा."
+  },
+  "checklist": {
+    "title": "सुरुवात करा",
+    "progress": "%{total} पैकी %{done} पूर्ण",
+    "attendance": "आजची हजेरी लावा",
+    "attendance_hint": "प्रत्येक स्टाफसमोर P किंवा A दाबा",
+    "payment": "उचल किंवा पेमेंट नोंदवा",
+    "payment_hint": "बाकी आपोआप मोजली जाते",
+    "salary": "बाकी पगार पहा",
+    "salary_hint": "या महिन्यात कोणाला किती देणे आहे",
+    "tomorrow": "उद्या पुन्हा हजेरी लावा",
+    "tomorrow_on": "आम्ही तुम्हाला %{time} वाजता आठवण करून देऊ",
+    "tomorrow_off": "विसरू नये म्हणून रोजची आठवण चालू करा",
+    "turn_on": "चालू करा"
   }
 }

@@ -31,8 +31,10 @@ interface SettingsState {
   setActiveBusinessId: (id: string) => Promise<void>;
   setReminderEnabled: (enabled: boolean) => Promise<void>;
   /** Turns the daily reminder on from a flow other than Settings; false if permission was refused. */
-  autoEnableReminder: (source: 'first_staff') => Promise<boolean>;
+  autoEnableReminder: (source: 'first_staff' | 'checklist') => Promise<boolean>;
   setReminderTime: (time: string) => Promise<void>;
+  /** Rebuilds the scheduled reminders (staff names, today's marks) if reminders are on. */
+  refreshReminders: () => Promise<void>;
   completeOnboarding: () => Promise<void>;
   setOwnerPhone: (phone: string, source: 'onboarding' | 'home_prompt' | 'settings') => Promise<void>;
   dismissPhonePrompt: () => Promise<void>;
@@ -99,11 +101,14 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     await get().setSetting('language', lang);
     set({ language: lang });
     track('language_changed', { language: lang });
-    // The scheduled reminder keeps the text it was created with — recreate it in the new language.
-    if (get().reminderEnabled) {
-      const [h, m] = get().reminderTime.split(':').map(Number);
-      scheduleAttendanceReminder(h, m);
-    }
+    // Scheduled reminders keep the text they were created with — recreate them in the new language.
+    get().refreshReminders();
+  },
+
+  refreshReminders: async () => {
+    if (!get().reminderEnabled) return;
+    const [h, m] = get().reminderTime.split(':').map(Number);
+    await scheduleAttendanceReminder(h, m);
   },
 
   setReminderEnabled: async (enabled: boolean) => {

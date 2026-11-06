@@ -276,5 +276,25 @@
     "settings_section": "Privacy",
     "settings_title": "Check apps on this phone",
     "settings_desc": "Only WhatsApp, UPI and khata apps (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — helps us improve Hisab Pagar"
+  },
+  "reminder": {
+    "title_one": "Did %{name} come to work today?",
+    "title_many": "Mark attendance: %{name} and %{count} more",
+    "body": "Tap to mark today's attendance. Salary is worked out from it.",
+    "body_day2": "Day 2! Mark today's attendance so this month's salary comes out right."
+  },
+  "checklist": {
+    "title": "Getting started",
+    "progress": "%{done} of %{total} done",
+    "attendance": "Mark today's attendance",
+    "attendance_hint": "Tap P or A next to each staff member",
+    "payment": "Record an advance or payment",
+    "payment_hint": "Dues are worked out automatically",
+    "salary": "See salary due",
+    "salary_hint": "How much each staff member is owed this month",
+    "tomorrow": "Mark attendance again tomorrow",
+    "tomorrow_on": "We'll remind you at %{time}",
+    "tomorrow_off": "Turn on a daily reminder so you don't forget",
+    "turn_on": "Turn on"
   }
 }

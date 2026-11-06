@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import type { Attendance, AttendanceStatus } from '../types';
 import { track } from '../utils/analytics';
 import { maybeAskForReview } from '../utils/reviewPrompt';
+import { useSettingsStore } from './useSettingsStore';
 
 interface AttendanceState {
   records: Attendance[];
@@ -62,6 +63,8 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
     await get().loadMonthAttendance(staffId, d.year(), d.month());
     track('attendance_marked', { status, has_overtime: !!overtimeHours, bulk: false });
     maybeAskForReview('attendance_streak');
+    // Today's reminder is dropped once everyone is marked.
+    useSettingsStore.getState().refreshReminders();
   },
 
   // Marks every given staff as "present" for a date in one shot.
@@ -83,6 +86,7 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
     }
     track('attendance_marked', { status, bulk: true, staff_count: staffIds.length });
     maybeAskForReview('attendance_streak');
+    useSettingsStore.getState().refreshReminders();
   },
 
   markAllPresent: async (staffIds: string[], date: string) => {

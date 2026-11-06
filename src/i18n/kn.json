@@ -276,5 +276,25 @@
     "settings_section": "ಗೌಪ್ಯತೆ",
     "settings_title": "ಈ ಫೋನ್‌ನ ಆ್ಯಪ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ",
     "settings_desc": "WhatsApp, UPI ಮತ್ತು ಖಾತಾ ಆ್ಯಪ್‌ಗಳು ಮಾತ್ರ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar ಉತ್ತಮಗೊಳಿಸಲು"
+  },
+  "reminder": {
+    "title_one": "%{name} ಇಂದು ಕೆಲಸಕ್ಕೆ ಬಂದರೇ?",
+    "title_many": "ಹಾಜರಾತಿ ಹಾಕಿ: %{name} ಮತ್ತು ಇನ್ನೂ %{count} ಜನ",
+    "body": "ಇಂದಿನ ಹಾಜರಾತಿ ಹಾಕಲು ಟ್ಯಾಪ್ ಮಾಡಿ. ಸಂಬಳ ಇದರಿಂದಲೇ ಲೆಕ್ಕವಾಗುತ್ತದೆ.",
+    "body_day2": "ಎರಡನೇ ದಿನ! ಈ ತಿಂಗಳ ಸಂಬಳ ಸರಿಯಾಗಿ ಬರಲು ಇಂದಿನ ಹಾಜರಾತಿ ಹಾಕಿ."
+  },
+  "checklist": {
+    "title": "ಪ್ರಾರಂಭಿಸಿ",
+    "progress": "%{total} ರಲ್ಲಿ %{done} ಮುಗಿದಿದೆ",
+    "attendance": "ಇಂದಿನ ಹಾಜರಾತಿ ಹಾಕಿ",
+    "attendance_hint": "ಪ್ರತಿ ಸಿಬ್ಬಂದಿಯ ಪಕ್ಕ P ಅಥವಾ A ಒತ್ತಿ",
+    "payment": "ಮುಂಗಡ ಅಥವಾ ಪಾವತಿ ದಾಖಲಿಸಿ",
+    "payment_hint": "ಬಾಕಿ ತಾನಾಗಿಯೇ ಲೆಕ್ಕವಾಗುತ್ತದೆ",
+    "salary": "ಬಾಕಿ ಸಂಬಳ ನೋಡಿ",
+    "salary_hint": "ಈ ತಿಂಗಳು ಯಾರಿಗೆ ಎಷ್ಟು ಕೊಡಬೇಕು",
+    "tomorrow": "ನಾಳೆ ಮತ್ತೆ ಹಾಜರಾತಿ ಹಾಕಿ",
+    "tomorrow_on": "ನಾವು ನಿಮಗೆ %{time}ಕ್ಕೆ ನೆನಪಿಸುತ್ತೇವೆ",
+    "tomorrow_off": "ಮರೆಯದಿರಲು ದಿನದ ರಿಮೈಂಡರ್ ಆನ್ ಮಾಡಿ",
+    "turn_on": "ಆನ್ ಮಾಡಿ"
   }
 }
