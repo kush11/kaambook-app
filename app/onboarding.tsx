@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Text, Button, TextInput, Snackbar } from 'react-native-paper';
 import { router } from 'expo-router';
 import { LanguagePicker } from '@/src/components/settings/LanguagePicker';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import i18n from '@/src/i18n';
 import { isDriveConfigured, useDriveConnect, restoreFromDrive, isDriveScopeError } from '@/src/utils/googleDrive';
 import { trackError } from '@/src/utils/analytics';
 
 export default function OnboardingScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { language, setLanguage, completeOnboarding, setOwnerPhone } = useSettingsStore();
   const { activeBusiness, updateBusiness, addBusiness } = useBusinessStore();
   const [selectedLang, setSelectedLang] = useState(language);
@@ -151,7 +153,7 @@ export default function OnboardingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background, padding: 24, justifyContent: 'space-between' },
   top: { alignItems: 'center', marginTop: 48 },
   title: { marginTop: 20, fontWeight: 'bold', color: colors.text, textAlign: 'center' },
@@ -166,4 +168,4 @@ const styles = StyleSheet.create({
   button: { marginBottom: 32 },
   buttonContent: { paddingVertical: 8 },
   buttonLabel: { fontSize: 16 },
-});
+}));

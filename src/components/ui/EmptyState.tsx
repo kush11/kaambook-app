@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -13,6 +13,8 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ icon, title, subtitle }: EmptyStateProps) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <View style={styles.container}>
       <MaterialCommunityIcons name={icon} size={64} color={colors.textSecondary} />
@@ -22,9 +24,9 @@ export function EmptyState({ icon, title, subtitle }: EmptyStateProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
   // Full width: Android measured centred Devanagari titles too narrow and dropped the last word.
   title: { marginTop: 16, color: colors.textSecondary, textAlign: 'center', alignSelf: 'stretch' },
   subtitle: { marginTop: 8, color: colors.textSecondary, textAlign: 'center', alignSelf: 'stretch' },
-});
+}));

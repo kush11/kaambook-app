@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, Portal, Button, Text } from 'react-native-paper';
+import { useColors } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 interface ConfirmDialogProps {
@@ -23,6 +24,7 @@ export function ConfirmDialog({
   onConfirm,
   onDismiss,
 }: ConfirmDialogProps) {
+  const colors = useColors();
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={onDismiss}>
@@ -34,7 +36,7 @@ export function ConfirmDialog({
           <Button onPress={onDismiss}>{cancelLabel}</Button>
           <Button
             onPress={onConfirm}
-            textColor={destructive ? '#DC2626' : undefined}
+            textColor={destructive ? colors.error : undefined}
           >
             {confirmLabel}
           </Button>

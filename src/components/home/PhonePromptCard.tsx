@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Card, Text, TextInput, Button } from 'react-native-paper';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 /**
@@ -11,6 +11,8 @@ import i18n from '@/src/i18n';
  * prompt is dismissed. New users are asked during onboarding instead.
  */
 export function PhonePromptCard() {
+  const styles = useStyles();
+  const colors = useColors();
   const { isOnboarded, ownerPhone, phonePromptDismissed, setOwnerPhone, dismissPhonePrompt } =
     useSettingsStore();
   const [phone, setPhone] = useState('');
@@ -64,10 +66,10 @@ export function PhonePromptCard() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: { marginHorizontal: 12, marginTop: 10, backgroundColor: colors.surface },
   title: { color: colors.text, fontWeight: 'bold' },
   subtitle: { color: colors.textSecondary, marginTop: 2, marginBottom: 10 },
   input: { backgroundColor: colors.surface },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 10 },
-});
+}));

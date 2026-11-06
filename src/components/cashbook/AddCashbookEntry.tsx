@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Button, TextInput, Text, Chip } from 'react-native-paper';
 import { SegmentedToggle } from '../ui/SegmentedToggle';
 import { AmountInput } from '../ui/AmountInput';
 import { DatePickerField } from '../ui/DatePickerField';
 import { today } from '@/src/utils/date';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import type { CashbookType, CashbookCategory } from '@/src/types';
 import i18n from '@/src/i18n';
 
@@ -30,6 +30,7 @@ const INCOME_CATEGORIES: { value: CashbookCategory; labelKey: string }[] = [
 ];
 
 export function AddCashbookEntry({ onSubmit, isLoading }: Props) {
+  const styles = useStyles();
   const [amount, setAmount] = useState(0);
   const [type, setType] = useState<CashbookType>('expense');
   const [category, setCategory] = useState<CashbookCategory>('material');
@@ -107,7 +108,7 @@ export function AddCashbookEntry({ onSubmit, isLoading }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flexGrow: 0 },
   content: { padding: 16 },
   label: { marginTop: 16, marginBottom: 8, color: colors.textSecondary },
@@ -119,4 +120,4 @@ const styles = StyleSheet.create({
   input: { marginTop: 16 },
   button: { marginTop: 24 },
   buttonContent: { paddingVertical: 6 },
-});
+}));

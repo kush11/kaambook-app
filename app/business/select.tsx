@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { Card, Text, FAB, IconButton, Dialog, Portal, Button, TextInput } from 'react-native-paper';
 import { router } from 'expo-router';
 import { ConfirmDialog } from '@/src/components/ui/ConfirmDialog';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useStaffStore } from '@/src/stores/useStaffStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import type { Business } from '@/src/types';
 import i18n from '@/src/i18n';
 import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
 
 export default function SelectBusinessScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { businesses, activeBusiness, loadBusinesses, setActiveBusiness, updateBusiness, deleteBusiness } = useBusinessStore();
   const { setActiveBusinessId } = useSettingsStore();
   const { loadStaff } = useStaffStore();
@@ -127,7 +129,7 @@ export default function SelectBusinessScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   list: { padding: 16, paddingBottom: 96 },
   card: { marginBottom: 12, backgroundColor: colors.surface, borderRadius: 16 },
@@ -137,4 +139,4 @@ const styles = StyleSheet.create({
   cardInfo: { flex: 1 },
   type: { color: colors.textSecondary, marginTop: 2, textTransform: 'capitalize' },
   fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: colors.primary },
-});
+}));

@@ -148,7 +148,23 @@
     "owner_phone": "તમારો મોબાઇલ નંબર",
     "owner_phone_add": "તમારો નંબર ઉમેરો",
     "share_app": "એપ શેર કરો",
-    "share_app_desc": "બીજા વેપારીઓને હિસાબ પગાર વિશે જણાવો"
+    "share_app_desc": "બીજા વેપારીઓને હિસાબ પગાર વિશે જણાવો",
+    "preferences": "પસંદગીઓ",
+    "theme": "થીમ",
+    "theme_system": "ફોન મુજબ",
+    "theme_light": "લાઇટ",
+    "theme_dark": "ડાર્ક",
+    "daily_reminder": "રોજનું રિમાઇન્ડર",
+    "reminder_off": "બંધ",
+    "your_data": "તમારો ડેટા",
+    "backup_restore": "બૅકઅપ અને રિસ્ટોર",
+    "backup_not_set": "ચાલુ નથી — રેકોર્ડ ફક્ત આ ફોનમાં છે",
+    "backup_file": "બૅકઅપ ફાઇલ",
+    "privacy": "પ્રાઇવસી",
+    "privacy_desc": "ઍપ ચકાસણી, પ્રાઇવસી પૉલિસી",
+    "privacy_policy": "પ્રાઇવસી પૉલિસી",
+    "support": "મદદ",
+    "version_footer": "વર્ઝન %{version}"
   },
   "share": {
     "message": "હું સ્ટાફની હાજરી અને પગારનો હિસાબ રાખવા માટે હિસાબ પગાર એપ વાપરું છું. તે મફત છે અને ઇન્ટરનેટ વિના ચાલે છે. તમે પણ અજમાવો:"
@@ -275,7 +291,8 @@
     "deny": "ના, આભાર",
     "settings_section": "ગોપનીયતા",
     "settings_title": "આ ફોનની એપ્સ તપાસો",
-    "settings_desc": "ફક્ત WhatsApp, UPI અને ખાતા એપ્સ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar ને વધુ સારું બનાવવા"
+    "settings_desc": "આનાથી અમને હિસાબ પગાર સુધારવામાં મદદ મળે છે. તમે તેને ગમે ત્યારે બંધ કરી શકો છો.",
+    "settings_note": "ફક્ત થોડી પેમેન્ટ, ખાતા અને WhatsApp ઍપ જ ચકાસાય છે — તમારી બીજી ઍપ, મેસેજ કે ડેટા ક્યારેય નહીં."
   },
   "reminder": {
     "title_one": "શું %{name} આજે કામ પર આવ્યા?",

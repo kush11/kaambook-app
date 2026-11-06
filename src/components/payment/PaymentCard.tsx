@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Card, Text, IconButton } from 'react-native-paper';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { formatCurrency } from '@/src/utils/formatters';
 import { formatDate } from '@/src/utils/date';
 import type { Payment } from '@/src/types';
@@ -20,6 +20,8 @@ const TYPE_ICONS: Record<string, string> = {
 };
 
 export function PaymentCard({ payment, onDelete }: PaymentCardProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const isDeduction = payment.type === 'penalty';
   return (
     <Card style={styles.card}>
@@ -45,10 +47,10 @@ export function PaymentCard({ payment, onDelete }: PaymentCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: { marginHorizontal: 16, marginVertical: 4, backgroundColor: '#fff' },
+const useStyles = makeStyles((colors) => ({
+  card: { marginHorizontal: 16, marginVertical: 4, backgroundColor: colors.surface },
   content: { flexDirection: 'row', alignItems: 'center' },
   left: { flex: 1 },
   meta: { color: colors.textSecondary, marginTop: 2 },
   note: { color: colors.textSecondary, marginTop: 2, fontStyle: 'italic' },
-});
+}));

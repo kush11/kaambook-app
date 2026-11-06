@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StaffForm } from '@/src/components/staff/StaffForm';
 import { useStaffStore } from '@/src/stores/useStaffStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 export default function ProfileScreen() {
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getStaffById, updateStaff, isPhoneTaken } = useStaffStore();
   const [loading, setLoading] = useState(false);
@@ -56,6 +57,6 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
-});
+}));

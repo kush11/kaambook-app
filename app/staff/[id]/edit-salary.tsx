@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Text, Button } from 'react-native-paper';
 import { router, useLocalSearchParams } from 'expo-router';
 import { AmountInput } from '@/src/components/ui/AmountInput';
 import { SegmentedToggle } from '@/src/components/ui/SegmentedToggle';
 import { useStaffStore } from '@/src/stores/useStaffStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import type { SalaryType } from '@/src/types';
 import i18n from '@/src/i18n';
 
 export default function EditSalaryScreen() {
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getStaffById, updateStaff } = useStaffStore();
   const staffMember = getStaffById(id);
@@ -67,11 +68,11 @@ export default function EditSalaryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 16 },
   label: { marginBottom: 8, color: colors.textSecondary },
   segment: { marginBottom: 24 },
   button: { marginTop: 24 },
   buttonContent: { paddingVertical: 6 },
-});
+}));

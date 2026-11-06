@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { TextInput, Portal, Dialog, Button } from 'react-native-paper';
 import dayjs from 'dayjs';
 import { AttendanceCalendar } from '../attendance/AttendanceCalendar';
 import { MonthNavigator } from '../attendance/MonthNavigator';
 import { formatDate } from '@/src/utils/date';
+import { makeStyles } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 interface DatePickerFieldProps {
@@ -17,6 +18,7 @@ interface DatePickerFieldProps {
 // Picks a past-or-today date with the same month calendar the attendance screen uses,
 // so it needs no native date-picker module. Future days are disabled by the calendar.
 export function DatePickerField({ value, onChange, label = 'Date', style }: DatePickerFieldProps) {
+  const styles = useStyles();
   const [open, setOpen] = useState(false);
   const initial = value ? dayjs(value) : dayjs();
   const [year, setYear] = useState(initial.year());
@@ -74,7 +76,7 @@ export function DatePickerField({ value, onChange, label = 'Date', style }: Date
   );
 }
 
-const styles = StyleSheet.create({
-  dialog: { backgroundColor: '#fff' },
+const useStyles = makeStyles((colors) => ({
+  dialog: { backgroundColor: colors.surface },
   content: { paddingHorizontal: 8 },
-});
+}));

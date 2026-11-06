@@ -148,7 +148,23 @@
     "owner_phone": "ଆପଣଙ୍କ ମୋବାଇଲ୍ ନମ୍ବର",
     "owner_phone_add": "ଆପଣଙ୍କ ନମ୍ବର ଯୋଡ଼ନ୍ତୁ",
     "share_app": "ଆପ୍ ସେୟାର କରନ୍ତୁ",
-    "share_app_desc": "ଅନ୍ୟ ବ୍ୟବସାୟୀଙ୍କୁ ହିସାବ ପଗାର ବିଷୟରେ କୁହନ୍ତୁ"
+    "share_app_desc": "ଅନ୍ୟ ବ୍ୟବସାୟୀଙ୍କୁ ହିସାବ ପଗାର ବିଷୟରେ କୁହନ୍ତୁ",
+    "preferences": "ପସନ୍ଦ",
+    "theme": "ଥିମ୍",
+    "theme_system": "ଫୋନ୍ ପରି",
+    "theme_light": "ଲାଇଟ୍",
+    "theme_dark": "ଡାର୍କ",
+    "daily_reminder": "ଦୈନିକ ରିମାଇଣ୍ଡର",
+    "reminder_off": "ବନ୍ଦ",
+    "your_data": "ଆପଣଙ୍କ ଡାଟା",
+    "backup_restore": "ବ୍ୟାକଅପ୍ ଓ ରିଷ୍ଟୋର୍",
+    "backup_not_set": "ଚାଲୁ ନାହିଁ — ରେକର୍ଡ କେବଳ ଏହି ଫୋନରେ ଅଛି",
+    "backup_file": "ବ୍ୟାକଅପ୍ ଫାଇଲ୍",
+    "privacy": "ଗୋପନୀୟତା",
+    "privacy_desc": "ଆପ୍ ଯାଞ୍ଚ, ଗୋପନୀୟତା ନୀତି",
+    "privacy_policy": "ଗୋପନୀୟତା ନୀତି",
+    "support": "ସହାୟତା",
+    "version_footer": "ସଂସ୍କରଣ %{version}"
   },
   "share": {
     "message": "ମୁଁ ଷ୍ଟାଫଙ୍କ ହାଜିରା ଓ ଦରମା ହିସାବ ରଖିବା ପାଇଁ ହିସାବ ପଗାର ଆପ୍ ବ୍ୟବହାର କରେ। ଏହା ମାଗଣା ଏବଂ ଇଣ୍ଟରନେଟ୍ ବିନା ଚାଲେ। ଆପଣ ମଧ୍ୟ ଚେଷ୍ଟା କରନ୍ତୁ:"
@@ -275,7 +291,8 @@
     "deny": "ନା, ଧନ୍ୟବାଦ",
     "settings_section": "ଗୋପନୀୟତା",
     "settings_title": "ଏହି ଫୋନର ଆପ୍ ଯାଞ୍ଚ କରନ୍ତୁ",
-    "settings_desc": "କେବଳ WhatsApp, UPI ଓ ଖାତା ଆପ୍ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar କୁ ଉନ୍ନତ କରିବା ପାଇଁ"
+    "settings_desc": "ଏହା ଆମକୁ ହିସାବ ପଗାରକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରେ। ଆପଣ ଏହାକୁ ଯେକୌଣସି ସମୟରେ ବନ୍ଦ କରିପାରିବେ।",
+    "settings_note": "କେବଳ କିଛି ପେମେଣ୍ଟ, ଖାତା ଓ WhatsApp ଆପ୍ ଯାଞ୍ଚ କରାଯାଏ — ଆପଣଙ୍କ ଅନ୍ୟ ଆପ୍, ମେସେଜ୍ କିମ୍ବା ଡାଟା କେବେ ନୁହେଁ।"
   },
   "reminder": {
     "title_one": "%{name} ଆଜି କାମକୁ ଆସିଥିଲେ କି?",

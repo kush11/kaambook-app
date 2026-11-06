@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Pressable, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { View, Pressable, StyleProp, ViewStyle } from 'react-native';
 import { Text } from 'react-native-paper';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 
 export interface SegmentedOption {
   value: string;
@@ -23,6 +23,7 @@ interface SegmentedToggleProps {
  * unselected segments were transparent and disappeared on white surfaces.
  */
 export function SegmentedToggle({ value, onValueChange, options, style }: SegmentedToggleProps) {
+  const styles = useStyles();
   return (
     <View style={[styles.row, style]}>
       {options.map((opt) => {
@@ -50,7 +51,7 @@ export function SegmentedToggle({ value, onValueChange, options, style }: Segmen
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     flexDirection: 'row',
     gap: 10,
@@ -78,4 +79,4 @@ const styles = StyleSheet.create({
   labelSelected: {
     color: '#fff',
   },
-});
+}));

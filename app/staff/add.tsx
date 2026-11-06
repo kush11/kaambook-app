@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import { router } from 'expo-router';
 import { StaffForm } from '@/src/components/staff/StaffForm';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 export default function AddStaffScreen() {
+  const styles = useStyles();
   const { addStaff, isPhoneTaken } = useStaffStore();
   const { activeBusinessId, autoEnableReminder } = useSettingsStore();
   const [loading, setLoading] = useState(false);
@@ -40,6 +41,6 @@ export default function AddStaffScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
-});
+}));

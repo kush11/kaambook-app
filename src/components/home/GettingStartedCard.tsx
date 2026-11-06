@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { Card, Text, Button, Icon, IconButton } from 'react-native-paper';
 import { router, useFocusEffect } from 'expo-router';
 import dayjs from 'dayjs';
@@ -9,7 +9,7 @@ import { advances, attendance, businesses, payments, settings } from '@/src/db/s
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { track } from '@/src/utils/analytics';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 /** Shown during the first SHOW_DAYS days after the first business was created. */
@@ -60,6 +60,8 @@ interface GettingStartedCardProps {
  * expectation that attendance is marked every day, with the reminder time shown.
  */
 export function GettingStartedCard({ markedToday }: GettingStartedCardProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const { reminderEnabled, reminderTime, autoEnableReminder, setSetting, isOnboarded } = useSettingsStore();
   const { staffList, firstStaffNudgeId } = useStaffStore();
   const [progress, setProgress] = useState<Progress | null>(null);
@@ -157,7 +159,7 @@ export function GettingStartedCard({ markedToday }: GettingStartedCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: { marginHorizontal: 12, marginTop: 10, backgroundColor: colors.surface },
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
   headerText: { flex: 1 },
@@ -167,4 +169,4 @@ const styles = StyleSheet.create({
   rowText: { flex: 1 },
   itemTitle: { color: colors.text },
   itemDone: { color: colors.textSecondary, textDecorationLine: 'line-through' },
-});
+}));

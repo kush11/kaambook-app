@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-paper';
 import dayjs from 'dayjs';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors, type Palette } from '@/src/theme';
 import type { Attendance, AttendanceStatus } from '@/src/types';
 import { getDaysInMonth, isToday, isFuture } from '@/src/utils/date';
 
@@ -15,19 +15,21 @@ interface AttendanceCalendarProps {
   selectedDate?: string;
 }
 
-const STATUS_COLORS: Record<AttendanceStatus, string> = {
-  present: colors.present,
-  absent: colors.absent,
-  half_day: colors.halfDay,
-  paid_leave: colors.paidLeave,
-  unpaid_leave: colors.absent,
-  holiday: colors.holiday,
-  week_off: colors.weekOff,
+const STATUS_COLORS: Record<AttendanceStatus, keyof Palette> = {
+  present: 'present',
+  absent: 'absent',
+  half_day: 'halfDay',
+  paid_leave: 'paidLeave',
+  unpaid_leave: 'absent',
+  holiday: 'holiday',
+  week_off: 'weekOff',
 };
 
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 export function AttendanceCalendar({ year, month, records, onDayPress, selectedDate }: AttendanceCalendarProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const days = getDaysInMonth(year, month);
   const firstDayOfWeek = dayjs(days[0]).day();
   const attendanceMap = new Map<string, AttendanceStatus>();
@@ -71,7 +73,7 @@ export function AttendanceCalendar({ year, month, records, onDayPress, selectedD
                 {day}
               </Text>
               {status && (
-                <View style={[styles.dot, { backgroundColor: STATUS_COLORS[status] }]} />
+                <View style={[styles.dot, { backgroundColor: colors[STATUS_COLORS[status]] }]} />
               )}
             </TouchableOpacity>
           );
@@ -81,7 +83,7 @@ export function AttendanceCalendar({ year, month, records, onDayPress, selectedD
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { paddingHorizontal: 8 },
   row: { flexDirection: 'row' },
   headerCell: { flex: 1, alignItems: 'center', paddingVertical: 8 },
@@ -92,6 +94,6 @@ const styles = StyleSheet.create({
   selectedCell: { backgroundColor: colors.primary, borderRadius: 20 },
   selectedText: { color: '#fff', fontWeight: '700' },
   dayText: { fontSize: 14 },
-  futureText: { color: colors.border },
+  futureText: { color: colors.textSecondary, opacity: 0.4 },
   dot: { width: 6, height: 6, borderRadius: 3, marginTop: 4 },
-});
+}));

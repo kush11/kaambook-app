@@ -16,7 +16,7 @@ import {
 } from '@/src/utils/googleDrive';
 import { formatBytes } from '@/src/utils/formatters';
 import { trackError } from '@/src/utils/analytics';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 // Google's own page for seeing what uses the space and buying more.
@@ -41,6 +41,8 @@ const reportError = (where: string, e: unknown) => {
  * only option in unconfigured builds.
  */
 export function DriveBackupSection() {
+  const styles = useStyles();
+  const colors = useColors();
   const { driveEmail, driveLastBackupAt } = useSettingsStore();
   const { connect, busy: connecting } = useDriveConnect('settings');
   const { connect: connectOther } = useDriveConnect('settings', { selectAccount: true });
@@ -300,7 +302,7 @@ export function DriveBackupSection() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   actions: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 4 },
   button: { flex: 1 },
   card: {
@@ -323,4 +325,4 @@ const styles = StyleSheet.create({
   storage: { marginTop: 6, gap: 6 },
   bar: { height: 6, borderRadius: 3, backgroundColor: colors.divider },
   rowSpinner: { marginRight: 12 },
-});
+}));

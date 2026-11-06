@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Card, Text, IconButton } from 'react-native-paper';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { formatCurrency } from '@/src/utils/formatters';
 import { formatDate } from '@/src/utils/date';
 import type { CashbookEntry } from '@/src/types';
@@ -25,6 +25,8 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 export function CashbookEntryCard({ entry, onDelete }: Props) {
+  const styles = useStyles();
+  const colors = useColors();
   const isExpense = entry.type === 'expense';
   return (
     <Card style={styles.card}>
@@ -48,10 +50,10 @@ export function CashbookEntryCard({ entry, onDelete }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: { marginHorizontal: 16, marginVertical: 4, backgroundColor: '#fff' },
+const useStyles = makeStyles((colors) => ({
+  card: { marginHorizontal: 16, marginVertical: 4, backgroundColor: colors.surface },
   content: { flexDirection: 'row', alignItems: 'center' },
   left: { flex: 1 },
   meta: { color: colors.textSecondary, marginTop: 2 },
   desc: { color: colors.textSecondary, marginTop: 2, fontStyle: 'italic' },
-});
+}));

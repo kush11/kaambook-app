@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, FlatList, ScrollView, StyleSheet } from 'react-native';
+import { View, FlatList, ScrollView } from 'react-native';
 import { Text, Button, Portal, Modal, ActivityIndicator, IconButton, TouchableRipple } from 'react-native-paper';
 import { router, useFocusEffect } from 'expo-router';
 import { EmptyState } from '@/src/components/ui/EmptyState';
@@ -9,7 +9,7 @@ import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { SEEN_SALARY_DUE_KEY } from '@/src/components/home/GettingStartedCard';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { formatCurrency } from '@/src/utils/formatters';
 import { calculateSalary } from '@/src/utils/salary';
 import { getMonthYear } from '@/src/utils/date';
@@ -28,6 +28,8 @@ interface StaffDue {
 }
 
 export default function SalaryDueScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { staffList, loadStaff } = useStaffStore();
   const { activeBusinessId, language } = useSettingsStore();
   const { activeBusiness } = useBusinessStore();
@@ -230,7 +232,7 @@ export default function SalaryDueScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   totalCard: {
     marginHorizontal: 16,
@@ -240,7 +242,8 @@ const styles = StyleSheet.create({
   },
   totalLabel: { color: '#fff', fontSize: 14, fontWeight: '500' },
   totalAmount: { color: '#fff', fontSize: 38, fontWeight: '800', lineHeight: 46 },
-  totalTrack: { height: 8, borderRadius: 4, backgroundColor: colors.primaryDark, overflow: 'hidden', marginTop: 8 },
+  // Translucent dark track: primaryDark is a light shade in the dark palette and would hide the white fill.
+  totalTrack: { height: 8, borderRadius: 4, backgroundColor: 'rgba(0,0,0,0.25)', overflow: 'hidden', marginTop: 8 },
   totalFill: { height: 8, borderRadius: 4, backgroundColor: '#fff' },
   totalCaptions: { flexDirection: 'row', justifyContent: 'space-between', gap: 8, marginTop: 8 },
   totalCaption: { color: '#fff', fontSize: 13, fontWeight: '500' },
@@ -273,7 +276,7 @@ const styles = StyleSheet.create({
   aiBtn: { marginHorizontal: 16, marginVertical: 12, borderRadius: 14 },
   aiBtnContent: { paddingVertical: 4 },
   aiBtnLabel: { fontWeight: '700' },
-  modal: { backgroundColor: '#fff', margin: 20, borderRadius: 16, padding: 16, maxHeight: '80%' },
+  modal: { backgroundColor: colors.surface, margin: 20, borderRadius: 16, padding: 16, maxHeight: '80%' },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   modalTitle: { fontWeight: 'bold', flex: 1 },
   modalMonth: { color: colors.textSecondary, marginBottom: 12 },
@@ -283,4 +286,4 @@ const styles = StyleSheet.create({
   modalScroll: { maxHeight: 360 },
   modalBody: { lineHeight: 24, color: colors.text },
   modalFootnote: { fontSize: 11, color: colors.textSecondary, marginTop: 14, fontStyle: 'italic' },
-});
+}));

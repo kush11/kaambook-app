@@ -1,15 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { FAB } from 'react-native-paper';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { PaymentCard } from '@/src/components/payment/PaymentCard';
 import { EmptyState } from '@/src/components/ui/EmptyState';
 import { ConfirmDialog } from '@/src/components/ui/ConfirmDialog';
 import { usePaymentStore } from '@/src/stores/usePaymentStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 export default function PaymentsScreen() {
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { payments, loadPayments, deletePayment } = usePaymentStore();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -59,7 +60,7 @@ export default function PaymentsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   list: { paddingBottom: 80, paddingTop: 8 },
   emptyContainer: { flex: 1 },
@@ -69,4 +70,4 @@ const styles = StyleSheet.create({
     bottom: 16,
     backgroundColor: colors.primary,
   },
-});
+}));

@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Card, Text, Button } from 'react-native-paper';
 import dayjs from 'dayjs';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { useAttendanceStore } from '@/src/stores/useAttendanceStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { today } from '@/src/utils/date';
 import { track } from '@/src/utils/analytics';
 import type { AttendanceStatus } from '@/src/types';
@@ -23,6 +23,8 @@ interface FirstAttendanceCardProps {
  * before the user has to find the P / A chips on their own.
  */
 export function FirstAttendanceCard({ todayRecords, onMarked }: FirstAttendanceCardProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const { firstStaffNudgeId, clearFirstStaffNudge, staffList } = useStaffStore();
   const { reminderEnabled, reminderTime } = useSettingsStore();
   const { markAttendance } = useAttendanceStore();
@@ -70,9 +72,9 @@ export function FirstAttendanceCard({ todayRecords, onMarked }: FirstAttendanceC
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: { marginHorizontal: 12, marginTop: 10, backgroundColor: colors.surface },
   title: { color: colors.text, fontWeight: 'bold' },
   subtitle: { color: colors.textSecondary, marginTop: 2 },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 12 },
-});
+}));

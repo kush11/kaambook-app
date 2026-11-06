@@ -1,29 +1,38 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View, Linking, Platform } from 'react-native';
+import { ScrollView, View, Linking } from 'react-native';
 import Constants from 'expo-constants';
-import { List, Switch, Text, Divider, Portal, Dialog, Chip, Button } from 'react-native-paper';
+import dayjs from 'dayjs';
+import { List, Switch, Text, Portal, Dialog, Chip, Button, RadioButton } from 'react-native-paper';
+import { router } from 'expo-router';
 import { getLanguageLabel } from '@/src/components/settings/LanguagePicker';
-import { BackupRestore } from '@/src/components/settings/BackupRestore';
-import { DriveBackupSection } from '@/src/components/settings/DriveBackupSection';
 import { OwnerPhoneDialog } from '@/src/components/settings/OwnerPhoneDialog';
+import { SettingsGroup } from '@/src/components/settings/SettingsGroup';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { scheduleAttendanceReminder, cancelAttendanceReminder, requestNotificationPermissions } from '@/src/utils/notifications';
-import { router } from 'expo-router';
 import i18n from '@/src/i18n';
 import { track } from '@/src/utils/analytics';
 import { shareApp } from '@/src/utils/shareApp';
-import { setAppCheckEnabled } from '@/src/utils/installedApps';
 import { PACKAGE } from '@/src/config/links';
 
 // Hourly choices for the daily reminder, 07:00 to 22:00.
 const REMINDER_TIMES = Array.from({ length: 16 }, (_, i) => `${String(i + 7).padStart(2, '0')}:00`);
+const THEME_MODES = ['system', 'light', 'dark'] as const;
+
+const formatTime = (hhmm: string) => dayjs(`2000-01-01T${hhmm}`).format('h:mm A');
 
 export default function SettingsScreen() {
-  const { language, reminderEnabled, setReminderEnabled, reminderTime, setReminderTime, ownerPhone, appCheckConsent } = useSettingsStore();
+  const styles = useStyles();
+  const colors = useColors();
+  const {
+    language, reminderEnabled, setReminderEnabled, reminderTime, setReminderTime,
+    ownerPhone, themeMode, setThemeMode, driveEmail,
+  } = useSettingsStore();
+  const businessName = useBusinessStore((s) => s.activeBusiness?.name) || 'Hisab Pagar';
   const [showPhoneDialog, setShowPhoneDialog] = useState(false);
   const [showTimeDialog, setShowTimeDialog] = useState(false);
+  const [showThemeDialog, setShowThemeDialog] = useState(false);
 
   const handleReminderTime = async (time: string) => {
     setShowTimeDialog(false);
@@ -58,106 +67,95 @@ export default function SettingsScreen() {
     }
   };
 
+  const chevron = (props: { color: string }) => <List.Icon {...props} icon="chevron-right" />;
+  const icon = (name: string) => (props: { color: string }) => <List.Icon {...props} icon={name} color={colors.primary} />;
+
   return (
-    <ScrollView style={styles.container}>
-      <List.Section>
-        <List.Subheader>{i18n.t('business.section_title')}</List.Subheader>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <SettingsGroup title={i18n.t('business.section_title')}>
         <List.Item
-          title={useBusinessStore.getState().activeBusiness?.name || 'Hisab Pagar'}
+          title={businessName}
           description={i18n.t('business.switch_description')}
-          left={props => <List.Icon {...props} icon="domain" />}
-          right={props => <List.Icon {...props} icon="chevron-right" />}
+          left={icon('domain')}
+          right={chevron}
           onPress={() => router.push('/business/select')}
         />
         <List.Item
           title={i18n.t('settings.owner_phone')}
           description={ownerPhone || i18n.t('settings.owner_phone_add')}
-          left={props => <List.Icon {...props} icon="phone" />}
-          right={props => <List.Icon {...props} icon="pencil" />}
+          left={icon('phone-outline')}
+          right={chevron}
           onPress={() => setShowPhoneDialog(true)}
         />
-      </List.Section>
+      </SettingsGroup>
 
-      <Divider />
-
-      <List.Section>
-        <List.Subheader>{i18n.t('settings.language')}</List.Subheader>
+      <SettingsGroup title={i18n.t('settings.preferences')}>
         <List.Item
           title={i18n.t('settings.language')}
           description={getLanguageLabel(language)}
-          left={props => <List.Icon {...props} icon="translate" />}
-          right={props => <List.Icon {...props} icon="chevron-right" />}
+          left={icon('translate')}
+          right={chevron}
           onPress={() => router.push('/settings/language')}
         />
-      </List.Section>
-
-      <Divider />
-
-      <List.Section>
-        <List.Subheader>{i18n.t('settings.attendance_reminder')}</List.Subheader>
         <List.Item
-          title={i18n.t('settings.attendance_reminder')}
-          description={reminderEnabled ? `${i18n.t('settings.reminder_time')}: ${reminderTime}` : undefined}
-          onPress={reminderEnabled ? () => setShowTimeDialog(true) : undefined}
+          title={i18n.t('settings.daily_reminder')}
+          description={reminderEnabled ? formatTime(reminderTime) : i18n.t('settings.reminder_off')}
+          left={icon('bell-outline')}
+          onPress={reminderEnabled ? () => setShowTimeDialog(true) : () => handleReminderToggle(true)}
           right={() => (
-            <Switch value={reminderEnabled} onValueChange={handleReminderToggle} color={colors.primary} />
+            <Switch value={reminderEnabled} onValueChange={handleReminderToggle} color={colors.primary} style={styles.switch} />
           )}
         />
-      </List.Section>
+        <List.Item
+          title={i18n.t('settings.theme')}
+          description={i18n.t(`settings.theme_${themeMode}`)}
+          left={icon('theme-light-dark')}
+          right={chevron}
+          onPress={() => setShowThemeDialog(true)}
+        />
+      </SettingsGroup>
 
-      <Divider />
+      <SettingsGroup title={i18n.t('settings.your_data')}>
+        <List.Item
+          title={i18n.t('settings.backup_restore')}
+          description={driveEmail ? i18n.t('drive.on') : i18n.t('settings.backup_not_set')}
+          descriptionStyle={driveEmail ? undefined : { color: colors.warning }}
+          left={icon('cloud-upload-outline')}
+          right={chevron}
+          onPress={() => router.push('/settings/backup')}
+        />
+        <List.Item
+          title={i18n.t('settings.privacy')}
+          description={i18n.t('settings.privacy_desc')}
+          left={icon('shield-lock-outline')}
+          right={chevron}
+          onPress={() => router.push('/settings/privacy')}
+        />
+      </SettingsGroup>
 
-      <List.Section>
-        <List.Subheader>{i18n.t('settings.backup')}</List.Subheader>
-        <DriveBackupSection />
-        <BackupRestore />
-      </List.Section>
-
-      <Divider />
-
-      {Platform.OS === 'android' && (
-        <>
-          <List.Section>
-            <List.Subheader>{i18n.t('app_check.settings_section')}</List.Subheader>
-            <List.Item
-              title={i18n.t('app_check.settings_title')}
-              description={i18n.t('app_check.settings_desc')}
-              descriptionNumberOfLines={3}
-              left={props => <List.Icon {...props} icon="apps" color={colors.primary} />}
-              right={() => (
-                <Switch
-                  value={appCheckConsent === 'granted'}
-                  onValueChange={(on) => setAppCheckEnabled(on)}
-                  color={colors.primary}
-                />
-              )}
-            />
-          </List.Section>
-          <Divider />
-        </>
-      )}
-
-      <List.Section>
-        <List.Subheader>{i18n.t('settings.about')}</List.Subheader>
+      <SettingsGroup title={i18n.t('settings.support')}>
         <List.Item
           title={i18n.t('settings.rate')}
           description={i18n.t('settings.rate_desc')}
-          left={props => <List.Icon {...props} icon="star" color={colors.warning} />}
-          right={props => <List.Icon {...props} icon="open-in-new" />}
+          left={icon('star-outline')}
+          right={(props) => <List.Icon {...props} icon="open-in-new" />}
           onPress={handleRate}
         />
         <List.Item
           title={i18n.t('settings.share_app')}
           description={i18n.t('settings.share_app_desc')}
-          left={props => <List.Icon {...props} icon="share-variant" color={colors.primary} />}
+          left={icon('share-variant-outline')}
           onPress={() => shareApp('settings')}
         />
-        <Divider />
-        <List.Item
-          title={i18n.t('settings.version')}
-          description={Constants.expoConfig?.version || '1.0.1'}
-        />
-      </List.Section>
+      </SettingsGroup>
+
+      <View style={styles.footer}>
+        <Text variant="titleSmall" style={styles.footerName}>Hisab Pagar</Text>
+        <Text variant="bodySmall" style={styles.footerVersion}>
+          {i18n.t('settings.version_footer', { version: Constants.expoConfig?.version ?? '' })}
+        </Text>
+      </View>
+
       <OwnerPhoneDialog visible={showPhoneDialog} onDismiss={() => setShowPhoneDialog(false)} />
       <Portal>
         <Dialog visible={showTimeDialog} onDismiss={() => setShowTimeDialog(false)}>
@@ -172,7 +170,7 @@ export default function SettingsScreen() {
                 style={[styles.timeChip, t === reminderTime && styles.timeChipSelected]}
                 textStyle={t === reminderTime ? styles.timeChipTextSelected : undefined}
               >
-                {t}
+                {formatTime(t)}
               </Chip>
             ))}
           </Dialog.Content>
@@ -180,15 +178,36 @@ export default function SettingsScreen() {
             <Button onPress={() => setShowTimeDialog(false)}>{i18n.t('common.cancel')}</Button>
           </Dialog.Actions>
         </Dialog>
+        <Dialog visible={showThemeDialog} onDismiss={() => setShowThemeDialog(false)}>
+          <Dialog.Title>{i18n.t('settings.theme')}</Dialog.Title>
+          <Dialog.Content>
+            <RadioButton.Group
+              value={themeMode}
+              onValueChange={(v) => {
+                setShowThemeDialog(false);
+                setThemeMode(v as (typeof THEME_MODES)[number]);
+              }}
+            >
+              {THEME_MODES.map((m) => (
+                <RadioButton.Item key={m} value={m} label={i18n.t(`settings.theme_${m}`)} color={colors.primary} />
+              ))}
+            </RadioButton.Group>
+          </Dialog.Content>
+        </Dialog>
       </Portal>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
+  content: { paddingBottom: 24 },
+  switch: { alignSelf: 'center' },
+  footer: { alignItems: 'center', marginTop: 28, gap: 2 },
+  footerName: { color: colors.textSecondary },
+  footerVersion: { color: colors.textSecondary },
   timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   timeChip: { backgroundColor: colors.surfaceVariant },
   timeChipSelected: { backgroundColor: colors.primary },
   timeChipTextSelected: { color: '#fff' },
-});
+}));

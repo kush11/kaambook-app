@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Text, Button, TextInput, Portal, Modal } from 'react-native-paper';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors, type Palette } from '@/src/theme';
 import type { AttendanceStatus } from '@/src/types';
 import { formatDate } from '@/src/utils/date';
 import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
@@ -15,17 +15,19 @@ interface AttendanceSheetProps {
   onDismiss: () => void;
 }
 
-const STATUSES: { key: AttendanceStatus; color: string; icon: string }[] = [
-  { key: 'present', color: colors.present, icon: 'check' },
-  { key: 'absent', color: colors.absent, icon: 'close' },
-  { key: 'half_day', color: colors.halfDay, icon: 'circle-half-full' },
-  { key: 'paid_leave', color: colors.paidLeave, icon: 'calendar-check' },
-  { key: 'unpaid_leave', color: colors.absent, icon: 'calendar-remove' },
-  { key: 'holiday', color: colors.holiday, icon: 'party-popper' },
-  { key: 'week_off', color: colors.weekOff, icon: 'calendar-blank' },
+const STATUSES: { key: AttendanceStatus; color: keyof Palette; icon: string }[] = [
+  { key: 'present', color: 'present', icon: 'check' },
+  { key: 'absent', color: 'absent', icon: 'close' },
+  { key: 'half_day', color: 'halfDay', icon: 'circle-half-full' },
+  { key: 'paid_leave', color: 'paidLeave', icon: 'calendar-check' },
+  { key: 'unpaid_leave', color: 'absent', icon: 'calendar-remove' },
+  { key: 'holiday', color: 'holiday', icon: 'party-popper' },
+  { key: 'week_off', color: 'weekOff', icon: 'calendar-blank' },
 ];
 
 export function AttendanceSheet({ visible, date, currentStatus, onMark, onDismiss }: AttendanceSheetProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const [selected, setSelected] = useState<AttendanceStatus | undefined>(currentStatus);
   const [note, setNote] = useState('');
   const [overtime, setOvertime] = useState('');
@@ -57,8 +59,8 @@ export function AttendanceSheet({ visible, date, currentStatus, onMark, onDismis
                 mode={selected === s.key ? 'contained' : 'outlined'}
                 onPress={() => setSelected(s.key)}
                 style={styles.statusBtn}
-                buttonColor={selected === s.key ? s.color : undefined}
-                textColor={selected === s.key ? '#fff' : s.color}
+                buttonColor={selected === s.key ? colors[s.color] : undefined}
+                textColor={selected === s.key ? '#fff' : colors[s.color]}
                 compact
               >
                 {i18n.t(`attendance.${s.key}`)}
@@ -89,9 +91,9 @@ export function AttendanceSheet({ visible, date, currentStatus, onMark, onDismis
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   modal: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     margin: 20,
     borderRadius: 16,
     padding: 20,
@@ -102,4 +104,4 @@ const styles = StyleSheet.create({
   statusBtn: { marginBottom: 4 },
   input: { marginBottom: 12 },
   saveBtn: { marginTop: 8 },
-});
+}));

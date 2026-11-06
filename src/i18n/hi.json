@@ -148,7 +148,23 @@
     "owner_phone": "आपका मोबाइल नंबर",
     "owner_phone_add": "अपना नंबर जोड़ें",
     "share_app": "ऐप शेयर करें",
-    "share_app_desc": "दूसरे दुकानदारों को हिसाब पगार के बारे में बताएं"
+    "share_app_desc": "दूसरे दुकानदारों को हिसाब पगार के बारे में बताएं",
+    "preferences": "पसंद",
+    "theme": "थीम",
+    "theme_system": "फ़ोन जैसा",
+    "theme_light": "लाइट",
+    "theme_dark": "डार्क",
+    "daily_reminder": "रोज़ का रिमाइंडर",
+    "reminder_off": "बंद",
+    "your_data": "आपका डेटा",
+    "backup_restore": "बैकअप और रीस्टोर",
+    "backup_not_set": "चालू नहीं — रिकॉर्ड सिर्फ़ इस फ़ोन में हैं",
+    "backup_file": "बैकअप फ़ाइल",
+    "privacy": "प्राइवेसी",
+    "privacy_desc": "ऐप जाँच, प्राइवेसी पॉलिसी",
+    "privacy_policy": "प्राइवेसी पॉलिसी",
+    "support": "सहायता",
+    "version_footer": "वर्ज़न %{version}"
   },
   "share": {
     "message": "स्टाफ की हाज़िरी और पगार का हिसाब रखने के लिए हिसाब पगार ऐप बहुत काम की है। यह फ्री है और बिना इंटरनेट के चलती है। आप भी आज़माएं:"
@@ -275,7 +291,8 @@
     "deny": "नहीं, धन्यवाद",
     "settings_section": "गोपनीयता",
     "settings_title": "इस फ़ोन के ऐप्स जाँचें",
-    "settings_desc": "सिर्फ़ WhatsApp, UPI और खाता ऐप्स (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar को बेहतर बनाने के लिए"
+    "settings_desc": "इससे हमें हिसाब पगार बेहतर बनाने में मदद मिलती है। आप इसे कभी भी बंद कर सकते हैं।",
+    "settings_note": "सिर्फ़ कुछ पेमेंट, खाता और WhatsApp ऐप जाँचे जाते हैं — आपके दूसरे ऐप, मैसेज या डेटा कभी नहीं।"
   },
   "reminder": {
     "title_one": "क्या %{name} आज काम पर आए?",

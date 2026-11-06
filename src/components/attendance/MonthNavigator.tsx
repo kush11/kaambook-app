@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Text, IconButton } from 'react-native-paper';
 import { getMonthYear } from '@/src/utils/date';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 
 interface MonthNavigatorProps {
   year: number;
@@ -12,6 +12,8 @@ interface MonthNavigatorProps {
 }
 
 export function MonthNavigator({ year, month, onPrev, onNext }: MonthNavigatorProps) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <View style={styles.container}>
       <View style={styles.pill}>
@@ -25,7 +27,7 @@ export function MonthNavigator({ year, month, onPrev, onNext }: MonthNavigatorPr
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { alignItems: 'center', paddingTop: 4, paddingBottom: 10 },
   pill: {
     flexDirection: 'row',
@@ -38,4 +40,4 @@ const styles = StyleSheet.create({
   },
   arrow: { margin: 0, width: 44, height: 44 },
   title: { minWidth: 140, textAlign: 'center', color: colors.text, fontWeight: '600' },
-});
+}));

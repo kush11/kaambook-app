@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Card, Text, Button } from 'react-native-paper';
 import dayjs from 'dayjs';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
@@ -7,7 +7,7 @@ import { useStaffStore } from '@/src/stores/useStaffStore';
 import { createBackup } from '@/src/utils/backup';
 import { isDriveConfigured, useDriveConnect, uploadBackupToDrive, isDriveScopeError } from '@/src/utils/googleDrive';
 import { track, trackError } from '@/src/utils/analytics';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 // Never backed up: remind once the first staff record is a week old.
@@ -31,6 +31,8 @@ let shownThisSession = false;
  * screen never stacks two cards.
  */
 export function BackupReminderCard() {
+  const styles = useStyles();
+  const colors = useColors();
   const {
     isOnboarded,
     ownerPhone,
@@ -119,9 +121,9 @@ export function BackupReminderCard() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: { marginHorizontal: 12, marginTop: 10, backgroundColor: colors.surface },
   title: { color: colors.text, fontWeight: 'bold' },
   subtitle: { color: colors.textSecondary, marginTop: 2 },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 10 },
-});
+}));

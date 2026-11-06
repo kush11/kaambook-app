@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
 import { AmountInput } from '../ui/AmountInput';
 import { SegmentedToggle } from '../ui/SegmentedToggle';
 import { DatePickerField } from '../ui/DatePickerField';
 import { today } from '@/src/utils/date';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import type { PaymentType, PaymentMode } from '@/src/types';
 import i18n from '@/src/i18n';
 
@@ -15,6 +15,7 @@ interface PaymentFormProps {
 }
 
 export function PaymentForm({ onSubmit, isLoading }: PaymentFormProps) {
+  const styles = useStyles();
   const [amount, setAmount] = useState(0);
   const [type, setType] = useState<PaymentType>('salary');
   const [mode, setMode] = useState<PaymentMode>('cash');
@@ -92,7 +93,7 @@ export function PaymentForm({ onSubmit, isLoading }: PaymentFormProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1 },
   content: { padding: 16 },
   label: { marginTop: 16, marginBottom: 8, color: colors.textSecondary },
@@ -100,4 +101,4 @@ const styles = StyleSheet.create({
   input: { marginTop: 16 },
   button: { marginTop: 24 },
   buttonContent: { paddingVertical: 6 },
-});
+}));

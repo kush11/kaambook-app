@@ -1,12 +1,11 @@
 import React from 'react';
 import { Tabs, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
-import { colors } from '@/src/theme/colors';
-import { headerOptions } from '@/src/theme';
+import { makeStyles, useColors, useHeaderOptions } from '@/src/theme';
 import i18n from '@/src/i18n';
 import { shareApp } from '@/src/utils/shareApp';
 
@@ -14,6 +13,8 @@ type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 // Active tab gets a soft orange pill behind its icon.
 function TabIcon({ name, color, focused }: { name: IconName; color: string; focused: boolean }) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <View style={[styles.iconPill, focused && styles.iconPillActive]}>
       <MaterialCommunityIcons name={name} size={22} color={focused ? colors.primary : color} />
@@ -22,6 +23,8 @@ function TabIcon({ name, color, focused }: { name: IconName; color: string; focu
 }
 
 function HomeHeaderTitle() {
+  const styles = useStyles();
+  const colors = useColors();
   const businessName = useBusinessStore((s) => s.activeBusiness?.name) || 'Hisab Pagar';
   return (
     <TouchableOpacity onPress={() => router.push('/business/select')}>
@@ -38,6 +41,9 @@ export default function TabLayout() {
   // Re-render when the language changes, otherwise tab labels and headers keep the old language.
   useSettingsStore((s) => s.language);
   const insets = useSafeAreaInsets();
+  const styles = useStyles();
+  const colors = useColors();
+  const headerOptions = useHeaderOptions();
   return (
     <Tabs
       screenOptions={{
@@ -97,7 +103,7 @@ export default function TabLayout() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   iconPill: { width: 56, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   iconPillActive: { backgroundColor: colors.primaryTint },
   businessRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
@@ -114,4 +120,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-});
+}));

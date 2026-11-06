@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { RadioButton, Text } from 'react-native-paper';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 
 interface LanguagePickerProps {
   value: string;
@@ -26,6 +26,7 @@ export function getLanguageLabel(code: string): string {
 }
 
 export function LanguagePicker({ value, onChange }: LanguagePickerProps) {
+  const styles = useStyles();
   return (
     <RadioButton.Group onValueChange={onChange} value={value}>
       {LANGUAGES.map(lang => (
@@ -40,6 +41,6 @@ export function LanguagePicker({ value, onChange }: LanguagePickerProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   item: { paddingHorizontal: 8 },
-});
+}));

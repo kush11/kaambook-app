@@ -14,6 +14,37 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 | 1.0.4 | 8, 9 | 2026-06-26 | — | Production (superseded) |
 | ≤ 1.0.3 | 1–7 | 2026-03 → 2026-06 | — | superseded |
 
+## Unreleased (planned 1.0.10)
+
+### Added
+- **Dark mode.** Settings → Theme: Same as phone (default), Light, Dark. All screens use the
+  theme (`src/theme/ThemeProvider.tsx`: `useColors()`, `makeStyles()`); PDF salary slips and the
+  splash stay light.
+- **Getting started checklist** on Home for the first week: mark attendance → record an advance
+  → see Salary Due → come back tomorrow (shows the reminder time). Events `checklist_*`.
+- **Personalised reminders.** The next 7 days are scheduled one by one, naming a staff member,
+  with day-2 copy; today is skipped once everyone is marked, and days that are a week off for
+  everyone are skipped. Rebuilt on app start, attendance and staff changes; they stop after a
+  week without opening the app. `notification_opened` event, `notif_permission` person property.
+- **Installed-app check** (with consent, Android): `has_*` person properties for OkCredit,
+  Khatabook, Vyapar, PagarBook, WhatsApp (Business), PhonePe, Google Pay, Paytm. One-time
+  dialog; switch in Settings → Privacy. **Declare "Installed apps" in Play Data safety first.**
+- Native debug symbols in the bundle (Play can symbolicate native crashes).
+
+### Changed
+- **Settings redesigned:** grouped cards (Business, Preferences, Your data, Support), centred
+  version footer, Backup & restore and Privacy moved to their own pages; the app-check row no
+  longer lists app names.
+- The Google Drive card on Home appears from the day after the first staff member is added
+  (day one is for the checklist).
+- Phones stay portrait; tablets and foldables can rotate (Play large-screen recommendation).
+
+### Fixed
+- Person properties (`staff_count`, `business_count`, `has_*`) were dropped by PostHog for
+  owners who never entered a phone number; now set with `setPersonProperties`.
+- R8 stripped expo-notifications' serialization code, so notifications with `data` could not
+  be scheduled (keep rules in `app.json` → expo-build-properties).
+
 ## 1.0.9 — 2026-11-06 · [release sheet](docs/release-1.0.9.md)
 
 ### Fixed

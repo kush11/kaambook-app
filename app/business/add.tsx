@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 export default function AddBusinessScreen() {
+  const styles = useStyles();
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,9 +45,9 @@ export default function AddBusinessScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background, padding: 16 },
   input: { marginBottom: 16 },
   button: { marginTop: 8 },
   buttonContent: { paddingVertical: 6 },
-});
+}));

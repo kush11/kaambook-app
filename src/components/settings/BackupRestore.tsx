@@ -4,10 +4,12 @@ import { Button, Text, Snackbar } from 'react-native-paper';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { createBackup, restoreBackup } from '@/src/utils/backup';
 import { trackError } from '@/src/utils/analytics';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 export function BackupRestore() {
+  const styles = useStyles();
+  const colors = useColors();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
@@ -72,7 +74,7 @@ export function BackupRestore() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { padding: 16, gap: 12 },
   button: { borderColor: colors.border },
-});
+}));

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Searchbar } from 'react-native-paper';
-import { StyleSheet } from 'react-native';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 
 interface SearchBarProps {
   value: string;
@@ -10,6 +9,8 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ value, onChangeText, placeholder = 'Search...' }: SearchBarProps) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <Searchbar
       placeholder={placeholder}
@@ -23,7 +24,7 @@ export function SearchBar({ value, onChangeText, placeholder = 'Search...' }: Se
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   bar: {
     marginHorizontal: 16,
     marginTop: 14,
@@ -36,4 +37,4 @@ const styles = StyleSheet.create({
   },
   // Paper gives the input a 56dp minimum, which overflows the 48dp pill.
   input: { fontSize: 15, minHeight: 0 },
-});
+}));

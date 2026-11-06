@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, FlatList, TouchableOpacity } from 'react-native';
 import { Card, Text, Portal, Modal } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
@@ -10,13 +10,15 @@ import { EmptyState } from '@/src/components/ui/EmptyState';
 import { ConfirmDialog } from '@/src/components/ui/ConfirmDialog';
 import { useCashbookStore } from '@/src/stores/useCashbookStore';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { formatCurrency } from '@/src/utils/formatters';
 import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
 import i18n from '@/src/i18n';
 import dayjs from 'dayjs';
 
 export default function CashbookScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { entries, totalIncome, totalExpense, balance, loadEntries, addEntry, deleteEntry } = useCashbookStore();
   const { activeBusinessId } = useSettingsStore();
   const [year, setYear] = useState(dayjs().year());
@@ -140,14 +142,14 @@ export default function CashbookScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   summaryRow: { flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 8 },
-  summaryCard: { flex: 1, marginHorizontal: 4, backgroundColor: '#fff', borderLeftWidth: 3 },
+  summaryCard: { flex: 1, marginHorizontal: 4, backgroundColor: colors.surface, borderLeftWidth: 3 },
   summaryLabel: { color: colors.textSecondary },
   flatList: { flex: 1 },
   list: { paddingBottom: 80 },
   emptyContainer: { flex: 1 },
   fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: colors.primary, width: 56, height: 56, borderRadius: 16, justifyContent: 'center' as const, alignItems: 'center' as const, elevation: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.27, shadowRadius: 4.65 },
   modal: { backgroundColor: colors.surface, borderRadius: 16, marginHorizontal: 16, maxHeight: '85%', overflow: 'hidden' },
-});
+}));

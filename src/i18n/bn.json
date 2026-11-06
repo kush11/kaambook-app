@@ -148,7 +148,23 @@
     "owner_phone": "আপনার মোবাইল নম্বর",
     "owner_phone_add": "আপনার নম্বর যোগ করুন",
     "share_app": "অ্যাপটি শেয়ার করুন",
-    "share_app_desc": "অন্য ব্যবসায়ীদের হিসাব পগার সম্পর্কে জানান"
+    "share_app_desc": "অন্য ব্যবসায়ীদের হিসাব পগার সম্পর্কে জানান",
+    "preferences": "পছন্দ",
+    "theme": "থিম",
+    "theme_system": "ফোনের মতো",
+    "theme_light": "লাইট",
+    "theme_dark": "ডার্ক",
+    "daily_reminder": "রোজের রিমাইন্ডার",
+    "reminder_off": "বন্ধ",
+    "your_data": "আপনার ডেটা",
+    "backup_restore": "ব্যাকআপ ও রিস্টোর",
+    "backup_not_set": "চালু নেই — রেকর্ড শুধু এই ফোনে আছে",
+    "backup_file": "ব্যাকআপ ফাইল",
+    "privacy": "প্রাইভেসি",
+    "privacy_desc": "অ্যাপ যাচাই, প্রাইভেসি পলিসি",
+    "privacy_policy": "প্রাইভেসি পলিসি",
+    "support": "সহায়তা",
+    "version_footer": "ভার্সন %{version}"
   },
   "share": {
     "message": "আমি কর্মীদের হাজিরা ও বেতনের হিসাব রাখতে হিসাব পগার অ্যাপ ব্যবহার করি। এটি ফ্রি এবং ইন্টারনেট ছাড়াই চলে। আপনিও ব্যবহার করে দেখুন:"
@@ -275,7 +291,8 @@
     "deny": "না, ধন্যবাদ",
     "settings_section": "গোপনীয়তা",
     "settings_title": "এই ফোনের অ্যাপ দেখুন",
-    "settings_desc": "শুধু WhatsApp, UPI ও খাতা অ্যাপ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar আরও ভালো করতে"
+    "settings_desc": "এটি আমাদের হিসাব পগার আরও ভালো করতে সাহায্য করে। আপনি যেকোনো সময় এটি বন্ধ করতে পারেন।",
+    "settings_note": "শুধু কয়েকটি পেমেন্ট, খাতা ও WhatsApp অ্যাপ যাচাই করা হয় — আপনার অন্য অ্যাপ, মেসেজ বা ডেটা কখনও নয়।"
   },
   "reminder": {
     "title_one": "%{name} কি আজ কাজে এসেছেন?",

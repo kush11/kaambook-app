@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Card, Text, Button, List, Divider, Portal, Snackbar } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
@@ -7,7 +7,7 @@ import { StaffAvatar } from '@/src/components/staff/StaffAvatar';
 import { SalaryBreakup } from '@/src/components/salary/SalaryBreakup';
 import { ConfirmDialog } from '@/src/components/ui/ConfirmDialog';
 import { useStaffStore } from '@/src/stores/useStaffStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { formatCurrency } from '@/src/utils/formatters';
 import { formatPhone } from '@/src/utils/formatters';
 import { calculateSalary } from '@/src/utils/salary';
@@ -22,6 +22,8 @@ import i18n from '@/src/i18n';
 import { trackError } from '@/src/utils/analytics';
 
 export default function StaffDetailScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
   const { getStaffById, deleteStaff, loadStaff, updateStaff } = useStaffStore();
@@ -209,7 +211,7 @@ export default function StaffDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   content: { paddingTop: 4 },
   headerCard: { marginHorizontal: 16, marginTop: 16, marginBottom: 8, backgroundColor: colors.surface, borderRadius: 20 },
@@ -232,4 +234,4 @@ const styles = StyleSheet.create({
   actionBtnContent: { height: 46 },
   linksCard: { marginHorizontal: 16, marginTop: 8, backgroundColor: colors.surface, borderRadius: 20, overflow: 'hidden' },
   deleteBtn: { marginHorizontal: 16, marginTop: 16 },
-});
+}));

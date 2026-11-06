@@ -1,8 +1,9 @@
 import { Stack } from 'expo-router';
-import { headerOptions } from '@/src/theme';
+import { useHeaderOptions } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 export default function StaffLayout() {
+  const headerOptions = useHeaderOptions();
   return (
     <Stack screenOptions={headerOptions}>
       <Stack.Screen name="index" options={{ title: i18n.t('staff.details') }} />

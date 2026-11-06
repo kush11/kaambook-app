@@ -148,7 +148,23 @@
     "owner_phone": "तुमचा मोबाईल नंबर",
     "owner_phone_add": "तुमचा नंबर जोडा",
     "share_app": "ॲप शेअर करा",
-    "share_app_desc": "इतर व्यावसायिकांना हिसाब पगारबद्दल सांगा"
+    "share_app_desc": "इतर व्यावसायिकांना हिसाब पगारबद्दल सांगा",
+    "preferences": "पसंती",
+    "theme": "थीम",
+    "theme_system": "फोनप्रमाणे",
+    "theme_light": "लाइट",
+    "theme_dark": "डार्क",
+    "daily_reminder": "रोजची आठवण",
+    "reminder_off": "बंद",
+    "your_data": "तुमचा डेटा",
+    "backup_restore": "बॅकअप आणि रिस्टोअर",
+    "backup_not_set": "चालू नाही — नोंदी फक्त या फोनवर आहेत",
+    "backup_file": "बॅकअप फाइल",
+    "privacy": "प्रायव्हसी",
+    "privacy_desc": "ॲप तपासणी, प्रायव्हसी पॉलिसी",
+    "privacy_policy": "प्रायव्हसी पॉलिसी",
+    "support": "मदत",
+    "version_footer": "आवृत्ती %{version}"
   },
   "share": {
     "message": "कर्मचाऱ्यांची हजेरी आणि पगाराचा हिशोब ठेवण्यासाठी हिसाब पगार ॲप खूप उपयोगी आहे. हे मोफत आहे आणि इंटरनेटशिवाय चालते. तुम्हीही वापरून पहा:"
@@ -275,7 +291,8 @@
     "deny": "नको, धन्यवाद",
     "settings_section": "गोपनीयता",
     "settings_title": "या फोनमधील ॲप्स तपासा",
-    "settings_desc": "फक्त WhatsApp, UPI आणि खाते ॲप्स (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar अधिक चांगले करण्यासाठी"
+    "settings_desc": "यामुळे आम्हाला हिसाब पगार सुधारण्यास मदत होते. तुम्ही हे कधीही बंद करू शकता.",
+    "settings_note": "फक्त काही पेमेंट, खाता आणि WhatsApp ॲप तपासले जातात — तुमचे इतर ॲप, मेसेज किंवा डेटा कधीच नाही."
   },
   "reminder": {
     "title_one": "%{name} आज कामावर आले का?",

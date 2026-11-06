@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { LanguagePicker } from '@/src/components/settings/LanguagePicker';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 export default function LanguageScreen() {
+  const styles = useStyles();
   const { language, setLanguage } = useSettingsStore();
   // Frozen for as long as this screen is open. Picking a language closes the
   // screen right away, and react-native-screens crashes if the header title
@@ -26,6 +27,6 @@ export default function LanguageScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
-});
+}));

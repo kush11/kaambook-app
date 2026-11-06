@@ -184,7 +184,23 @@
     "owner_phone": "Your mobile number",
     "owner_phone_add": "Add your number",
     "share_app": "Share this app",
-    "share_app_desc": "Tell other business owners about Hisab Pagar"
+    "share_app_desc": "Tell other business owners about Hisab Pagar",
+    "preferences": "Preferences",
+    "theme": "Theme",
+    "theme_system": "Same as phone",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "daily_reminder": "Daily reminder",
+    "reminder_off": "Off",
+    "your_data": "Your data",
+    "backup_restore": "Backup & restore",
+    "backup_not_set": "Not set up — records are only on this phone",
+    "backup_file": "Backup file",
+    "privacy": "Privacy",
+    "privacy_desc": "App check, privacy policy",
+    "privacy_policy": "Privacy policy",
+    "support": "Support",
+    "version_footer": "Version %{version}"
   },
   "share": {
     "message": "I use Hisab Pagar to manage staff attendance (hazri) and salary. It is free and works without internet. Try it:"
@@ -275,7 +291,8 @@
     "deny": "No thanks",
     "settings_section": "Privacy",
     "settings_title": "Check apps on this phone",
-    "settings_desc": "Only WhatsApp, UPI and khata apps (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — helps us improve Hisab Pagar"
+    "settings_desc": "Helps us improve Hisab Pagar. You can turn it off any time.",
+    "settings_note": "Only a few payment, khata and WhatsApp apps are checked — never your other apps, messages or data."
   },
   "reminder": {
     "title_one": "Did %{name} come to work today?",

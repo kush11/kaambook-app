@@ -11,6 +11,9 @@ interface SettingsState {
   language: string;
   reminderEnabled: boolean;
   reminderTime: string;
+  /** 'system' follows the phone's dark mode setting. */
+  themeMode: 'system' | 'light' | 'dark';
+  setThemeMode: (mode: 'system' | 'light' | 'dark') => Promise<void>;
   activeBusinessId: string;
   isOnboarded: boolean;
   isLoading: boolean;
@@ -48,6 +51,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   language: 'en',
   reminderEnabled: false,
   reminderTime: '20:00',
+  themeMode: 'system',
   activeBusinessId: '',
   isOnboarded: false,
   isLoading: true,
@@ -72,6 +76,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       language: lang,
       reminderEnabled: map['reminder_enabled'] === '1',
       reminderTime: map['reminder_time'] || '20:00',
+      themeMode: (['light', 'dark'].includes(map['theme_mode']) ? map['theme_mode'] : 'system') as 'system' | 'light' | 'dark',
       activeBusinessId: map['active_business_id'] || '',
       isOnboarded: map['onboarded'] === '1',
       ownerPhone: map['owner_phone'] || '',
@@ -129,6 +134,12 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     await get().setSetting('reminder_enabled', '1');
     set({ reminderEnabled: true });
     return true;
+  },
+
+  setThemeMode: async (mode) => {
+    await get().setSetting('theme_mode', mode);
+    set({ themeMode: mode });
+    track('theme_changed', { mode });
   },
 
   setReminderTime: async (time: string) => {

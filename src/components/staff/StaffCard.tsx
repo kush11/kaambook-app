@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { Text, TouchableRipple } from 'react-native-paper';
 import { StaffAvatar } from './StaffAvatar';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors, type Palette } from '@/src/theme';
 import { formatCurrency } from '@/src/utils/formatters';
 import type { Staff, AttendanceStatus } from '@/src/types';
 import i18n from '@/src/i18n';
@@ -20,15 +20,17 @@ interface StaffCardProps {
 
 // P / A / ½ are the marks used in paper attendance registers, so they stay the
 // same in every language; the spoken label is translated.
-const marks: { status: AttendanceStatus; letter: string; color: string; labelKey: string }[] = [
-  { status: 'present', letter: 'P', color: colors.present, labelKey: 'attendance.present' },
-  { status: 'absent', letter: 'A', color: colors.absent, labelKey: 'attendance.absent' },
-  { status: 'half_day', letter: '½', color: colors.halfDay, labelKey: 'attendance.half_day' },
+const marks: { status: AttendanceStatus; letter: string; color: keyof Palette; labelKey: string }[] = [
+  { status: 'present', letter: 'P', color: 'present', labelKey: 'attendance.present' },
+  { status: 'absent', letter: 'A', color: 'absent', labelKey: 'attendance.absent' },
+  { status: 'half_day', letter: '½', color: 'halfDay', labelKey: 'attendance.half_day' },
 ];
 
 const salarySuffix = { monthly: 'salary.per_month', daily: 'salary.per_day', weekly: 'salary.per_week' } as const;
 
 export function StaffCard({ staff, todayStatus, onPress, onMarkAttendance, isFirst, isLast }: StaffCardProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const suffixKey = salarySuffix[staff.salaryType as keyof typeof salarySuffix] ?? 'salary.per_month';
 
   return (
@@ -53,7 +55,7 @@ export function StaffCard({ staff, todayStatus, onPress, onMarkAttendance, isFir
                     accessibilityRole="button"
                     accessibilityLabel={`${i18n.t(m.labelKey)}: ${staff.name}`}
                     accessibilityState={{ selected }}
-                    style={[styles.chip, selected && { backgroundColor: m.color }]}
+                    style={[styles.chip, selected && { backgroundColor: colors[m.color] }]}
                   >
                     <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{m.letter}</Text>
                   </Pressable>
@@ -67,7 +69,7 @@ export function StaffCard({ staff, todayStatus, onPress, onMarkAttendance, isFir
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     marginHorizontal: 16,
     backgroundColor: colors.surface,
@@ -96,4 +98,4 @@ const styles = StyleSheet.create({
   },
   chipText: { fontSize: 16, fontWeight: '700', color: colors.textSecondary },
   chipTextSelected: { color: '#fff' },
-});
+}));

@@ -148,7 +148,23 @@
     "owner_phone": "ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਨੰਬਰ",
     "owner_phone_add": "ਆਪਣਾ ਨੰਬਰ ਜੋੜੋ",
     "share_app": "ਐਪ ਸ਼ੇਅਰ ਕਰੋ",
-    "share_app_desc": "ਹੋਰ ਕਾਰੋਬਾਰੀਆਂ ਨੂੰ ਹਿਸਾਬ ਪਗਾਰ ਬਾਰੇ ਦੱਸੋ"
+    "share_app_desc": "ਹੋਰ ਕਾਰੋਬਾਰੀਆਂ ਨੂੰ ਹਿਸਾਬ ਪਗਾਰ ਬਾਰੇ ਦੱਸੋ",
+    "preferences": "ਪਸੰਦ",
+    "theme": "ਥੀਮ",
+    "theme_system": "ਫ਼ੋਨ ਵਾਂਗ",
+    "theme_light": "ਲਾਈਟ",
+    "theme_dark": "ਡਾਰਕ",
+    "daily_reminder": "ਰੋਜ਼ਾਨਾ ਰਿਮਾਈਂਡਰ",
+    "reminder_off": "ਬੰਦ",
+    "your_data": "ਤੁਹਾਡਾ ਡਾਟਾ",
+    "backup_restore": "ਬੈਕਅੱਪ ਅਤੇ ਰੀਸਟੋਰ",
+    "backup_not_set": "ਚਾਲੂ ਨਹੀਂ — ਰਿਕਾਰਡ ਸਿਰਫ਼ ਇਸ ਫ਼ੋਨ ਵਿੱਚ ਹਨ",
+    "backup_file": "ਬੈਕਅੱਪ ਫ਼ਾਈਲ",
+    "privacy": "ਪ੍ਰਾਈਵੇਸੀ",
+    "privacy_desc": "ਐਪ ਜਾਂਚ, ਪ੍ਰਾਈਵੇਸੀ ਪਾਲਿਸੀ",
+    "privacy_policy": "ਪ੍ਰਾਈਵੇਸੀ ਪਾਲਿਸੀ",
+    "support": "ਮਦਦ",
+    "version_footer": "ਵਰਜ਼ਨ %{version}"
   },
   "share": {
     "message": "ਸਟਾਫ ਦੀ ਹਾਜ਼ਰੀ ਅਤੇ ਤਨਖਾਹ ਦਾ ਹਿਸਾਬ ਰੱਖਣ ਲਈ ਹਿਸਾਬ ਪਗਾਰ ਐਪ ਬਹੁਤ ਕੰਮ ਦੀ ਹੈ। ਇਹ ਮੁਫ਼ਤ ਹੈ ਅਤੇ ਬਿਨਾਂ ਇੰਟਰਨੈੱਟ ਦੇ ਚੱਲਦੀ ਹੈ। ਤੁਸੀਂ ਵੀ ਅਜ਼ਮਾਓ:"
@@ -275,7 +291,8 @@
     "deny": "ਨਹੀਂ, ਧੰਨਵਾਦ",
     "settings_section": "ਨਿੱਜਤਾ",
     "settings_title": "ਇਸ ਫ਼ੋਨ ਦੇ ਐਪਸ ਜਾਂਚੋ",
-    "settings_desc": "ਸਿਰਫ਼ WhatsApp, UPI ਅਤੇ ਖਾਤਾ ਐਪਸ (PhonePe, Google Pay, Paytm, OkCredit, Khatabook, Vyapar, PagarBook) — Hisab Pagar ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ"
+    "settings_desc": "ਇਸ ਨਾਲ ਸਾਨੂੰ ਹਿਸਾਬ ਪਗਾਰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ ਕਦੇ ਵੀ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।",
+    "settings_note": "ਸਿਰਫ਼ ਕੁਝ ਪੇਮੈਂਟ, ਖਾਤਾ ਅਤੇ WhatsApp ਐਪ ਜਾਂਚੇ ਜਾਂਦੇ ਹਨ — ਤੁਹਾਡੇ ਹੋਰ ਐਪ, ਸੁਨੇਹੇ ਜਾਂ ਡਾਟਾ ਕਦੇ ਨਹੀਂ।"
   },
   "reminder": {
     "title_one": "ਕੀ %{name} ਅੱਜ ਕੰਮ 'ਤੇ ਆਏ?",

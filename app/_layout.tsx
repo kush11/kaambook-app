@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Stack, useSegments } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
-import { PaperProvider } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import Head from 'expo-router/head';
-import { theme, headerOptions } from '@/src/theme';
+import { AppThemeProvider, useHeaderOptions } from '@/src/theme';
 import { db, initDatabase } from '@/src/db/client';
 import { staff } from '@/src/db/schema';
 import { seedDatabase } from '@/src/db/seed';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { useBusinessStore } from '@/src/stores/useBusinessStore';
-import { colors } from '@/src/theme/colors';
 import i18n from '@/src/i18n';
 import { AnimatedSplashScreen } from '@/src/components/AnimatedSplashScreen';
 import { initAnalytics, track, identifyOwner, setUserProperties } from '@/src/utils/analytics';
@@ -108,10 +105,22 @@ function RootLayout() {
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Hisab Pagar" />
       </Head>
-      <PaperProvider theme={theme}>
-        <StatusBar style="dark" />
-        {appReady && (
-          <Stack screenOptions={{ headerShown: false }}>
+      <AppThemeProvider>
+        {appReady && <RootStack />}
+        {!splashDone && (
+          <AnimatedSplashScreen isReady={appReady} onFinish={() => setSplashDone(true)} />
+        )}
+      </AppThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  );
+}
+
+// Separate component so the header colours can come from the theme hook.
+function RootStack() {
+  const headerOptions = useHeaderOptions();
+  return (
+          <Stack screenOptions={{ headerShown: false, contentStyle: headerOptions.contentStyle }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="(tabs)" />
@@ -119,16 +128,11 @@ function RootLayout() {
             <Stack.Screen name="staff/[id]" />
             {/* Title is set inside the screen and frozen while it is open — see app/settings/language.tsx */}
             <Stack.Screen name="settings/language" options={{ headerShown: true, title: '', ...headerOptions }} />
+            <Stack.Screen name="settings/backup" options={{ headerShown: true, title: i18n.t('settings.backup_restore'), ...headerOptions }} />
+            <Stack.Screen name="settings/privacy" options={{ headerShown: true, title: i18n.t('settings.privacy'), ...headerOptions }} />
             <Stack.Screen name="business/select" options={{ headerShown: true, title: i18n.t('business.switch'), ...headerOptions }} />
             <Stack.Screen name="business/add" options={{ headerShown: true, title: i18n.t('business.add'), presentation: 'modal', ...headerOptions }} />
           </Stack>
-        )}
-        {!splashDone && (
-          <AnimatedSplashScreen isReady={appReady} onFinish={() => setSplashDone(true)} />
-        )}
-      </PaperProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
   );
 }
 

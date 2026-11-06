@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Dialog, Portal, Button, Text, TextInput } from 'react-native-paper';
 import { useSettingsStore } from '@/src/stores/useSettingsStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import i18n from '@/src/i18n';
 import { useKeyboardHeight } from '@/src/utils/useKeyboardHeight';
 
@@ -13,6 +13,8 @@ interface OwnerPhoneDialogProps {
 
 /** Lets the owner add or change their mobile number from Settings. */
 export function OwnerPhoneDialog({ visible, onDismiss }: OwnerPhoneDialogProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const { ownerPhone, setOwnerPhone } = useSettingsStore();
   const [phone, setPhone] = useState(ownerPhone);
   const [error, setError] = useState(false);
@@ -67,7 +69,7 @@ export function OwnerPhoneDialog({ visible, onDismiss }: OwnerPhoneDialogProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   help: { color: colors.textSecondary, marginBottom: 10 },
   input: { backgroundColor: colors.surface },
-});
+}));

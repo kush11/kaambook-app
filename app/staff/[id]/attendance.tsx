@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import { useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { AttendanceCalendar } from '@/src/components/attendance/AttendanceCalendar';
@@ -7,12 +7,14 @@ import { AttendanceSheet } from '@/src/components/attendance/AttendanceSheet';
 import { MonthNavigator } from '@/src/components/attendance/MonthNavigator';
 import { useAttendanceStore } from '@/src/stores/useAttendanceStore';
 import { useStaffStore } from '@/src/stores/useStaffStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import dayjs from 'dayjs';
 import type { AttendanceStatus } from '@/src/types';
 import i18n from '@/src/i18n';
 
 export default function AttendanceScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { records, loadMonthAttendance, markAttendance, getMonthSummary } = useAttendanceStore();
   const { getStaffById, updateStaff } = useStaffStore();
@@ -99,6 +101,7 @@ export default function AttendanceScreen() {
 }
 
 function SummaryItem({ label, value, color }: { label: string; value: number; color: string }) {
+  const summaryStyles = useSummaryStyles();
   return (
     <View style={summaryStyles.item}>
       <Text variant="headlineSmall" style={{ color, fontWeight: 'bold' }}>{value}</Text>
@@ -107,15 +110,15 @@ function SummaryItem({ label, value, color }: { label: string; value: number; co
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
-  calendarCard: { margin: 16, backgroundColor: '#fff' },
-  summaryCard: { margin: 16, marginTop: 0, backgroundColor: '#fff' },
+  calendarCard: { margin: 16, backgroundColor: colors.surface },
+  summaryCard: { margin: 16, marginTop: 0, backgroundColor: colors.surface },
   summaryTitle: { marginBottom: 12 },
   summaryGrid: { flexDirection: 'row', justifyContent: 'space-around' },
-});
+}));
 
-const summaryStyles = StyleSheet.create({
+const useSummaryStyles = makeStyles((colors) => ({
   item: { alignItems: 'center' },
   label: { color: colors.textSecondary, marginTop: 4 },
-});
+}));

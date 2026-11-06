@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
+import { View, ScrollView, Alert, Linking } from 'react-native';
 import { TextInput, Button, Text, Chip, HelperText } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SegmentedToggle } from '../ui/SegmentedToggle';
 import { AmountInput } from '../ui/AmountInput';
 import { DatePickerField } from '../ui/DatePickerField';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import type { SalaryType } from '@/src/types';
 import i18n from '@/src/i18n';
 import * as Contacts from 'expo-contacts';
@@ -42,6 +42,7 @@ const DAY_OPTIONS = [
 ];
 
 export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.save'), isLoading, isPhoneTaken }: StaffFormProps) {
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const [name, setName] = useState(initialData?.name || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
@@ -222,7 +223,7 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1 },
   contentContainer: { padding: 16 },
   pickContactBtn: { marginBottom: 16 },
@@ -238,4 +239,4 @@ const styles = StyleSheet.create({
   chipTextSelected: { color: '#fff' },
   button: { marginTop: 24 },
   buttonContent: { paddingVertical: 6 },
-});
+}));

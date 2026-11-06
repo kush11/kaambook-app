@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Text, Button } from 'react-native-paper';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, lightColors } from '@/src/theme';
 import i18n from '@/src/i18n';
 
 interface TodaySummaryCardProps {
@@ -31,6 +31,7 @@ export function TodaySummaryCard({
   onMarkAllPresent,
   onMarkHoliday,
 }: TodaySummaryCardProps) {
+  const styles = useStyles();
   const stats = [
     { label: i18n.t('home.present_today'), value: present },
     { label: i18n.t('home.absent_today'), value: absent },
@@ -61,7 +62,8 @@ export function TodaySummaryCard({
           onPress={onMarkAllPresent}
           loading={markingAll}
           buttonColor="#fff"
-          textColor={colors.primaryDark}
+          // The button stays white in both themes, so its text keeps the light palette's deep orange.
+          textColor={lightColors.primaryDark}
           style={styles.primaryBtn}
           labelStyle={styles.btnLabel}
         >
@@ -82,7 +84,7 @@ export function TodaySummaryCard({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     marginHorizontal: 16,
     marginTop: 4,
@@ -102,4 +104,4 @@ const styles = StyleSheet.create({
   primaryBtn: { flex: 1, borderRadius: 12 },
   secondaryBtn: { borderRadius: 12, borderColor: '#fff', borderWidth: 1.5 },
   btnLabel: { fontWeight: '700' },
-});
+}));

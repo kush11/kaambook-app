@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Card, Text, Divider } from 'react-native-paper';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { formatCurrency } from '@/src/utils/formatters';
 import type { SalaryBreakdown as SalaryBreakdownType } from '@/src/types';
 import i18n from '@/src/i18n';
@@ -11,6 +11,7 @@ interface SalaryBreakupProps {
 }
 
 function StatTile({ label, value, color }: { label: string; value: string; color: string }) {
+  const styles = useStyles();
   return (
     <View style={[styles.tile, { backgroundColor: color + '14' }]}>
       <Text style={[styles.tileValue, { color }]}>{value}</Text>
@@ -20,6 +21,7 @@ function StatTile({ label, value, color }: { label: string; value: string; color
 }
 
 function Row({ label, value, color }: { label: string; value: string; color?: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.row}>
       <Text variant="bodyMedium" style={styles.rowLabel}>{label}</Text>
@@ -29,6 +31,8 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
 }
 
 export function SalaryBreakup({ breakdown }: SalaryBreakupProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const owes = breakdown.balanceDue > 0;
   const isAdvance = breakdown.balanceDue < 0;
   const balanceColor = owes ? colors.error : colors.primary;
@@ -66,7 +70,7 @@ export function SalaryBreakup({ breakdown }: SalaryBreakupProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: { marginHorizontal: 16, marginVertical: 8, backgroundColor: colors.surface, borderRadius: 20 },
   sectionTitle: { color: colors.textSecondary, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
@@ -88,4 +92,4 @@ const styles = StyleSheet.create({
   },
   balanceLabel: { fontWeight: '600' },
   balanceValue: { fontWeight: '700' },
-});
+}));

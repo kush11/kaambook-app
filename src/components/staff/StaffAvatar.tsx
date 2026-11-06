@@ -1,6 +1,5 @@
 import React from 'react';
 import { Avatar } from 'react-native-paper';
-import { colors } from '@/src/theme/colors';
 
 interface StaffAvatarProps {
   name: string;

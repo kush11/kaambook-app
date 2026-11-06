@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, TouchableRipple } from 'react-native-paper';
 import { router, useFocusEffect } from 'expo-router';
@@ -18,12 +18,14 @@ import { useSettingsStore } from '@/src/stores/useSettingsStore';
 import { db } from '@/src/db/client';
 import { attendance } from '@/src/db/schema';
 import { eq } from 'drizzle-orm';
-import { colors } from '@/src/theme/colors';
+import { makeStyles, useColors } from '@/src/theme';
 import { today } from '@/src/utils/date';
 import type { AttendanceStatus, Attendance } from '@/src/types';
 import i18n from '@/src/i18n';
 
 export default function HomeScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { staffList, loadStaff } = useStaffStore();
   const { activeBusinessId } = useSettingsStore();
   const { markAttendance, markAllPresent, markAllStatus } = useAttendanceStore();
@@ -214,7 +216,7 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   list: { paddingBottom: 96 },
   // paddingBottom keeps the inactive-staff footer clear of the Add Staff button.
@@ -233,4 +235,4 @@ const styles = StyleSheet.create({
   },
   fabContent: { flexDirection: 'row', alignItems: 'center', gap: 8, height: 52, paddingLeft: 16, paddingRight: 22 },
   fabLabel: { color: '#fff', fontSize: 15, fontWeight: '700' },
-});
+}));

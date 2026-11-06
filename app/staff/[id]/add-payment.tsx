@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { PaymentForm } from '@/src/components/payment/PaymentForm';
 import { usePaymentStore } from '@/src/stores/usePaymentStore';
-import { colors } from '@/src/theme/colors';
+import { makeStyles } from '@/src/theme';
 import type { PaymentType, PaymentMode } from '@/src/types';
 
 export default function AddPaymentScreen() {
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { addPayment } = usePaymentStore();
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,6 @@ export default function AddPaymentScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
-});
+}));
