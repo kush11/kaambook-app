@@ -30,7 +30,6 @@ export default function ProfileScreen() {
       overtimeRate: data.overtimeRate,
       shiftHours: data.shiftHours,
       lateFine: data.lateFine,
-      upiId: data.upiId || null,
       joiningDate: data.joiningDate,
       weekOffDays: (data.weekOffDays as number[]).join(','),
       weekOff: (data.weekOffDays as number[])[0] ?? -1, // keep legacy column in sync
@@ -50,7 +49,6 @@ export default function ProfileScreen() {
           overtimeRate: staffMember.overtimeRate,
           shiftHours: staffMember.shiftHours,
           lateFine: staffMember.lateFine,
-          upiId: staffMember.upiId || '',
           weekOffDays: initialWeekOffDays,
           joiningDate: staffMember.joiningDate,
         }}

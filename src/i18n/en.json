@@ -84,10 +84,7 @@
     "shift_hours": "Working hours per day",
     "shift_hours_hint": "A present day counts as this many hours",
     "late_fine": "Late fine (per late day)",
-    "late_fine_hint": "Deducted each day you mark them late. Leave empty for no fine.",
-    "upi_id": "UPI ID (optional)",
-    "upi_id_hint": "To pay salary by UPI from the app, e.g. name@okaxis",
-    "upi_invalid": "Enter a valid UPI ID, e.g. name@okaxis"
+    "late_fine_hint": "Deducted each day you mark them late. Leave empty for no fine."
   },
   "attendance": {
     "title": "Attendance",
@@ -327,17 +324,6 @@
     "tomorrow_on": "We'll remind you at %{time}",
     "tomorrow_off": "Turn on a daily reminder so you don't forget",
     "turn_on": "Turn on"
-  },
-  "upi": {
-    "pay": "Pay %{amount} by UPI",
-    "add_id_title": "Add UPI ID",
-    "add_id_body": "Add %{name}'s UPI ID to pay salary from the app.",
-    "confirm_title": "Did the payment go through?",
-    "confirm_body": "Record %{amount} paid to %{name} by UPI?",
-    "yes": "Yes, record it",
-    "no": "No",
-    "no_app": "No UPI app found on this phone.",
-    "recorded": "Payment recorded"
   },
   "register": {
     "button": "Monthly register",

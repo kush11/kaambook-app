@@ -24,7 +24,6 @@ export const staff = sqliteTable('staff', {
   shiftHours: real('shift_hours').notNull().default(8),
   // Deducted for each day marked late (0 = no fine).
   lateFine: real('late_fine').notNull().default(0),
-  upiId: text('upi_id'),
   joiningDate: text('joining_date').notNull(),
   status: text('status').notNull().default('active'), // active, inactive
   createdAt: text('created_at').notNull(),

@@ -22,9 +22,6 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
   full shift; hours can be changed per day in the attendance sheet.
 - **Late fines.** Per-staff "late fine per late day"; a Late toggle on present / half days in the
   attendance sheet; deducted automatically and shown on Salary Due, the staff page and the slip.
-- **Pay by UPI.** Staff UPI ID (optional). "UPI" on each Salary Due row and "Pay ₹X by UPI" on the
-  staff page open PhonePe / GPay / Paytm with the amount filled in (`upi://pay`); on return the
-  owner confirms and the payment is recorded (salary, UPI). Events `upi_pay_*`, `upi_id_added`.
 - **Monthly register PDF** from Salary Due: every staff member's day-by-day attendance (P / A / H /
   PL / UL / HO / WO, L = late) and the salary register (rate, days, hours, OT, late fine, earned,
   paid, balance, totals). Event `register_shared`.

@@ -34,7 +34,6 @@ export interface Staff {
   shiftHours: number;
   /** ₹ deducted per day marked late; 0 = no fine. */
   lateFine: number;
-  upiId: string | null;
   joiningDate: string;
   status: StaffStatus;
   createdAt: string;

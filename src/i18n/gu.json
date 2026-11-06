@@ -84,10 +84,7 @@
     "shift_hours": "રોજના કામના કલાક",
     "shift_hours_hint": "હાજર દિવસ આટલા કલાક ગણાશે",
     "late_fine": "મોડા આવવાનો દંડ (દરેક મોડા દિવસે)",
-    "late_fine_hint": "દરેક મોડા દિવસે કપાશે. દંડ ન હોય તો ખાલી રાખો.",
-    "upi_id": "UPI ID (વૈકલ્પિક)",
-    "upi_id_hint": "ઍપમાંથી UPI થી પગાર આપવા, દા.ત. name@okaxis",
-    "upi_invalid": "સાચો UPI ID લખો, દા.ત. name@okaxis"
+    "late_fine_hint": "દરેક મોડા દિવસે કપાશે. દંડ ન હોય તો ખાલી રાખો."
   },
   "attendance": {
     "title": "હાજરી",
@@ -327,17 +324,6 @@
     "tomorrow_on": "અમે તમને %{time} વાગ્યે યાદ કરાવીશું",
     "tomorrow_off": "ભૂલી ન જાઓ એ માટે રોજનું રિમાઇન્ડર ચાલુ કરો",
     "turn_on": "ચાલુ કરો"
-  },
-  "upi": {
-    "pay": "UPI થી %{amount} આપો",
-    "add_id_title": "UPI ID ઉમેરો",
-    "add_id_body": "ઍપમાંથી પગાર આપવા %{name} નો UPI ID ઉમેરો.",
-    "confirm_title": "ચુકવણી થઈ ગઈ?",
-    "confirm_body": "%{name} ને UPI થી %{amount} ચૂકવ્યાની નોંધ કરીએ?",
-    "yes": "હા, નોંધ કરો",
-    "no": "ના",
-    "no_app": "આ ફોનમાં કોઈ UPI ઍપ મળી નહીં.",
-    "recorded": "ચુકવણી નોંધાઈ ગઈ"
   },
   "register": {
     "button": "માસિક રજિસ્ટર",

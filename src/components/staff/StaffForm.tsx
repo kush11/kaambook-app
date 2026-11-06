@@ -10,7 +10,6 @@ import i18n from '@/src/i18n';
 import * as Contacts from 'expo-contacts';
 import dayjs from 'dayjs';
 import { track, trackError } from '@/src/utils/analytics';
-import { isValidUpiId } from '@/src/utils/upi';
 
 interface StaffFormData {
   name: string;
@@ -20,7 +19,6 @@ interface StaffFormData {
   overtimeRate: number;
   shiftHours: number;
   lateFine: number;
-  upiId: string;
   weekOffDays: number[];
   joiningDate: string; // YYYY-MM-DD
 }
@@ -56,8 +54,6 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
     shiftHours: initialData?.shiftHours || 8,
     lateFine: initialData?.lateFine || 0,
   });
-  const [upiId, setUpiId] = useState(initialData?.upiId || '');
-  const [upiError, setUpiError] = useState(false);
   const [weekOffDays, setWeekOffDays] = useState<number[]>(initialData?.weekOffDays ?? []);
   const [joiningDate, setJoiningDate] = useState(initialData?.joiningDate || dayjs().format('YYYY-MM-DD'));
   const [nameError, setNameError] = useState(false);
@@ -107,14 +103,12 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
     let hasError = false;
     if (!name.trim()) { setNameError(true); hasError = true; }
     if (!rules.salaryAmount || rules.salaryAmount <= 0) { setSalaryError(true); hasError = true; }
-    if (upiId.trim() && !isValidUpiId(upiId.trim())) { setUpiError(true); hasError = true; }
     if (phone.trim() && isPhoneTaken?.(phone.trim())) { setPhoneError(true); hasError = true; }
     if (hasError) return;
     onSubmit({
       name: name.trim(),
       phone: phone.trim(),
       ...rules,
-      upiId: upiId.trim(),
       weekOffDays: [...weekOffDays].sort((a, b) => a - b),
       joiningDate,
     });
@@ -171,21 +165,6 @@ export function StaffForm({ initialData, onSubmit, submitLabel = i18n.t('common.
         salaryError={salaryError}
       />
 
-      <TextInput
-        mode="outlined"
-        label={i18n.t('staff.upi_id')}
-        value={upiId}
-        onChangeText={(t) => { setUpiId(t.replace(/\s/g, '')); setUpiError(false); }}
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="email-address"
-        error={upiError}
-        style={styles.upiInput}
-      />
-      <HelperText type={upiError ? 'error' : 'info'} style={styles.phoneHelper}>
-        {upiError ? i18n.t('staff.upi_invalid') : i18n.t('staff.upi_id_hint')}
-      </HelperText>
-
       <Text variant="labelLarge" style={[styles.label, { marginTop: 16 }]}>{i18n.t('staff.week_off')}</Text>
       <Text style={styles.hint}>{i18n.t('staff.week_off_hint')}</Text>
       <View style={styles.chipWrap}>
@@ -235,7 +214,6 @@ const useStyles = makeStyles((colors) => ({
   input: { marginBottom: 16 },
   inputNoMargin: { marginBottom: 0 },
   phoneHelper: { marginBottom: 8 },
-  upiInput: { marginTop: 16 },
   label: { marginBottom: 8, color: colors.textSecondary },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
   hint: { fontSize: 12, color: colors.textSecondary, marginBottom: 8 },

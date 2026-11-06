@@ -11,7 +11,7 @@ function mkStaff(over: Partial<Staff>): Staff {
   return {
     id: 's1', businessId: 'b1', name: 'Test', phone: null, photoUri: null,
     salaryType: 'monthly', salaryAmount: 0, weekOff: -1, weekOffDays: null,
-    overtimeRate: 0, shiftHours: 8, lateFine: 0, upiId: null, joiningDate: '2024-01-01', status: 'active', createdAt: '2024-01-01T00:00:00Z',
+    overtimeRate: 0, shiftHours: 8, lateFine: 0, joiningDate: '2024-01-01', status: 'active', createdAt: '2024-01-01T00:00:00Z',
     ...over,
   };
 }

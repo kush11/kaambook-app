@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { StaffAvatar } from '@/src/components/staff/StaffAvatar';
 import { SalaryBreakup } from '@/src/components/salary/SalaryBreakup';
-import { PayByUpiButton } from '@/src/components/payment/PayByUpiButton';
 import { ConfirmDialog } from '@/src/components/ui/ConfirmDialog';
 import { useStaffStore } from '@/src/stores/useStaffStore';
 import { makeStyles, useColors } from '@/src/theme';
@@ -149,11 +148,7 @@ export default function StaffDetailScreen() {
 
       {/* Salary Breakdown */}
       {breakdown && <SalaryBreakup hourly={staffMember.salaryType === 'hourly'} breakdown={breakdown} />}
-      {breakdown && breakdown.balanceDue > 0 && (
-        <View style={styles.upiPay}>
-          <PayByUpiButton staff={staffMember} amount={breakdown.balanceDue} source="staff_detail" onPaid={loadData} />
-        </View>
-      )}
+
 
       {/* Navigation Links */}
       <Card style={styles.linksCard} mode="elevated">
@@ -216,7 +211,6 @@ export default function StaffDetailScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
-  upiPay: { marginHorizontal: 16, marginBottom: 8 },
   container: { flex: 1, backgroundColor: colors.background },
   content: { paddingTop: 4 },
   headerCard: { marginHorizontal: 16, marginTop: 16, marginBottom: 8, backgroundColor: colors.surface, borderRadius: 20 },

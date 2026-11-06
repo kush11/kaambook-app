@@ -84,10 +84,7 @@
     "shift_hours": "ਰੋਜ਼ ਕੰਮ ਦੇ ਘੰਟੇ",
     "shift_hours_hint": "ਹਾਜ਼ਰ ਦਿਨ ਇੰਨੇ ਘੰਟੇ ਗਿਣਿਆ ਜਾਵੇਗਾ",
     "late_fine": "ਲੇਟ ਜੁਰਮਾਨਾ (ਹਰ ਲੇਟ ਦਿਨ)",
-    "late_fine_hint": "ਹਰ ਲੇਟ ਦਿਨ ਕੱਟਿਆ ਜਾਵੇਗਾ। ਜੁਰਮਾਨਾ ਨਾ ਹੋਵੇ ਤਾਂ ਖਾਲੀ ਛੱਡੋ।",
-    "upi_id": "UPI ID (ਲਾਜ਼ਮੀ ਨਹੀਂ)",
-    "upi_id_hint": "ਐਪ ਤੋਂ UPI ਰਾਹੀਂ ਤਨਖਾਹ ਦੇਣ ਲਈ, ਜਿਵੇਂ name@okaxis",
-    "upi_invalid": "ਸਹੀ UPI ID ਪਾਓ, ਜਿਵੇਂ name@okaxis"
+    "late_fine_hint": "ਹਰ ਲੇਟ ਦਿਨ ਕੱਟਿਆ ਜਾਵੇਗਾ। ਜੁਰਮਾਨਾ ਨਾ ਹੋਵੇ ਤਾਂ ਖਾਲੀ ਛੱਡੋ।"
   },
   "attendance": {
     "title": "ਹਾਜ਼ਰੀ",
@@ -327,17 +324,6 @@
     "tomorrow_on": "ਅਸੀਂ ਤੁਹਾਨੂੰ %{time} ਵਜੇ ਯਾਦ ਕਰਾਵਾਂਗੇ",
     "tomorrow_off": "ਭੁੱਲੋ ਨਾ, ਇਸ ਲਈ ਰੋਜ਼ਾਨਾ ਰਿਮਾਈਂਡਰ ਚਾਲੂ ਕਰੋ",
     "turn_on": "ਚਾਲੂ ਕਰੋ"
-  },
-  "upi": {
-    "pay": "UPI ਨਾਲ %{amount} ਦਿਓ",
-    "add_id_title": "UPI ID ਜੋੜੋ",
-    "add_id_body": "ਐਪ ਤੋਂ ਤਨਖਾਹ ਦੇਣ ਲਈ %{name} ਦੀ UPI ID ਜੋੜੋ।",
-    "confirm_title": "ਕੀ ਭੁਗਤਾਨ ਹੋ ਗਿਆ?",
-    "confirm_body": "%{name} ਨੂੰ UPI ਨਾਲ %{amount} ਦਾ ਭੁਗਤਾਨ ਦਰਜ ਕਰੀਏ?",
-    "yes": "ਹਾਂ, ਦਰਜ ਕਰੋ",
-    "no": "ਨਹੀਂ",
-    "no_app": "ਇਸ ਫ਼ੋਨ ਵਿੱਚ ਕੋਈ UPI ਐਪ ਨਹੀਂ ਮਿਲੀ।",
-    "recorded": "ਭੁਗਤਾਨ ਦਰਜ ਹੋ ਗਿਆ"
   },
   "register": {
     "button": "ਮਹੀਨਾਵਾਰ ਰਜਿਸਟਰ",

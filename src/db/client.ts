@@ -42,7 +42,6 @@ function createTables() {
       overtime_rate REAL NOT NULL DEFAULT 0,
       shift_hours REAL NOT NULL DEFAULT 8,
       late_fine REAL NOT NULL DEFAULT 0,
-      upi_id TEXT,
       joining_date TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'active',
       created_at TEXT NOT NULL
@@ -82,11 +81,10 @@ function createTables() {
     );
   `);
 
-  // 1.1.0: hourly salary, late fines, UPI pay. Each ALTER fails harmlessly once the column exists.
+  // 1.1.0: hourly salary and late fines. Each ALTER fails harmlessly once the column exists.
   for (const sql of [
     `ALTER TABLE staff ADD COLUMN shift_hours REAL NOT NULL DEFAULT 8;`,
     `ALTER TABLE staff ADD COLUMN late_fine REAL NOT NULL DEFAULT 0;`,
-    `ALTER TABLE staff ADD COLUMN upi_id TEXT;`,
     `ALTER TABLE attendance ADD COLUMN hours_worked REAL;`,
     `ALTER TABLE attendance ADD COLUMN is_late INTEGER NOT NULL DEFAULT 0;`,
   ]) {

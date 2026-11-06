@@ -17,7 +17,6 @@ interface AddStaffInput {
   overtimeRate?: number;
   shiftHours?: number;
   lateFine?: number;
-  upiId?: string;
   weekOffDays: number[];
   joiningDate?: string;
 }
@@ -65,7 +64,6 @@ export const useStaffStore = create<StaffState>((set, get) => ({
       overtimeRate: input.overtimeRate || 0,
       shiftHours: input.shiftHours || 8,
       lateFine: input.lateFine || 0,
-      upiId: input.upiId || null,
       weekOff: input.weekOffDays[0] ?? -1, // keep legacy column in sync
       weekOffDays: input.weekOffDays.join(','),
       joiningDate: input.joiningDate || dayjs().format('YYYY-MM-DD'),

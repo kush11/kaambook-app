@@ -84,10 +84,7 @@
     "shift_hours": "रोज़ काम के घंटे",
     "shift_hours_hint": "हाज़िर दिन इतने घंटे गिना जाएगा",
     "late_fine": "लेट फ़ाइन (हर लेट दिन)",
-    "late_fine_hint": "हर लेट दिन पर कटेगा। फ़ाइन न हो तो खाली छोड़ें।",
-    "upi_id": "UPI ID (ज़रूरी नहीं)",
-    "upi_id_hint": "ऐप से UPI द्वारा सैलरी देने के लिए, जैसे name@okaxis",
-    "upi_invalid": "सही UPI ID डालें, जैसे name@okaxis"
+    "late_fine_hint": "हर लेट दिन पर कटेगा। फ़ाइन न हो तो खाली छोड़ें।"
   },
   "attendance": {
     "title": "हाजिरी",
@@ -327,17 +324,6 @@
     "tomorrow_on": "हम आपको %{time} बजे याद दिलाएँगे",
     "tomorrow_off": "रोज़ का रिमाइंडर चालू करें ताकि भूलें नहीं",
     "turn_on": "चालू करें"
-  },
-  "upi": {
-    "pay": "UPI से %{amount} दें",
-    "add_id_title": "UPI ID जोड़ें",
-    "add_id_body": "ऐप से सैलरी देने के लिए %{name} की UPI ID जोड़ें।",
-    "confirm_title": "क्या भुगतान हो गया?",
-    "confirm_body": "%{name} को UPI से %{amount} का भुगतान दर्ज करें?",
-    "yes": "हाँ, दर्ज करें",
-    "no": "नहीं",
-    "no_app": "इस फ़ोन में कोई UPI ऐप नहीं मिला।",
-    "recorded": "भुगतान दर्ज हो गया"
   },
   "register": {
     "button": "मासिक रजिस्टर",

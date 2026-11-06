@@ -4,7 +4,6 @@ import { Text, Button, Portal, Modal, ActivityIndicator, IconButton, TouchableRi
 import { router, useFocusEffect } from 'expo-router';
 import { EmptyState } from '@/src/components/ui/EmptyState';
 import { StaffAvatar } from '@/src/components/staff/StaffAvatar';
-import { PayByUpiButton } from '@/src/components/payment/PayByUpiButton';
 import { shareMonthlyRegister } from '@/src/utils/register';
 import { MonthNavigator } from '@/src/components/attendance/MonthNavigator';
 import { useStaffStore } from '@/src/stores/useStaffStore';
@@ -118,9 +117,6 @@ export default function SalaryDueScreen() {
     }
   };
 
-  // Payments made from here land in the month on screen (today, or its last day for a past month).
-  const monthEnd = dayjs().year(year).month(month).endOf('month').format('YYYY-MM-DD');
-
   const openAiSummary = async () => {
     setAiVisible(true);
     setAiText('');
@@ -222,16 +218,6 @@ export default function SalaryDueScreen() {
                       {formatCurrency(Math.abs(balanceDue))}
                     </Text>
                     {isAdvance ? <Text style={styles.rowDueLabel}>{i18n.t('payment.advance')}</Text> : null}
-                    {balanceDue > 0 ? (
-                      <PayByUpiButton
-                        compact
-                        staff={item.staff}
-                        amount={balanceDue}
-                        paymentDate={monthEnd}
-                        source="salary_due"
-                        onPaid={loadDues}
-                      />
-                    ) : null}
                   </View>
                 </View>
               </TouchableRipple>
@@ -321,7 +307,7 @@ const useStyles = makeStyles((colors) => ({
   rowMeta: { fontSize: 13, color: colors.textSecondary },
   rowTrack: { height: 4, borderRadius: 2, backgroundColor: colors.divider, overflow: 'hidden', marginTop: 2 },
   rowFill: { height: 4, backgroundColor: colors.success },
-  rowDue: { alignItems: 'flex-end', gap: 6 },
+  rowDue: { alignItems: 'flex-end' },
   rowAmount: { fontSize: 17, fontWeight: '700', color: colors.text },
   rowAmountAdvance: { color: colors.success },
   rowDueLabel: { fontSize: 12, color: colors.textSecondary },
