@@ -93,12 +93,15 @@ export function AttendanceSheet({ visible, date, current, hourly, shiftHours = 8
           {worked && (
             <View style={styles.extraRow}>
               <Chip
+                // Outlined when off: Paper's default (flat) chip is tinted, which reads as "on".
+                mode={late ? 'flat' : 'outlined'}
                 icon="clock-alert-outline"
                 selected={late}
                 showSelectedCheck={false}
                 onPress={() => setLate((v) => !v)}
                 style={late ? { backgroundColor: colors.halfDay } : undefined}
                 textStyle={late ? styles.lateTextOn : undefined}
+                selectedColor={late ? '#fff' : colors.halfDay}
               >
                 {i18n.t('attendance.late')}
               </Chip>

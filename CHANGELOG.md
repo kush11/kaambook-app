@@ -49,6 +49,9 @@ Version codes 6 and up were built on EAS; earlier ones were built locally.
 - Phones stay portrait; tablets and foldables can rotate (Play large-screen recommendation).
 
 ### Fixed
+- **Phones could rotate to landscape** after leaving the app with Back and reopening it (Android
+  made a new activity without the portrait lock while the app kept running; affects 1.0.9).
+  The lock is now re-applied whenever the app comes to the foreground.
 - Person properties (`staff_count`, `business_count`, `has_*`) were dropped by PostHog for
   owners who never entered a phone number; now set with `setPersonProperties`.
 - R8 stripped expo-notifications' serialization code, so notifications with `data` could not
