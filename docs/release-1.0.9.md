@@ -68,7 +68,7 @@ Google's real 403 bodies (scope vs storage-full).
   notes en-GB / en-IN / hi-IN. Sent for Google review; managed publishing is off, so it goes live
   as soon as review passes. Only warning: no native debug symbols uploaded (not blocking).
 - Review passed: **Available on Google Play since 2026-11-06 05:16 IST** (3 countries/regions, 12 installs on the track).
-- Not yet verified on a Play-installed build: the Drive "untick the Drive box" flow.
+- Verified by Kush on the Play Store build (2026-11-06): Google Drive backup works.
 
 ## After promoting
 - The R8 `mapping.txt` is uploaded by the workflow; check the obfuscation warning clears on
