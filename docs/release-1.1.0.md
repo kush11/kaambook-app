@@ -4,6 +4,7 @@
 - **Release:** tag `v1.1.0` → GitHub Actions run `42160878211` (success) → Play Internal testing (2026-11-06 ~09:55 IST)
 - **Production:** promoted 2026-11-06 ~10:30 IST, 100% rollout, notes en-GB / en-IN / hi-IN, sent for review.
   Play warning: "no native debug symbols uploaded" (not blocking; being checked).
+- **Live on Google Play** 2026-11-06 (~10:35 IST). Kush checked Google Drive backup on the Play build: working.
 - **Why:** 12 of 18 users used the app on one day only (PostHog, Oct 19–Nov 5) even though all
   had the reminder on; competitors (PagarBook, SalaryBook) offer hourly pay, late fines and a
   monthly register; owners asked for dark mode / a cleaner Settings; 1.0.9 could rotate to
